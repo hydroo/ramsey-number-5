@@ -1,0 +1,4 @@
+.*
+*.o
+
+/test-1-brute-force-straight-forward/test-1
