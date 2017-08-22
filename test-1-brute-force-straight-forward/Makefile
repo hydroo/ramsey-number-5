@@ -36,11 +36,4 @@ clang-format:
 		clang-format-4.0 -i $$file; \
 	done
 
-.PHONY: clang-tidy
-clang-tidy:
-	@for file in $(SOURCES) $(INCLUDES); do \
-		echo "clang-tidy-4.0 -i $$file"; \
-		clang-tidy-4.0 -fix -header-filter=.* $$file -- -std=c++14; \
-	done
-
 -include .depend
