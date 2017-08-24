@@ -24,7 +24,7 @@ int main(int argc, char** args) {
 
 using EdgeColor = int;
 
-bool hasOnlyCompleteSubGraphs(int subGraphSize, EdgeColor color, int nodes, const std::vector<EdgeColor>& coloring) {
+bool hasCompleteSubgraph(int subGraphSize, EdgeColor color, int nodes, const std::vector<EdgeColor>& coloring) {
     // std::cerr << coloring << std::endl;
 
     ASSERT(nodes * (nodes - 1) / 2 == (int)coloring.size());
@@ -104,8 +104,8 @@ void test1(int ramseyNumber0, int ramseyNumber1) {
         exitCondition = true;
 
         for (int c = 0; c < colorings; c += 1) {
-            bool onlyEmptyOrOnlyComplete = hasOnlyCompleteSubGraphs(ramseyNumber0, 0, nodes, coloring) ||
-                                           hasOnlyCompleteSubGraphs(ramseyNumber1, 1, nodes, coloring);
+            bool onlyEmptyOrOnlyComplete = hasCompleteSubgraph(ramseyNumber0, 0, nodes, coloring) ||
+                                           hasCompleteSubgraph(ramseyNumber1, 1, nodes, coloring);
             exitCondition &= onlyEmptyOrOnlyComplete;
             if (onlyEmptyOrOnlyComplete == false) {
                 std::cerr << "nodes: " << nodes << ", subGraphSize (" << ramseyNumber0 << ", " << ramseyNumber1
