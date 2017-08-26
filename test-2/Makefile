@@ -1,25 +1,17 @@
 CXX = g++
 INCLUDE =
-CXXFLAGS = -Wall -Wextra -g -O2 -std=c++17 -fno-omit-frame-pointer -DDEBUG $(INCLUDE)
-#CXXFLAGS = -mtune=native -march=native -Wall -Wextra -O2 -std=c++17 $(INCLUDE)
-
-T2_COLOR1=$$(if [ "${T2_COLOR1}" != "" ]; then echo $$T2_COLOR1; else echo $$T2_COLOR0; fi) # if T2_COLOR1 is not set, set it to T2_COLOR0
-
-CXXFLAGS+=                 \
-   -DT2_COLOR0=$$T2_COLOR0 \
-   -DT2_COLOR1=$$T2_COLOR1 \
-   -DT2_NODES=$$T2_NODES
+#CXXFLAGS = -Wall -Wextra -g -O2 -std=c++17 -fno-omit-frame-pointer -DDEBUG $(INCLUDE)
+CXXFLAGS = -mtune=native -march=native -Wall -Wextra -O2 -std=c++17 $(INCLUDE)
 
 LN = $(CXX)
 LIBS =
 LFLAGS =
 
-BINARY_PREFIX = test-2-
-BINARY        = "${BINARY_PREFIX}R($$T2_COLOR0,$$T2_COLOR1)<=$$T2_NODES"
+BINARY = test-2
 
 SOURCES = main.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
-INCLUDES = prereqs.hpp
+INCLUDES = prereqs.hpp config.hpp
 
 .PHONY: all
 all: .depend $(BINARY)
@@ -37,7 +29,7 @@ $(BINARY): $(OBJECTS)
 
 .PHONY: clean
 clean:
-	-rm -f $(BINARY_PREFIX)* *.o
+	-rm -f $(BINARY) *.o
 
 .PHONY: clang-format
 clang-format:

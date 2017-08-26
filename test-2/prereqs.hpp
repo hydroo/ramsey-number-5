@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <functional>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -84,9 +85,94 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
     return o;
 }
 
+template <typename T>
+std::string arrayToString(T * a, std::size_t length) {
+    std::ostringstream o;
+
+    o << '[';
+    for (std::size_t i = 0; i < length-1; i += 1) {
+        o << a[i] << ", ";
+    }
+    if (length > 0) {
+        o << a[length-1];
+    }
+    o << ']';
+
+    return o.str();
+}
+
 constexpr int pow(auto base, auto exponent) {
     return (exponent != 0 )? base * pow(base, exponent - 1) : 1;
 }
 
+constexpr int nChooseK(int n, int k) {
+
+    if      (n < k) { return -1; }
+    else if (n < 0) { return -1; }
+    else if (k < 0) { return -1; }
+
+    if (k == 0 || k == n) {
+        return 1;
+    } else {
+        return nChooseK(n-1, k-1) + nChooseK(n-1, k);
+    }
+}
+
+template<typename T>
+constexpr void constSwap(T* a, T* b) {
+    T tmp = *a;
+    *a    = *b;
+    *b    = tmp;
+}
+
+template<typename T>
+constexpr void constReverse(T* p, std::size_t from, std::size_t to) {
+
+    if (from >= to) { return; }
+
+    for (std::size_t i = 0; i < (to - from+1)/2; i += 1) {
+        constSwap(&p[from+i], &p[to-i]);
+    }
+
+}
+
+template<typename T>
+constexpr bool previousPermutation(T* p, std::size_t length)
+{
+
+    //std::cerr << "before" << arrayToString(p, length) << " length " << length << std::endl;
+
+    if (length < 2) { return false; }
+
+    int i = length-1;
+
+    while (true) {
+        int j = i;
+        i -= 1;
+
+        //std::cerr << "  i " << i << " j " << j << " p[i] " << p[i] << " p[j] " << p [j] << " p[i] < p[j] " << (p[i] < p[j]) << std::endl;
+
+        if (p[i] > p[j]) {
+            int k = length-1;
+
+            while (!(p[k] < p[i]))
+                k -= 1;
+
+            //std::cerr << "  swap p[i] p[k] (p[" << i << "] " << "p[" << k << "]" << std::endl;
+            constSwap(&p[i], &p[k]);
+            //std::cerr << "  reverse j to length-1; j " << j << " length-1 " << length-1 << std::endl;
+            constReverse(p, j, length-1);
+            //std::cerr << "after" << arrayToString(p, length) << " return true" << std::endl;
+            return true;
+        }
+
+        if (i == 0)
+        {
+            constReverse(p, 0, length-1);
+            //std::cerr << "after" << arrayToString(p, length) << " return false" << std::endl;
+            return false;
+        }
+    }
+}
 
 #endif /* PREREQS_HPP */

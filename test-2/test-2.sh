@@ -1,3 +1,23 @@
 #! /usr/bin/env bash
 
-make clean && make T2_COLOR0=2 T2_COLOR1=2 T2_NODES=3 && ./test-2-*
+set -e
+
+./build.sh 1 1 1 &>/dev/null && ./test-2 2>/dev/null
+./build.sh 1 2 2 &>/dev/null && ./test-2 2>/dev/null
+./build.sh 1 3 3 &>/dev/null && ./test-2 2>/dev/null
+./build.sh 1 4 4 &>/dev/null && ./test-2 2>/dev/null
+
+./build.sh 2 1 2 &>/dev/null && ./test-2 2>/dev/null
+./build.sh 2 2 2 &>/dev/null && ./test-2 2>/dev/null
+./build.sh 2 3 3 &>/dev/null && ./test-2 2>/dev/null
+./build.sh 2 4 4 &>/dev/null && ./test-2 2>/dev/null
+
+./build.sh 3 1 3 &>/dev/null && ./test-2 2>/dev/null
+./build.sh 3 2 3 &>/dev/null && ./test-2 2>/dev/null
+./build.sh 3 3 6 &>/dev/null && ./test-2 2>/dev/null
+#./build.sh 3 4 9 &>/dev/null && ./test-2 2>/dev/null
+
+./build.sh 4 1  4 &>/dev/null && ./test-2 2>/dev/null
+./build.sh 4 2  4 &>/dev/null && ./test-2 2>/dev/null
+#./build.sh 4 3  9 &>/dev/null && ./test-2 2>/dev/null
+#./build.sh 4 4 18 &>/dev/null && ./test-2 2>/dev/null
