@@ -1,7 +1,7 @@
 CXX = g++
 INCLUDE =
-#CXXFLAGS = -Wall -Wextra -g -O2 -std=c++17 -fno-omit-frame-pointer -DDEBUG $(INCLUDE)
-CXXFLAGS = -mtune=native -march=native -Wall -Wextra -O2 -std=c++17 $(INCLUDE)
+CXXFLAGS = -Wall -Wextra -g -O2 -std=c++17 -fno-omit-frame-pointer -DDEBUG $(INCLUDE)
+#CXXFLAGS = -mtune=native -march=native -Wall -Wextra -O2 -std=c++17 $(INCLUDE)
 
 LN = $(CXX)
 LIBS =
