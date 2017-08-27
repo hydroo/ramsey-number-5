@@ -144,6 +144,8 @@ void test2() {
         std::cout << "R(" << color0SubgraphSize << ", " << color1SubgraphSize << ") <= " << nodes << std::endl;
     } else {
         std::cout << "R(" << color0SubgraphSize << ", " << color1SubgraphSize << ") >  " << nodes << std::endl;
+        std::cerr << "Counter Example:" << std::endl;
+        printAdjacencyMatrix<nodes>(std::cerr, coloring, "    ");
     }
 
     checkResult(allColoringsHaveCompleteOrEmptySubgraph);
