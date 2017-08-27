@@ -129,7 +129,7 @@ void test2() {
 
     do {
         //printAdjacencyMatrix(std::cerr, coloring, nodes, "   " );
-        //std::cerr << coloring << std::endl;
+        //std::cerr << bitsetToString(coloring) << std::endl;
 
         allColoringsHaveCompleteOrEmptySubgraph = hasCompleteOrEmptySubgraph();
 

@@ -55,9 +55,14 @@ void printAdjacencyMatrix(std::ostream& o, const std::bitset<nodes*(nodes-1)/2>&
 }
 
 template <std::size_t N>
-std::ostream& operator<<(std::ostream& o, const std::bitset<N>& v) {
-    o << '[' << v.to_string() << ']';
-    return o;
+std::string bitsetToString(const std::bitset<N>& v, bool reverseString = true) {
+    std::ostringstream o;
+    auto s = v.to_string();
+    if (reverseString) {
+        std::reverse(begin(s), end(s));
+    }
+    o << '[' << s << ']';
+    return o.str();
 }
 
 template <typename T, long unsigned int N>
