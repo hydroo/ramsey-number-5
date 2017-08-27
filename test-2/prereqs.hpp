@@ -101,8 +101,9 @@ std::string arrayToString(T * a, std::size_t length) {
     return o.str();
 }
 
-constexpr int pow(auto base, auto exponent) {
-    return (exponent != 0 )? base * pow(base, exponent - 1) : 1;
+template<typename T>
+constexpr T constPow(T base, T exponent) {
+    return (exponent != 0 ) ? base * pow(base, exponent - 1) : 1;
 }
 
 constexpr int nChooseK(int n, int k) {

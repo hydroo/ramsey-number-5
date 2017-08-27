@@ -82,6 +82,7 @@ void test2() {
     std::cerr << "number of color 1 subgraphs: " << nChooseK(nodes, color1SubgraphSize) << std::endl;
     std::cerr << "nodes:                       " << nodes << std::endl;
     std::cerr << "edges:                       " << edges << "                  # = nodes(nodes-1)/2" << std::endl;
+    std::cerr << "edge colorings:              " << constPow<int64_t>(2, edges) << "                  # = 2^edges" << std::endl;
     // std::cerr << "colorings: " << colorings << "                  # = colors^edges" << std::endl; // too big for basic datatypes
 
     std::bitset<edges> coloring;  // all zero by default
