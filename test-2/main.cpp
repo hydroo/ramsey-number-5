@@ -29,6 +29,8 @@ std::array<std::bitset<edges>, nChooseK(nodes, subGraphSize)> subGraphEdgeMasks(
 
     do {
 
+        //std::cerr << arrayToString(nodeMask, nodes) << std::endl;
+
         for (int e = 0; e < edges; e += 1) {
             int j = e;
             int y = 0;
@@ -40,15 +42,17 @@ std::array<std::bitset<edges>, nChooseK(nodes, subGraphSize)> subGraphEdgeMasks(
             }
             int x = j + 1 + y;
 
-            //std::cerr << "  e " << e << " x " << x << " y " << y << std::endl;
+            //std::cerr << "  e " << e << " x " << x << " y " << y << " test " << (nodeMask[x] == true && nodeMask[y] == true) << std::endl;
 
             if (nodeMask[x] == true && nodeMask[y] == true) {
                 edgeMasks[p][e] = true;
             } else {
                 edgeMasks[p][e] = false;
             }
+
         }
 
+        //std::cerr << edgeMasks[p] << std::endl;
         //std::cerr << arrayToString(nodeMask, nodes) << " \"" << std::string(b) << "\"" << std::endl;
 
         p += 1;
