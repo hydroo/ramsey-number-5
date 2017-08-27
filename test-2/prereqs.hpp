@@ -26,10 +26,10 @@
 #define ASSERT(expression)
 #endif
 
-template <std::size_t N>
-void printAdjacencyMatrix(std::ostream& o, const std::bitset<N>& m, int nodes, const std::string& indent = "") {
-    ASSERT(nodes*(nodes-1)/2 == m.size());
+template <std::size_t nodes>
+void printAdjacencyMatrix(std::ostream& o, const std::bitset<nodes*(nodes-1)/2>& m, const std::string& indent = "") {
 
+    int offset=0;
     for (auto n = nodes-1; n > 0; n -= 1) {
 
         if (n == nodes-1) {
@@ -38,17 +38,18 @@ void printAdjacencyMatrix(std::ostream& o, const std::bitset<N>& m, int nodes, c
             o << indent << ' ';
         }
 
-        for (int i = n; i < nodes-1; i += 1) {
+        for (auto i = n; i < nodes-1; i += 1) {
             o << ' ';
         }
 
-        for (int i = 0; i < n; i += 1) {
-            o << m[i];
+        for (std::size_t i = 0; i < n; i += 1) {
+            o << m[offset + i];
         }
 
         if (n > 1) {
             o << std::endl;
         }
+        offset += n;
     }
     o << ']' << std::endl;
 }
