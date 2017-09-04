@@ -1,8 +1,11 @@
 #! /usr/bin/env bash
 
+set -e
+
 if [ $# -lt 3 ]; then
 	echo "Usage: $1 <r> <s> <n>"
 	echo "  where R(r, s) <= n will be answered"
+	exit 0
 fi
 
 tmp_file=config.hpp.new
