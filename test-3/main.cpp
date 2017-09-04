@@ -40,7 +40,7 @@ void parseArguments(int argc, char **args, int* r, int* s, int* minN, int* maxN)
         std::exit(EXIT_FAILURE);
     }
 
-    std::cerr << "Problem: R(" << *r << "," << *s << ") = ?   , where " << *minN << " <= ? <= " << *maxN << std::endl;
+    std::cerr << "Problem: R(" << *r << "," << *s << ") = ? , where " << *minN << " <= ? <= " << *maxN << std::endl;
     std::cerr << std::endl;
 }
 
@@ -138,7 +138,7 @@ int main(int argc, char** args) {
         std::cerr << "Number of complete subgraphs: " << nChooseK(nodes, r) << "   # n choose r" << std::endl;
         std::cerr << "Number of empty subgraphs:    " << nChooseK(nodes, s) << "   # n choose s" << std::endl;
         std::cerr << "Edges:                        " << edges << "   # n(n-1)/2" << std::endl;
-        std::cerr << "Edge colorings:               " << std::pow(2, edges) << "   # 2^e" << std::endl;
+        std::cerr << "Edge colorings:               " << (int64_t) std::pow(2, edges) << "   # 2^e" << std::endl;
 
         std::vector<boost::dynamic_bitset<uint64_t>> edgeMasksComplete;
         std::vector<boost::dynamic_bitset<uint64_t>> edgeMasksEmpty;
@@ -191,13 +191,20 @@ int main(int argc, char** args) {
 
         boost::dynamic_bitset<uint64_t> coloring(edges, 0);
         boost::dynamic_bitset<uint64_t> counterExample;
+        int64_t recursionSteps     = 0;
+        int64_t coloringsChecked   = 0;
+        int64_t edgeMaskSizeChecks = 0;
 
-        std::function<bool(int)> foreachColoringHasCompleteOrEmptySubgraph = [nodes, edges, r, s, &coloring, &edgeMasksComplete, &edgeMasksCompleteLastOne, &edgeMasksEmpty, &edgeMasksEmptyLastZero, &counterExample, &foreachColoringHasCompleteOrEmptySubgraph](int nextEdge) -> bool {
+        std::function<bool(int)> foreachColoringHasCompleteOrEmptySubgraph = [nodes, edges, r, s, &coloring, &edgeMasksComplete, &edgeMasksCompleteLastOne, &edgeMasksEmpty, &edgeMasksEmptyLastZero, &counterExample, &recursionSteps, &coloringsChecked, &edgeMaskSizeChecks, &foreachColoringHasCompleteOrEmptySubgraph](int nextEdge) -> bool {
+
+            recursionSteps += 1;
 
             for (std::size_t i = 0; i < edgeMasksComplete.size(); i += 1) {
+                edgeMaskSizeChecks += 1;
                 if (edgeMasksCompleteLastOne[i] == nextEdge-1) {
                     if ((coloring &  edgeMasksComplete[i]) == edgeMasksComplete[i]) {
-                        if (nodes >= r) { // avoids matching subgraphs larger than the normal graph
+                        if (nodes >= r) { // avoids matching subgraphs larger than the to-be-checked graph
+                            coloringsChecked += 1;
                             return true;
                         }
                     }
@@ -205,9 +212,11 @@ int main(int argc, char** args) {
             }
 
             for (std::size_t i = 0; i < edgeMasksEmpty.size(); i += 1) {
+                edgeMaskSizeChecks += 1;
                 if (edgeMasksEmptyLastZero[i] == nextEdge-1) {
                     if ((coloring |  edgeMasksEmpty[i]) == edgeMasksEmpty[i]) {
-                        if (nodes >= s) { // avoids matching subgraphs larger than the normal graph
+                        if (nodes >= s) { // avoids matching subgraphs larger than the to-be-checked graph
+                            coloringsChecked += 1;
                             return true;
                         }
                     }
@@ -215,6 +224,7 @@ int main(int argc, char** args) {
             }
 
             if (nextEdge == edges) {
+                coloringsChecked += 1;
                 counterExample = coloring;
                 return false;
             }
@@ -239,7 +249,10 @@ int main(int argc, char** args) {
         auto t3 = std::chrono::steady_clock::now();
         bool allColoringsHaveCompleteOrEmptySubgraph = foreachColoringHasCompleteOrEmptySubgraph(0);
         auto t4 = std::chrono::steady_clock::now();
-        std::cerr << "Timing: Check all colorings: " << std::chrono::duration<double>(t4 - t3).count() << " seconds" << std::endl;
+        std::cerr << "Timing: Check all colorings:          " << std::chrono::duration<double>(t4 - t3).count() << " seconds" << std::endl;
+        std::cerr << "Timing: Number of recursion steps:    " << recursionSteps     << std::endl;
+        std::cerr << "Timing: Number of colorings checked:  " << coloringsChecked   << std::endl;
+        std::cerr << "Timing: Number edge mask size checks: " << edgeMaskSizeChecks << std::endl;
 
         if (allColoringsHaveCompleteOrEmptySubgraph == true) {
             if (nodes > minN) {

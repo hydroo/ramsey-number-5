@@ -26,4 +26,4 @@ set -e
 ./test-3 4 3
 
 
-./test-3 4 4
+#./test-3 4 4
