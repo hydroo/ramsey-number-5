@@ -83,12 +83,12 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
 
 void printAdjacencyMatrix(std::ostream& o, const boost::dynamic_bitset<uint64_t>& m, int nodes, const std::string& indent = "") {
 
+    o << indent << '[';
+
     int offset=0;
     for (auto n = nodes-1; n > 0; n -= 1) {
 
-        if (n == nodes-1) {
-            o << indent << '[';
-        } else {
+        if (n < nodes-1) {
             o << indent << ' ';
         }
 
