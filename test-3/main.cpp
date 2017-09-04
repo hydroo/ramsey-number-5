@@ -41,6 +41,7 @@ void parseArguments(int argc, char **args, int* r, int* s, int* minN, int* maxN)
     }
 
     std::cerr << "Problem: R(" << *r << "," << *s << ") = ?   , where " << *minN << " <= ? <= " << *maxN << std::endl;
+    std::cerr << std::endl;
 }
 
 bool checkResult(int r, int s, int n) {
@@ -84,13 +85,144 @@ bool checkResult(int r, int s, int n) {
     return false;
 }
 
+void subGraphEdgeMasks(int subGraphSize, int nodes, std::vector<boost::dynamic_bitset<uint64_t>>* edgeMasks) {
+
+    int edges = nodes*(nodes-1)/2;
+
+    edgeMasks->resize(nChooseK(nodes, std::min(subGraphSize, nodes)));
+
+    std::vector<bool> nodeMask(nodes, false);
+
+    for (int i = 0; i < subGraphSize; i += 1) {
+        nodeMask[i] = true;
+    }
+
+    int p = 0;
+
+    do {
+
+        (*edgeMasks)[p].resize(edges);
+
+        for (int e = 0; e < edges; e += 1) {
+            int j = e;
+            int y = 0;
+            int w = nodes - 1;
+            while (j >= w && w > 0) {
+                j -= w;
+                w -= 1;
+                y += 1;
+            }
+            int x = j + 1 + y;
+
+            if (nodeMask[x] == true && nodeMask[y] == true) {
+                (*edgeMasks)[p][e] = true;
+            }
+
+        }
+
+        p += 1;
+
+    } while (std::prev_permutation(std::begin(nodeMask), std::end(nodeMask)));
+}
+
 int main(int argc, char** args) {
 
     int r, s, minN, maxN;
 
     parseArguments(argc, args, &r, &s, &minN, &maxN);
 
+    for (int nodes = minN; nodes <= maxN; nodes += 1) {
 
+        int edges = nodes*(nodes-1)/2;
+
+        std::cerr << "Number of complete subgraphs: " << nChooseK(nodes, r) << "   # n choose r" << std::endl;
+        std::cerr << "Number of empty subgraphs:    " << nChooseK(nodes, s) << "   # n choose s" << std::endl;
+        std::cerr << "Edges:                        " << edges << "   # n(n-1)/2" << std::endl;
+        std::cerr << "Edge colorings:               " << std::pow(2, edges) << "   # 2^e" << std::endl;
+
+        std::vector<boost::dynamic_bitset<uint64_t>> edgeMasksComplete;
+        std::vector<boost::dynamic_bitset<uint64_t>> edgeMasksEmpty;
+
+        auto t1 = std::chrono::steady_clock::now();
+        subGraphEdgeMasks(r, nodes, &edgeMasksComplete);
+        subGraphEdgeMasks(s, nodes, &edgeMasksEmpty);
+        auto t2 = std::chrono::steady_clock::now();
+
+        std::cerr << "Timing: Create subgraph edge masks: " << std::chrono::duration<double>(t2 - t1).count() << " seconds" << std::endl;
+
+        for (auto&& edgeMask : edgeMasksEmpty) {
+            edgeMask = ~edgeMask;
+        }
+
+        vout << "Complete edge masks: " << edgeMasksComplete << std::endl;
+        vout << "Empty edge masks:    " << edgeMasksEmpty    << std::endl;
+
+        boost::dynamic_bitset<uint64_t> counterExample;
+
+        std::function<bool(boost::dynamic_bitset<uint64_t>*, int)> foreachColoringHasCompleteOrEmptySubgraph = [nodes, edges, r, s, &edgeMasksComplete, &edgeMasksEmpty, &counterExample, &foreachColoringHasCompleteOrEmptySubgraph](boost::dynamic_bitset<uint64_t>* coloring, int nextEdge) -> bool {
+
+            if (nextEdge == edges) {
+                for (const auto& mask : edgeMasksComplete) {
+                    if ((*coloring &  mask) == mask) {
+                        if (nodes >= r) { // avoids matching subgraphs larger than the normal graph
+                            return true;
+                        }
+                    }
+                }
+                for (const auto& mask : edgeMasksEmpty) {
+                    if ((*coloring | mask) == mask) {
+                        if (nodes >= s) { // avoids matching subgraphs larger than the normal graph
+                            return true;
+                        }
+                    }
+                }
+                counterExample = *coloring;
+                return false;
+            }
+
+            bool ret;
+
+            (*coloring)[nextEdge] = true;
+            ret = foreachColoringHasCompleteOrEmptySubgraph(coloring, nextEdge+1);
+
+            if (ret == false) { return false; }
+
+            (*coloring)[nextEdge] = false;
+            ret = foreachColoringHasCompleteOrEmptySubgraph(coloring, nextEdge+1);
+
+            if (ret == false) {
+                return false;
+            } else {
+                return true;
+            }
+        };
+
+        boost::dynamic_bitset<uint64_t> coloring(edges, 0);
+        auto t3 = std::chrono::steady_clock::now();
+        bool allColoringsHaveCompleteOrEmptySubgraph = foreachColoringHasCompleteOrEmptySubgraph(&coloring, 0);
+        auto t4 = std::chrono::steady_clock::now();
+        std::cerr << "Timing: Check all colorings: " << std::chrono::duration<double>(t4 - t3).count() << " seconds" << std::endl;
+
+        if (allColoringsHaveCompleteOrEmptySubgraph == true) {
+            if (nodes > minN) {
+                std::cerr << "R(" << r << "," << s << ")  = " << nodes << std::endl;
+            } else {
+                std::cerr << "R(" << r << "," << s << ") <= " << nodes << std::endl;
+            }
+        } else {
+            std::cerr << "R(" << r << "," << s << ")  > " << nodes << std::endl;
+            std::cerr << "Counter example: " << std::endl;
+            printAdjacencyMatrix(std::cerr, counterExample, nodes, "    ");
+        }
+
+        if (checkResult(r, s, nodes) != allColoringsHaveCompleteOrEmptySubgraph) {
+            std::cerr << "Error: Check Result for R(" << r << "," << s << ") <= " << nodes << " disagrees with our result (" << allColoringsHaveCompleteOrEmptySubgraph << ")" << std::endl;
+            std::abort();
+        }
+
+        if (allColoringsHaveCompleteOrEmptySubgraph == true) { break; }
+
+    }
 
     return 0;
 }
