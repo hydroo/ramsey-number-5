@@ -57,7 +57,7 @@ bool checkResult(int r, int s, int n) {
     if (r == 1) {
         return n == 1;
     } else if (r == 2) {
-        return n == r;
+        return n == s;
     }
 
     if (r == 3) {
