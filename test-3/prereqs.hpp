@@ -8,8 +8,11 @@
 #include <chrono>
 #include <functional>
 #include <iostream>
+#include <iomanip>
 #include <limits>
+#include <map>
 #include <sstream>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/dynamic_bitset.hpp>
@@ -78,6 +81,30 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
         o << v.back();
     }
     o << ']';
+    return o;
+}
+
+template <typename T, typename U>
+std::ostream& operator<<(std::ostream& o, const std::map<T, U>& m) {
+    o << '{';
+    for (auto i = std::begin(m); i != --std::end(m); ++i) {
+        o << i->first << ":" << i->second << ", ";
+    }
+    if (m.size() > 0) {
+        auto i = --std::end(m);
+        o << i->first << ":" << i->second;
+    }
+    o << '}';
+    return o;
+}
+
+template <typename T, typename U>
+std::ostream& operator<<(std::ostream& o, const std::unordered_map<T, U>& u) {
+    std::map<T, U> m;
+    for (auto i : u) {
+        m[i.first] = i.second;
+    }
+    o << m;
     return o;
 }
 

@@ -135,16 +135,17 @@ int main(int argc, char** args) {
 
         int edges = nodes*(nodes-1)/2;
 
-        std::cerr << "Number of complete subgraphs: " << nChooseK(nodes, r) << "   # n choose r" << std::endl;
-        std::cerr << "Number of empty subgraphs:    " << nChooseK(nodes, s) << "   # n choose s" << std::endl;
-        std::cerr << "Edges:                        " << edges << "   # n(n-1)/2" << std::endl;
-        std::cerr << "Edge colorings:               " << (int64_t) std::pow(2, edges) << "   # 2^e" << std::endl;
+        std::cerr << "Number of complete subgraphs: " << std::setw(21) << nChooseK(nodes, r) << "   # n choose r" << std::endl;
+        std::cerr << "Number of empty subgraphs:    " << std::setw(21) << nChooseK(nodes, s) << "   # n choose s" << std::endl;
+        std::cerr << "Edges:                        " << std::setw(21) << edges << "   # n*(n-1)/2" << std::endl;
+        std::cerr << "Edge colorings:               " << std::setw(21) << std::fixed << std::setprecision(0) << std::pow(2, edges) << "   # 2^e" << std::endl;
+        std::cerr << std::setprecision(6);
 
         std::vector<boost::dynamic_bitset<uint64_t>> edgeMasksComplete;
         std::vector<boost::dynamic_bitset<uint64_t>> edgeMasksEmpty;
 
-        std::vector<int> edgeMasksCompleteLastOne;
-        std::vector<int> edgeMasksEmptyLastZero;
+        std::unordered_map<int, std::vector<boost::dynamic_bitset<uint64_t>>> edgeMasksCompleteByLastOne;
+        std::unordered_map<int, std::vector<boost::dynamic_bitset<uint64_t>>> edgeMasksEmptyByLastZero;
 
         auto t1 = std::chrono::steady_clock::now();
         subGraphEdgeMasks(r, nodes, &edgeMasksComplete);
@@ -154,7 +155,7 @@ int main(int argc, char** args) {
             edgeMask = ~edgeMask;
         }
 
-        for (const auto& mask : edgeMasksComplete) {
+        for (const auto& mask : edgeMasksComplete) { // It is necessary to add one for -1 for the R(1,1) case. Causes segfaults / wrong results otherwise
             int last = -1;
             for (int i = ((int)mask.size())-1; i >= 0; i -= 1) {
                 if (mask[i] == true) {
@@ -162,10 +163,10 @@ int main(int argc, char** args) {
                     break;
                 }
             }
-            edgeMasksCompleteLastOne.push_back(last);
+            edgeMasksCompleteByLastOne[last].push_back(mask);
         }
 
-        for (const auto& mask : edgeMasksEmpty) {
+        for (const auto& mask : edgeMasksEmpty) { // It is necessary to add one for -1 for the R(1,1) case. Causes segfaults / wrong results otherwise
             int last = -1;
             for (int i = ((int)mask.size())-1; i >= 0; i -= 1) {
                 if (mask[i] == false) {
@@ -173,37 +174,40 @@ int main(int argc, char** args) {
                     break;
                 }
             }
-            edgeMasksEmptyLastZero.push_back(last);
+            edgeMasksEmptyByLastZero[last].push_back(mask);
         }
-
-        ASSERT(edgeMasksComplete.size() == edgeMasksCompleteLastOne.size());
-        ASSERT(edgeMasksEmpty.size()    == edgeMasksEmptyLastZero.size()  );
 
         auto t2 = std::chrono::steady_clock::now();
 
         std::cerr << "Timing: Create subgraph edge masks: " << std::chrono::duration<double>(t2 - t1).count() << " seconds" << std::endl;
 
 
-        vout << "Complete edge masks:        " << edgeMasksComplete        << std::endl;
-        vout << "Complete edge masks last 1: " << edgeMasksCompleteLastOne << std::endl;
-        vout << "Empty edge masks:           " << edgeMasksEmpty           << std::endl;
-        vout << "Empty edge masks last 0:    " << edgeMasksEmptyLastZero   << std::endl;
+        vout << "Complete edge masks:        " << edgeMasksComplete          << std::endl;
+        vout << "Complete edge masks last 1: " << edgeMasksCompleteByLastOne << std::endl;
+        vout << "Empty edge masks:           " << edgeMasksEmpty             << std::endl;
+        vout << "Empty edge masks last 0:    " << edgeMasksEmptyByLastZero   << std::endl;
 
         boost::dynamic_bitset<uint64_t> coloring(edges, 0);
         boost::dynamic_bitset<uint64_t> counterExample;
         int64_t recursionSteps     = 0;
         int64_t coloringsChecked   = 0;
-        int64_t edgeMaskSizeChecks = 0;
+        int64_t edgeMaskChecks     = 0;
 
-        std::function<bool(int)> foreachColoringHasCompleteOrEmptySubgraph = [nodes, edges, r, s, &coloring, &edgeMasksComplete, &edgeMasksCompleteLastOne, &edgeMasksEmpty, &edgeMasksEmptyLastZero, &counterExample, &recursionSteps, &coloringsChecked, &edgeMaskSizeChecks, &foreachColoringHasCompleteOrEmptySubgraph](int nextEdge) -> bool {
+        std::function<bool(int)> foreachColoringHasCompleteOrEmptySubgraph = [nodes, edges, r, s, &coloring, &edgeMasksCompleteByLastOne, &edgeMasksEmptyByLastZero, &counterExample, &recursionSteps, &coloringsChecked, &edgeMaskChecks, &foreachColoringHasCompleteOrEmptySubgraph](int nextEdge) -> bool {
 
             recursionSteps += 1;
 
-            for (std::size_t i = 0; i < edgeMasksComplete.size(); i += 1) {
-                edgeMaskSizeChecks += 1;
-                if (edgeMasksCompleteLastOne[i] == nextEdge-1) {
-                    if ((coloring &  edgeMasksComplete[i]) == edgeMasksComplete[i]) {
+            //std::cerr << "  " << coloring << " nextEdge " << nextEdge << std::endl;
+
+            auto edgeMasksCompleteI = edgeMasksCompleteByLastOne.find(nextEdge-1);
+
+            if (edgeMasksCompleteI != std::end(edgeMasksCompleteByLastOne)) {
+                //std::cerr << "    Check for complete subgraphs: Last one: " << edgeMasksCompleteI->first << ", masks: " << edgeMasksCompleteI->second << std::endl;
+                for (const auto& mask : edgeMasksCompleteI->second) {
+                    edgeMaskChecks += 1;
+                    if ((coloring &  mask) == mask) {
                         if (nodes >= r) { // avoids matching subgraphs larger than the to-be-checked graph
+                            //std::cerr << "      Mask " << mask << " is a subgraph" << std::endl;
                             coloringsChecked += 1;
                             return true;
                         }
@@ -211,11 +215,15 @@ int main(int argc, char** args) {
                 }
             }
 
-            for (std::size_t i = 0; i < edgeMasksEmpty.size(); i += 1) {
-                edgeMaskSizeChecks += 1;
-                if (edgeMasksEmptyLastZero[i] == nextEdge-1) {
-                    if ((coloring |  edgeMasksEmpty[i]) == edgeMasksEmpty[i]) {
+            auto edgeMasksEmptyI = edgeMasksEmptyByLastZero.find(nextEdge-1);
+
+            if (edgeMasksEmptyI != std::end(edgeMasksCompleteByLastOne)) {
+                //std::cerr << "    Check for empty subgraphs: Last zero: " << edgeMasksEmptyI->first << ", masks: " << edgeMasksEmptyI->second << std::endl;
+                for (const auto& mask : edgeMasksEmptyI->second) {
+                    edgeMaskChecks += 1;
+                    if ((coloring |  mask) == mask) {
                         if (nodes >= s) { // avoids matching subgraphs larger than the to-be-checked graph
+                            //std::cerr << "      Mask " << mask << " is a subgraph" << std::endl;
                             coloringsChecked += 1;
                             return true;
                         }
@@ -250,9 +258,9 @@ int main(int argc, char** args) {
         bool allColoringsHaveCompleteOrEmptySubgraph = foreachColoringHasCompleteOrEmptySubgraph(0);
         auto t4 = std::chrono::steady_clock::now();
         std::cerr << "Timing: Check all colorings:          " << std::chrono::duration<double>(t4 - t3).count() << " seconds" << std::endl;
-        std::cerr << "Timing: Number of recursion steps:    " << recursionSteps     << std::endl;
-        std::cerr << "Timing: Number of colorings checked:  " << coloringsChecked   << std::endl;
-        std::cerr << "Timing: Number edge mask size checks: " << edgeMaskSizeChecks << std::endl;
+        std::cerr << "Timing: Number of recursion steps:    " << std::setw(12) << recursionSteps   << std::endl;
+        std::cerr << "Timing: Number of colorings checked:  " << std::setw(12) << coloringsChecked << std::endl;
+        std::cerr << "Timing: Number edge mask size checks: " << std::setw(12) << edgeMaskChecks   << std::endl;
 
         if (allColoringsHaveCompleteOrEmptySubgraph == true) {
             if (nodes > minN) {
