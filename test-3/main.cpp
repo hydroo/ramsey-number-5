@@ -143,52 +143,91 @@ int main(int argc, char** args) {
         std::vector<boost::dynamic_bitset<uint64_t>> edgeMasksComplete;
         std::vector<boost::dynamic_bitset<uint64_t>> edgeMasksEmpty;
 
+        std::vector<int> edgeMasksCompleteLastOne;
+        std::vector<int> edgeMasksEmptyLastZero;
+
         auto t1 = std::chrono::steady_clock::now();
         subGraphEdgeMasks(r, nodes, &edgeMasksComplete);
         subGraphEdgeMasks(s, nodes, &edgeMasksEmpty);
-        auto t2 = std::chrono::steady_clock::now();
-
-        std::cerr << "Timing: Create subgraph edge masks: " << std::chrono::duration<double>(t2 - t1).count() << " seconds" << std::endl;
 
         for (auto&& edgeMask : edgeMasksEmpty) {
             edgeMask = ~edgeMask;
         }
 
-        vout << "Complete edge masks: " << edgeMasksComplete << std::endl;
-        vout << "Empty edge masks:    " << edgeMasksEmpty    << std::endl;
+        for (const auto& mask : edgeMasksComplete) {
+            int last = -1;
+            for (int i = ((int)mask.size())-1; i >= 0; i -= 1) {
+                if (mask[i] == true) {
+                    last = i;
+                    break;
+                }
+            }
+            edgeMasksCompleteLastOne.push_back(last);
+        }
 
+        for (const auto& mask : edgeMasksEmpty) {
+            int last = -1;
+            for (int i = ((int)mask.size())-1; i >= 0; i -= 1) {
+                if (mask[i] == false) {
+                    last = i;
+                    break;
+                }
+            }
+            edgeMasksEmptyLastZero.push_back(last);
+        }
+
+        ASSERT(edgeMasksComplete.size() == edgeMasksCompleteLastOne.size());
+        ASSERT(edgeMasksEmpty.size()    == edgeMasksEmptyLastZero.size()  );
+
+        auto t2 = std::chrono::steady_clock::now();
+
+        std::cerr << "Timing: Create subgraph edge masks: " << std::chrono::duration<double>(t2 - t1).count() << " seconds" << std::endl;
+
+
+        vout << "Complete edge masks:        " << edgeMasksComplete        << std::endl;
+        vout << "Complete edge masks last 1: " << edgeMasksCompleteLastOne << std::endl;
+        vout << "Empty edge masks:           " << edgeMasksEmpty           << std::endl;
+        vout << "Empty edge masks last 0:    " << edgeMasksEmptyLastZero   << std::endl;
+
+        boost::dynamic_bitset<uint64_t> coloring(edges, 0);
         boost::dynamic_bitset<uint64_t> counterExample;
 
-        std::function<bool(boost::dynamic_bitset<uint64_t>*, int)> foreachColoringHasCompleteOrEmptySubgraph = [nodes, edges, r, s, &edgeMasksComplete, &edgeMasksEmpty, &counterExample, &foreachColoringHasCompleteOrEmptySubgraph](boost::dynamic_bitset<uint64_t>* coloring, int nextEdge) -> bool {
+        std::function<bool(int)> foreachColoringHasCompleteOrEmptySubgraph = [nodes, edges, r, s, &coloring, &edgeMasksComplete, &edgeMasksCompleteLastOne, &edgeMasksEmpty, &edgeMasksEmptyLastZero, &counterExample, &foreachColoringHasCompleteOrEmptySubgraph](int nextEdge) -> bool {
 
-            if (nextEdge == edges) {
-                for (const auto& mask : edgeMasksComplete) {
-                    if ((*coloring &  mask) == mask) {
+            for (std::size_t i = 0; i < edgeMasksComplete.size(); i += 1) {
+                if (edgeMasksCompleteLastOne[i] == nextEdge-1) {
+                    if ((coloring &  edgeMasksComplete[i]) == edgeMasksComplete[i]) {
                         if (nodes >= r) { // avoids matching subgraphs larger than the normal graph
                             return true;
                         }
                     }
                 }
-                for (const auto& mask : edgeMasksEmpty) {
-                    if ((*coloring | mask) == mask) {
+            }
+
+            for (std::size_t i = 0; i < edgeMasksEmpty.size(); i += 1) {
+                if (edgeMasksEmptyLastZero[i] == nextEdge-1) {
+                    if ((coloring |  edgeMasksEmpty[i]) == edgeMasksEmpty[i]) {
                         if (nodes >= s) { // avoids matching subgraphs larger than the normal graph
                             return true;
                         }
                     }
                 }
-                counterExample = *coloring;
+            }
+
+            if (nextEdge == edges) {
+                counterExample = coloring;
                 return false;
             }
 
             bool ret;
 
-            (*coloring)[nextEdge] = true;
-            ret = foreachColoringHasCompleteOrEmptySubgraph(coloring, nextEdge+1);
+            coloring[nextEdge] = true;
+            ret = foreachColoringHasCompleteOrEmptySubgraph(nextEdge+1);
 
             if (ret == false) { return false; }
 
-            (*coloring)[nextEdge] = false;
-            ret = foreachColoringHasCompleteOrEmptySubgraph(coloring, nextEdge+1);
+            coloring[nextEdge] = false;
+            ret = foreachColoringHasCompleteOrEmptySubgraph(nextEdge+1);
 
             if (ret == false) {
                 return false;
@@ -197,9 +236,8 @@ int main(int argc, char** args) {
             }
         };
 
-        boost::dynamic_bitset<uint64_t> coloring(edges, 0);
         auto t3 = std::chrono::steady_clock::now();
-        bool allColoringsHaveCompleteOrEmptySubgraph = foreachColoringHasCompleteOrEmptySubgraph(&coloring, 0);
+        bool allColoringsHaveCompleteOrEmptySubgraph = foreachColoringHasCompleteOrEmptySubgraph(0);
         auto t4 = std::chrono::steady_clock::now();
         std::cerr << "Timing: Check all colorings: " << std::chrono::duration<double>(t4 - t3).count() << " seconds" << std::endl;
 
