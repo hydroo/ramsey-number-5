@@ -120,22 +120,16 @@ std::string printAdjacencyMatrix(const std::bitset<nodes*(nodes - 1) / 2>& m, co
     return o.str();
 }
 
-template <std::size_t length>
-std::string printMasksByLastDigit(const std::unordered_map<int, std::vector<std::bitset<length>>> u) {
+template <std::size_t length, std::size_t length2>
+std::string printMasksByLastDigit(const std::array<std::vector<std::bitset<length>>, length2>& a) {
     std::ostringstream o;
 
-    std::map<int, std::vector<std::bitset<length>>> m;
-    for (auto i : u) {
-        m[i.first] = i.second;
-    }
-
     o << '{';
-    for (auto i = std::begin(m); i != --std::end(m); ++i) {
-        o << i->first << ":" << i->second.size() << ", ";
+    for (int i = 0; i < ((int)a.size() - 1); i += 1) {
+        o << i - 1 << ":" << a[i].size() << ", ";
     }
-    if (m.size() > 0) {
-        auto i = --std::end(m);
-        o << i->first << ":" << i->second.size();
+    if (a.size() > 0) {
+        o << a.size() - 1 << ":" << a.back().size();
     }
     o << '}';
 

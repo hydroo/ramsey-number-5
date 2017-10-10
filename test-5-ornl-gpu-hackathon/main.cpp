@@ -53,16 +53,17 @@ void invertSubgraphEdgeMasks(std::array<std::bitset<edges>, nChooseK(nodes, subG
 
 template <int edges, int nodes, int subGraphSize, bool digit>
 void subGraphEdgeMasksByLastDigit(std::array<std::bitset<edges>, nChooseK(nodes, subGraphSize)> edgeMasks,
-        std::unordered_map<int, std::vector<std::bitset<edges>>>* edgeMasksByLastDigit) {
+        std::array<std::vector<std::bitset<edges>>, edges + 1>* edgeMasksByLastDigit) {
     for (const auto& mask : edgeMasks) {
-        int last = -1;
+        int last =
+                -1;  // offset everything by +1 so that we can use -1, and don't have to worry about array[nextEdge-1]
         for (int i = ((int)mask.size()) - 1; i >= 0; i -= 1) {
             if (mask[i] == digit) {
                 last = i;
                 break;
             }
         }
-        (*edgeMasksByLastDigit)[last].push_back(mask);
+        (*edgeMasksByLastDigit)[last + 1].push_back(mask);
     }
 }
 
@@ -82,8 +83,8 @@ int main(int argc, char** args) {
 
     invertSubgraphEdgeMasks<config::e, config::n, config::s>(&edgeMasksEmpty);
 
-    std::unordered_map<int, std::vector<std::bitset<config::e>>> edgeMasksCompleteByLastOne;
-    std::unordered_map<int, std::vector<std::bitset<config::e>>> edgeMasksEmptyByLastZero;
+    std::array<std::vector<std::bitset<config::e>>, config::e + 1> edgeMasksCompleteByLastOne;
+    std::array<std::vector<std::bitset<config::e>>, config::e + 1> edgeMasksEmptyByLastZero;
 
     subGraphEdgeMasksByLastDigit<config::e, config::n, config::r, true>(edgeMasksComplete, &edgeMasksCompleteByLastOne);
     subGraphEdgeMasksByLastDigit<config::e, config::n, config::s, false>(edgeMasksEmpty, &edgeMasksEmptyByLastZero);
@@ -93,15 +94,15 @@ int main(int argc, char** args) {
     std::cerr << "Timing: Create subgraph edge masks:    " << std::fixed
               << std::chrono::duration<double>(t2 - t1).count() << " seconds" << std::endl;
 
-    // std::cerr << "Complete edge masks:        " << edgeMasksComplete          << std::endl;
-    // std::cerr << "Complete edge masks last 1: " << edgeMasksCompleteByLastOne << std::endl;
-    // std::cerr << "Empty edge masks:           " << edgeMasksEmpty             << std::endl;
-    // std::cerr << "Empty edge masks last 0:    " << edgeMasksEmptyByLastZero   << std::endl;
+    // std::cerr << "Complete edge masks:                   " << edgeMasksComplete << std::endl;
+    // std::cerr << "Complete edge masks by last 1(last+1): " << edgeMasksCompleteByLastOne << std::endl;
+    // std::cerr << "Empty edge masks:                      " << edgeMasksEmpty << std::endl;
+    // std::cerr << "Empty edge masks by last 0   (last+1): " << edgeMasksEmptyByLastZero << std::endl;
 
-    //std::cerr << "Complete edge masks by last 1 (last:vectorsize): "
-    //          << printMasksByLastDigit(edgeMasksCompleteByLastOne) << std::endl;
-    //std::cerr << "Empty edge masks by last 0    (last:vectorsize): " << printMasksByLastDigit(edgeMasksEmptyByLastZero)
-    //          << std::endl;
+    // std::cerr << "Complete edge masks by last 1 (last:vectorsize): "
+    //           << printMasksByLastDigit(edgeMasksCompleteByLastOne) << std::endl;
+    // std::cerr << "Empty edge masks by last 0    (last:vectorsize): " << printMasksByLastDigit(edgeMasksEmptyByLastZero)
+    //           << std::endl;
 
     std::bitset<config::e> coloring;
     std::bitset<config::e> counterExample;
@@ -109,45 +110,32 @@ int main(int argc, char** args) {
     int64_t coloringsChecked = 0;
     int64_t edgeMaskChecks = 0;
 
-    std::function<bool(int)> foreachColoringHasCompleteOrEmptySubgraph =
-            [&coloring, &edgeMasksCompleteByLastOne, &edgeMasksEmptyByLastZero, &counterExample, &recursionSteps,
-                    &coloringsChecked, &edgeMaskChecks,
-                    &foreachColoringHasCompleteOrEmptySubgraph](int nextEdge) -> bool {
+    std::function<bool(int)> foreachColoringHasCompleteOrEmptySubgraph = [&coloring, &edgeMasksCompleteByLastOne,
+            &edgeMasksEmptyByLastZero, &counterExample, &recursionSteps, &coloringsChecked, &edgeMaskChecks,
+            &foreachColoringHasCompleteOrEmptySubgraph](int nextEdge) -> bool {
 
         recursionSteps += 1;
 
         // std::cerr << "  " << coloring << " nextEdge " << nextEdge << std::endl;
 
-        auto edgeMasksCompleteI = edgeMasksCompleteByLastOne.find(nextEdge - 1);
-
-        if (edgeMasksCompleteI != std::end(edgeMasksCompleteByLastOne)) {
-            // std::cerr << "    Check for complete subgraphs: Last one: " << edgeMasksCompleteI->first << ", masks: "
-            // << edgeMasksCompleteI->second << std::endl;
-            for (const auto& mask : edgeMasksCompleteI->second) {
-                edgeMaskChecks += 1;
-                if ((coloring & mask) == mask) {
-                    if (config::n >= config::r) {  // avoids matching subgraphs larger than the to-be-checked graph
-                        // std::cerr << "      Mask " << mask << " is a subgraph" << std::endl;
-                        coloringsChecked += 1;
-                        return true;
-                    }
+        for (const auto& mask : edgeMasksCompleteByLastOne[nextEdge - 1 + 1]) {
+            edgeMaskChecks += 1;
+            if ((coloring & mask) == mask) {
+                if (config::n >= config::r) {  // avoids matching subgraphs larger than the to-be-checked graph
+                    // std::cerr << "      Mask " << mask << " is a subgraph" << std::endl;
+                    coloringsChecked += 1;
+                    return true;
                 }
             }
         }
 
-        auto edgeMasksEmptyI = edgeMasksEmptyByLastZero.find(nextEdge - 1);
-
-        if (edgeMasksEmptyI != std::end(edgeMasksCompleteByLastOne)) {
-            // std::cerr << "    Check for empty subgraphs: Last zero: " << edgeMasksEmptyI->first << ", masks: " <<
-            // edgeMasksEmptyI->second << std::endl;
-            for (const auto& mask : edgeMasksEmptyI->second) {
-                edgeMaskChecks += 1;
-                if ((coloring | mask) == mask) {
-                    if (config::n >= config::s) {  // avoids matching subgraphs larger than the to-be-checked graph
-                        // std::cerr << "      Mask " << mask << " is a subgraph" << std::endl;
-                        coloringsChecked += 1;
-                        return true;
-                    }
+        for (const auto& mask : edgeMasksEmptyByLastZero[nextEdge - 1 + 1]) {
+            edgeMaskChecks += 1;
+            if ((coloring | mask) == mask) {
+                if (config::n >= config::s) {  // avoids matching subgraphs larger than the to-be-checked graph
+                    // std::cerr << "      Mask " << mask << " is a subgraph" << std::endl;
+                    coloringsChecked += 1;
+                    return true;
                 }
             }
         }
