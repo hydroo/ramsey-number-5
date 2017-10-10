@@ -23,6 +23,12 @@
         std::abort();                                                                                     \
     }
 
+#ifdef VERBOSE
+#   define BENCH(x) x
+#else
+#   define BENCH(x)
+#endif
+
 template <std::size_t N>
 std::string bitsetToString(const std::bitset<N>& v, bool reverseString = true) {
     std::ostringstream o;

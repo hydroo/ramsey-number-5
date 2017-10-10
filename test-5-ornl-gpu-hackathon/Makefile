@@ -1,7 +1,9 @@
 CXX = g++
 INCLUDE =
-CXXFLAGS = -Wall -Wextra -g -O2 -std=c++17 -fno-omit-frame-pointer -DDEBUG $(INCLUDE)
+CXXFLAGS = -Wall -Wextra -g -O2 -std=c++17 -fno-omit-frame-pointer $(INCLUDE)
 #CXXFLAGS = -mtune=native -Wall -Wextra -O2 -std=c++17 $(INCLUDE)
+CXXFLAGS += -DDEBUG
+#CXXFLAGS += -DVERBOSE
 #CXXFLAGS += -pg
 
 LN = $(CXX)

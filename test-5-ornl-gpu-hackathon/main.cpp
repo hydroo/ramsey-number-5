@@ -114,36 +114,36 @@ int main(int argc, char** args) {
             &edgeMasksEmptyByLastZero, &counterExample, &recursionSteps, &coloringsChecked, &edgeMaskChecks,
             &foreachColoringHasCompleteOrEmptySubgraph](int nextEdge) -> bool {
 
-        recursionSteps += 1;
+        BENCH(recursionSteps += 1);
 
         // std::cerr << "  " << coloring << " nextEdge " << nextEdge << std::endl;
 
         const auto& currentEdgeMasksComplete = edgeMasksCompleteByLastOne[nextEdge - 1 + 1];
-        edgeMaskChecks += currentEdgeMasksComplete.size();
+        BENCH(edgeMaskChecks += currentEdgeMasksComplete.size());
         for (int i = 0; i < (int)currentEdgeMasksComplete.size(); i += 1) {
             if ((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i]) {
                 if (config::n >= config::r) {  // avoids matching subgraphs larger than the to-be-checked graph
                     // std::cerr << "      Mask " << currentEdgeMasksComplete[i] << " is a subgraph" << std::endl;
-                    coloringsChecked += 1;
+                    BENCH(coloringsChecked += 1);
                     return true;
                 }
             }
         }
 
         const auto& currentEdgeMasksEmpty = edgeMasksEmptyByLastZero[nextEdge - 1 + 1];
-        edgeMaskChecks += currentEdgeMasksEmpty.size();
+        BENCH(edgeMaskChecks += currentEdgeMasksEmpty.size());
         for (int i = 0; i < (int)currentEdgeMasksEmpty.size(); i += 1) {
             if ((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i]) {
                 if (config::n >= config::s) {  // avoids matching subgraphs larger than the to-be-checked graph
                     // std::cerr << "      Mask " << mask << " is a subgraph" << std::endl;
-                    coloringsChecked += 1;
+                    BENCH(coloringsChecked += 1);
                     return true;
                 }
             }
         }
 
         if (nextEdge == config::e) {
-            coloringsChecked += 1;
+            BENCH(coloringsChecked += 1);
             counterExample = coloring;
             return false;
         }
