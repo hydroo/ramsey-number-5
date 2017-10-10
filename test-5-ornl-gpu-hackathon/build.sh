@@ -18,7 +18,7 @@ namespace config_inc {
 }
 EOF
 
-if ! diff $tmp_file config.inc > /dev/null ; then
+if ! test -e config.inc || ! diff $tmp_file config.inc > /dev/null ; then
 	echo "replaced config.inc"
 	cp $tmp_file config.inc
 else
