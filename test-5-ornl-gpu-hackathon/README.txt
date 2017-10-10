@@ -55,3 +55,9 @@ R(4,4) > 11 takes 90   seconds
 
 Comment: Sadly, I have to use vector<> for bitsets because the number of buckets for the maps is unknown at compiletime.
   Idea: Create the maps in a second program to be able to use std::arrays again in the main part.
+
+# 0a1a5bff5a2e5b3c1dffabfde21afff4685d5a33 (replaced unordered_map with array):
+
+R(3,4) = 10 takes  6.0  seconds (Down from 9.1 ) (Summitdev)
+R(4,4) > 10 takes  0.92 seconds (Down from 1.42) (Summitdev)
+R(4,4) > 11 takes  60   seconds (Down from 75  ) (Summitdev)
