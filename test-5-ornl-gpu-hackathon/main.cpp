@@ -173,9 +173,9 @@ int main(int argc, char** args) {
     std::cerr << "Timing: Check all colorings:          " << std::fixed
               << std::chrono::duration<double>(t4 - t3).count() << " seconds" << std::endl;
     std::cerr.imbue(std::locale("en_US.UTF-8"));
-    std::cerr << "Timing: Number of recursion steps:    " << std::setw(15) << recursionSteps << std::endl;
-    std::cerr << "Timing: Number of colorings checked:  " << std::setw(15) << coloringsChecked << std::endl;
-    std::cerr << "Timing: Number edge mask size checks: " << std::setw(15) << edgeMaskChecks << std::endl;
+    std::cerr << "Timing: Number of recursion steps:   " << std::setw(15) << recursionSteps << std::endl;
+    std::cerr << "Timing: Number of colorings checked: " << std::setw(15) << coloringsChecked << std::endl;
+    std::cerr << "Timing: Number of edge mask checks:  " << std::setw(15) << edgeMaskChecks << std::endl;
 
     // Check against expected result
     if (allColoringsHaveCompleteOrEmptySubgraph == true) {
