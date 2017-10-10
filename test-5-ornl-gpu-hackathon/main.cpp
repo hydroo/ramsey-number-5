@@ -74,19 +74,19 @@ int main(int argc, char** args) {
 
     auto t1 = std::chrono::steady_clock::now();
 
-    std::array<std::bitset<config::e>, nChooseK(config::n, config::r)> edgeMasksEmpty;
-    std::array<std::bitset<config::e>, nChooseK(config::n, config::s)> edgeMasksComplete;
+    std::array<std::bitset<config::e>, nChooseK(config::n, config::r)> edgeMasksComplete;
+    std::array<std::bitset<config::e>, nChooseK(config::n, config::s)> edgeMasksEmpty;
 
-    subGraphEdgeMasks<config::e, config::n, config::r>(&edgeMasksEmpty);
-    subGraphEdgeMasks<config::e, config::n, config::s>(&edgeMasksComplete);
+    subGraphEdgeMasks<config::e, config::n, config::r>(&edgeMasksComplete);
+    subGraphEdgeMasks<config::e, config::n, config::s>(&edgeMasksEmpty);
 
-    invertSubgraphEdgeMasks<config::e, config::n, config::r>(&edgeMasksEmpty);
+    invertSubgraphEdgeMasks<config::e, config::n, config::s>(&edgeMasksEmpty);
 
     std::unordered_map<int, std::vector<std::bitset<config::e>>> edgeMasksCompleteByLastOne;
     std::unordered_map<int, std::vector<std::bitset<config::e>>> edgeMasksEmptyByLastZero;
 
-    subGraphEdgeMasksByLastDigit<config::e, config::n, config::r, false>(edgeMasksEmpty, &edgeMasksEmptyByLastZero);
-    subGraphEdgeMasksByLastDigit<config::e, config::n, config::s, true>(edgeMasksComplete, &edgeMasksCompleteByLastOne);
+    subGraphEdgeMasksByLastDigit<config::e, config::n, config::r, true>(edgeMasksComplete, &edgeMasksCompleteByLastOne);
+    subGraphEdgeMasksByLastDigit<config::e, config::n, config::s, false>(edgeMasksEmpty, &edgeMasksEmptyByLastZero);
 
     auto t2 = std::chrono::steady_clock::now();
 
@@ -98,10 +98,10 @@ int main(int argc, char** args) {
     // std::cerr << "Empty edge masks:           " << edgeMasksEmpty             << std::endl;
     // std::cerr << "Empty edge masks last 0:    " << edgeMasksEmptyByLastZero   << std::endl;
 
-    //std::cerr << "Empty edge masks by last 0    (last:vectorsize): " << printMasksByLastDigit(edgeMasksEmptyByLastZero)
-    //          << std::endl;
     //std::cerr << "Complete edge masks by last 1 (last:vectorsize): "
     //          << printMasksByLastDigit(edgeMasksCompleteByLastOne) << std::endl;
+    //std::cerr << "Empty edge masks by last 0    (last:vectorsize): " << printMasksByLastDigit(edgeMasksEmptyByLastZero)
+    //          << std::endl;
 
     std::bitset<config::e> coloring;
     std::bitset<config::e> counterExample;
