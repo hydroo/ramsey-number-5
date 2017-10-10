@@ -56,8 +56,23 @@ R(4,4) > 11 takes 90   seconds
 Comment: Sadly, I have to use vector<> for bitsets because the number of buckets for the maps is unknown at compiletime.
   Idea: Create the maps in a second program to be able to use std::arrays again in the main part.
 
-# 0a1a5bff5a2e5b3c1dffabfde21afff4685d5a33 (replaced unordered_map with array):
+# 0a1a5bff5a2e5b3c1dffabfde21afff4685d5a33 (replaced unordered_map with array, Oct 10th):
 
 R(3,4) = 10 takes  6.0  seconds (Down from 9.1 ) (Summitdev)
 R(4,4) > 10 takes  0.92 seconds (Down from 1.42) (Summitdev)
 R(4,4) > 11 takes  60   seconds (Down from 75  ) (Summitdev)
+
+# 6443f518f31cbeb19b9f308fa8b8e2a1ae7522e9 (small improvements, Oct 10th):
+
+R(3,4) <= 10 takes   5.1  s  (Summitdev),    3.6  (Solaire)
+R(4,4) >  10 takes   0.78 s  (Summitdev),    0.54 (Solaire)
+R(4,4) >  11 takes   56.8 s  (Summitdev),   32.8  (Solaire)
+R(3,4) <= 12 takes                         454    (Solaire)
+R(4,4) >  12 takes                        2768    (Solaire)
+
+I tried removing the inner ifs from the bitmask testing loops in favor of a bool variable that is repeatedly |='ed and gets evaluated later.
+But this is ~20% slower.
+This will probably be necessary for parallelization of these loops.
+But on the other hand the loops are fairly short. Most of them very short, some are around ~30 iterations.
+
+Next step is probably to break apart the recursion by either flattening it or transforming it into something iterative.
