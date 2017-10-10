@@ -118,20 +118,22 @@ int main(int argc, char** args) {
 
         // std::cerr << "  " << coloring << " nextEdge " << nextEdge << std::endl;
 
-        for (const auto& mask : edgeMasksCompleteByLastOne[nextEdge - 1 + 1]) {
+        const auto& currentEdgeMasksComplete = edgeMasksCompleteByLastOne[nextEdge - 1 + 1];
+        for (int i = 0; i < (int)currentEdgeMasksComplete.size(); i += 1) {
             edgeMaskChecks += 1;
-            if ((coloring & mask) == mask) {
+            if ((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i]) {
                 if (config::n >= config::r) {  // avoids matching subgraphs larger than the to-be-checked graph
-                    // std::cerr << "      Mask " << mask << " is a subgraph" << std::endl;
+                    // std::cerr << "      Mask " << currentEdgeMasksComplete[i] << " is a subgraph" << std::endl;
                     coloringsChecked += 1;
                     return true;
                 }
             }
         }
 
-        for (const auto& mask : edgeMasksEmptyByLastZero[nextEdge - 1 + 1]) {
+        const auto& currentEdgeMasksEmpty = edgeMasksEmptyByLastZero[nextEdge - 1 + 1];
+        for (int i = 0; i < (int)currentEdgeMasksEmpty.size(); i += 1) {
             edgeMaskChecks += 1;
-            if ((coloring | mask) == mask) {
+            if ((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i]) {
                 if (config::n >= config::s) {  // avoids matching subgraphs larger than the to-be-checked graph
                     // std::cerr << "      Mask " << mask << " is a subgraph" << std::endl;
                     coloringsChecked += 1;
