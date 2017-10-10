@@ -2,10 +2,12 @@ CXX = g++
 INCLUDE =
 CXXFLAGS = -Wall -Wextra -g -O2 -std=c++17 -fno-omit-frame-pointer -DDEBUG $(INCLUDE)
 #CXXFLAGS = -mtune=native -Wall -Wextra -O2 -std=c++17 $(INCLUDE)
+#CXXFLAGS += -pg
 
 LN = $(CXX)
 LIBS =
 LFLAGS =
+#LFLAGS = -pg
 
 BINARY = test-5
 
