@@ -50,8 +50,8 @@ std::ostream& operator<<(std::ostream& o, const std::array<T, length>& a) {
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
     o << '[';
-    for (auto i = begin(v); i != --end(v); ++i) {
-        o << *i << ", ";
+    for (int i = 0; i < ((int)v.size() - 1); i += 1) {
+        o << v[i] << ", ";
     }
     if (v.size() > 0) {
         o << v.back();
