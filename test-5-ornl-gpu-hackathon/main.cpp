@@ -120,7 +120,7 @@ int main(int argc, char** args) {
 
         const auto& currentEdgeMasksComplete = edgeMasksCompleteByLastOne[nextEdge - 1 + 1];
         BENCH(edgeMaskChecks += currentEdgeMasksComplete.size());
-        for (int i = 0; i < (int)currentEdgeMasksComplete.size(); i += 1) {
+        for (size_t i = 0; i < currentEdgeMasksComplete.size(); i += 1) {
             if ((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i]) {
                 if (config::n >= config::r) {  // avoids matching subgraphs larger than the to-be-checked graph
                     // std::cerr << "      Mask " << currentEdgeMasksComplete[i] << " is a subgraph" << std::endl;
@@ -132,7 +132,7 @@ int main(int argc, char** args) {
 
         const auto& currentEdgeMasksEmpty = edgeMasksEmptyByLastZero[nextEdge - 1 + 1];
         BENCH(edgeMaskChecks += currentEdgeMasksEmpty.size());
-        for (int i = 0; i < (int)currentEdgeMasksEmpty.size(); i += 1) {
+        for (size_t i = 0; i < currentEdgeMasksEmpty.size(); i += 1) {
             if ((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i]) {
                 if (config::n >= config::s) {  // avoids matching subgraphs larger than the to-be-checked graph
                     // std::cerr << "      Mask " << mask << " is a subgraph" << std::endl;
@@ -160,11 +160,7 @@ int main(int argc, char** args) {
         coloring[nextEdge] = false;
         ret = foreachColoringHasCompleteOrEmptySubgraph(nextEdge + 1);
 
-        if (ret == false) {
-            return false;
-        } else {
-            return true;
-        }
+        return ret;
     };
 
     auto t3 = std::chrono::steady_clock::now();
