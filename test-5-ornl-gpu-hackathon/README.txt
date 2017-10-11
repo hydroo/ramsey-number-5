@@ -64,11 +64,11 @@ R(4,4) > 11 takes  60   seconds (Down from 75  ) (Summitdev)
 
 # 6443f518f31cbeb19b9f308fa8b8e2a1ae7522e9 (small improvements, Oct 10th):
 
-R(3,4) <= 10 takes   5.1  s  (Summitdev),    3.6  (Solaire)
-R(4,4) >  10 takes   0.78 s  (Summitdev),    0.54 (Solaire)
-R(4,4) >  11 takes   56.8 s  (Summitdev),   32.8  (Solaire)
-R(3,4) <= 12 takes                         454    (Solaire)
-R(4,4) >  12 takes                        2768    (Solaire)
+R(3,4) <= 10 takes 5.1  s  (Summitdev),    3.6  (Solaire)
+R(4,4) >  10 takes 0.78 s  (Summitdev),    0.54 (Solaire)
+R(4,4) >  11 takes 56.8 s  (Summitdev),   32.8  (Solaire)
+R(3,4) <= 12 takes                       454    (Solaire)
+R(4,4) >  12 takes                      2768    (Solaire)
 
 I tried removing the inner ifs from the bitmask testing loops in favor of a bool variable that is repeatedly |='ed and gets evaluated later.
 But this is ~20% slower.
@@ -76,3 +76,70 @@ This will probably be necessary for parallelization of these loops.
 But on the other hand the loops are fairly short. Most of them very short, some are around ~30 iterations.
 
 Next step is probably to break apart the recursion by either flattening it or transforming it into something iterative.
+
+# switch to column major storing of adjacency matrices in bitsets (Oct 11th):
+
+I noticed all of the edgeMasks*ByLast* maps have their first non-empty vector relatively late. As far back as 20 bits or more.
+And this makes sense, considering we store graphs row-major.
+With column-major a compact complete/empty n-graph can be in the first n bits, whereas it needs a lot more in column major.
+This change brought a huge runtime performance improvement, because it prunes the tree that enumerates all graphs a lot earlier.
+
+E.g.:
+
+    Problem: R(3,4) <= 10 ? 
+    Number of complete subgraphs:                       120   # n choose r
+    Number of empty subgraphs:                          210   # n choose s
+    Edges:                                               45   # n*(n-1)/2
+    Edge colorings:                      35,184,372,088,832   # 2^e
+    
+    Timing: Create subgraph edge masks:              0.000206 seconds
+    Complete edge masks by last 1 (last:vectorsize): {-1:0, 0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1, 17:2, 18:2, 19:2, 20:2, 21:2, 22:2, 23:2, 24:3, 25:3, 26:3, 27:3, 28:3, 29:3, 30:4, 31:4, 32:4, 33:4, 34:4, 35:5, 36:5, 37:5, 38:5, 39:6, 40:6, 41:6, 42:7, 43:7, 45:8}
+    Empty edge masks by last 0    (last:vectorsize): {-1:0, 0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0, 14:0, 15:0, 16:0, 17:1, 18:1, 19:1, 20:1, 21:1, 22:1, 23:1, 24:3, 25:3, 26:3, 27:3, 28:3, 29:3, 30:6, 31:6, 32:6, 33:6, 34:6, 35:10, 36:10, 37:10, 38:10, 39:15, 40:15, 41:15, 42:21, 43:21, 45:28}
+    Timing: Check all colorings:          3.806234 seconds
+    Timing: Number of recursion steps:       292,838,893
+    Timing: Number of colorings checked:     146,419,447
+    Timing: Number of edge mask checks:    2,561,364,122
+
+is now:
+
+    Problem: R(3,4) <= 10 ? 
+    Number of complete subgraphs:                                        120   # n choose r
+    Number of empty subgraphs:                                           210   # n choose s
+    Edges:                                                                45   # n*(n-1)/2
+    Edge colorings:                                       35,184,372,088,832   # 2^e
+    
+    Timing: Create subgraph edge masks:              0.000131 seconds
+    Complete edge masks by last 1 (last:vectorsize): {-1:0, 0:0, 1:0, 2:1, 3:0, 4:1, 5:2, 6:0, 7:1, 8:2, 9:3, 10:0, 11:1, 12:2, 13:3, 14:4, 15:0, 16:1, 17:2, 18:3, 19:4, 20:5, 21:0, 22:1, 23:2, 24:3, 25:4, 26:5, 27:6, 28:0, 29:1, 30:2, 31:3, 32:4, 33:5, 34:6, 35:7, 36:0, 37:1, 38:2, 39:3, 40:4, 41:5, 42:6, 43:7, 45:8}
+    Empty edge masks by last 0    (last:vectorsize): {-1:0, 0:0, 1:0, 2:0, 3:0, 4:0, 5:1, 6:0, 7:0, 8:1, 9:3, 10:0, 11:0, 12:1, 13:3, 14:6, 15:0, 16:0, 17:1, 18:3, 19:6, 20:10, 21:0, 22:0, 23:1, 24:3, 25:6, 26:10, 27:15, 28:0, 29:0, 30:1, 31:3, 32:6, 33:10, 34:15, 35:21, 36:0, 37:0, 38:1, 39:3, 40:6, 41:10, 42:15, 43:21, 45:28}
+    Timing: Check all colorings:          0.034180 seconds
+    Timing: Number of recursion steps:         2,540,751
+    Timing: Number of colorings checked:       1,270,376
+    Timing: Number of edge mask checks:       22,049,936
+
+Notice:
+- In the by last 0/1 maps the first non-zero entries are at lower keys, i.e. earlier in the recursion/tree.
+- The number of recursion steps, colorings checked and edge masks checked is a lot lower.
+
+R(3,4) <= 10 takes   0.04 s (Solaire)
+R(4,4) >  13 takes   0.18 s (Solaire)
+R(4,4) >  14 takes 312    s (Solaire)
+R(3,5) >  13 takes   2.45 s (Solaire)
+R(3,5) =  14 didn't finish in a few mins
+
+One of the next task should be to verify some of these counter examples, because they are getting too large to just look at.
+
+    R(4,4)  > 14 (FALSE)    R(3,5)  > 13 (FALSE)
+    Counter example:        Counter example: 
+        [1111110000000          [111100000000
+          111001110000            00011100000
+           00111101100             0010011000
+            0111100011              001000110
+             111011000               00010101
+              00110110                0000110
+               0011101                 010001
+                001110                  11010
+                 11001                   0000
+                  0101                    101
+                   011                     00
+                    10                      1]
+                     1]

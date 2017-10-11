@@ -24,12 +24,12 @@ std::string print(const std::string indent = "") {
 
     o << indent << "Problem: R(" << r << "," << s << ") <= " << n << " ? " << std::endl;
     o.imbue(std::locale("en_US.UTF-8"));
-    o << indent << "Number of complete subgraphs: " << std::setw(25) << nChooseK(n, r) << "   # n choose r"
+    o << indent << "Number of complete subgraphs: " << std::setw(42) << nChooseK(n, r) << "   # n choose r"
       << std::endl;
-    o << indent << "Number of empty subgraphs:    " << std::setw(25) << nChooseK(n, s) << "   # n choose s"
+    o << indent << "Number of empty subgraphs:    " << std::setw(42) << nChooseK(n, s) << "   # n choose s"
       << std::endl;
-    o << indent << "Edges:                        " << std::setw(25) << e << "   # n*(n-1)/2" << std::endl;
-    o << indent << "Edge colorings:               " << std::setw(25) << std::fixed << std::setprecision(0)
+    o << indent << "Edges:                        " << std::setw(42) << e << "   # n*(n-1)/2" << std::endl;
+    o << indent << "Edge colorings:               " << std::setw(42) << std::fixed << std::setprecision(0)
       << std::pow(2, e) << "   # 2^e" << std::endl;
 
     return o.str();

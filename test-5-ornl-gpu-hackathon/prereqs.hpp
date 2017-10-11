@@ -96,32 +96,45 @@ std::ostream& operator<<(std::ostream& o, const std::unordered_map<T, U>& u) {
     return o;
 }
 
-template <std::size_t nodes>
+template <int nodes>
 std::string printAdjacencyMatrix(const std::bitset<nodes*(nodes - 1) / 2>& m, const std::string& indent = "") {
+
     std::ostringstream o;
 
-    int offset = 0;
-    for (auto n = nodes - 1; n > 0; n -= 1) {
-        if (n == nodes - 1) {
+    //std::cerr << m << std::endl << std::endl;
+
+    int ii = -1;
+    int ii_inc = 1;
+    for (int i = 0; i < nodes-1; i += 1) {
+        ii += ii_inc;
+        ii_inc += 1;
+
+        if (i == 0) {
             o << indent << '[';
         } else {
             o << indent << ' ';
         }
 
-        for (auto i = n; i < nodes - 1; i += 1) {
+        for (int j = 0; j < i; j += 1) {
             o << ' ';
         }
 
-        for (std::size_t i = 0; i < n; i += 1) {
-            o << m[offset + i];
+        int jj = -i;
+        int jj_inc = i;
+        for (int j = i+1; j < nodes; j += 1) {
+            jj += jj_inc;
+            jj_inc += 1;
+
+            o << m[ii + jj];
+            //std::cerr << "i " << i << ", j " << j << ", ii " << ii << ", jj " << jj << ", e " << ii + jj << std::endl;
         }
 
-        if (n > 1) {
+        if (i < nodes-2) {
             o << std::endl;
+        } else {
+            o << ']' << std::endl;
         }
-        offset += n;
     }
-    o << ']' << std::endl;
 
     return o.str();
 }

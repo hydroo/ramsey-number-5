@@ -20,15 +20,14 @@ void subGraphEdgeMasks(std::array<std::bitset<edges>, nChooseK(nodes, subGraphSi
 
     do {
         for (int e = 0; e < edges; e += 1) {
-            int j = e;
-            int y = 0;
-            int w = nodes - 1;
-            while (j >= w && w > 0) {
-                j -= w;
-                w -= 1;
-                y += 1;
+            int x = 1;
+            int y = e;
+            while (y >= x) {
+                y -= x;
+                x += 1;
             }
-            int x = j + 1 + y;
+
+            // std::cerr << "e " << e << ", x " << x << ", y " << y << std::endl;
 
             if (nodeMask[x] == true && nodeMask[y] == true) {
                 (*edgeMasks)[p][e] = true;
