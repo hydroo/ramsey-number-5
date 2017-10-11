@@ -91,13 +91,13 @@ int main(int argc, char** args) {
 
     auto t2 = std::chrono::steady_clock::now();
 
-    std::cerr << "Timing: Create subgraph edge masks:    " << std::fixed
+    std::cerr << "Timing: Create subgraph edge masks:              " << std::fixed
               << std::chrono::duration<double>(t2 - t1).count() << " seconds" << std::endl;
 
-    // std::cerr << "Complete edge masks:                   " << edgeMasksComplete << std::endl;
-    // std::cerr << "Complete edge masks by last 1(last+1): " << edgeMasksCompleteByLastOne << std::endl;
-    // std::cerr << "Empty edge masks:                      " << edgeMasksEmpty << std::endl;
-    // std::cerr << "Empty edge masks by last 0   (last+1): " << edgeMasksEmptyByLastZero << std::endl;
+    // std::cerr << "Complete edge masks:                             " << edgeMasksComplete << std::endl;
+    // std::cerr << "Complete edge masks by last 1(last+1):           " << edgeMasksCompleteByLastOne << std::endl;
+    // std::cerr << "Empty edge masks:                                " << edgeMasksEmpty << std::endl;
+    // std::cerr << "Empty edge masks by last 0   (last+1):           " << edgeMasksEmptyByLastZero << std::endl;
 
     // std::cerr << "Complete edge masks by last 1 (last:vectorsize): "
     //           << printMasksByLastDigit(edgeMasksCompleteByLastOne) << std::endl;
