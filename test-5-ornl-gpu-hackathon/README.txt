@@ -124,7 +124,7 @@ R(3,4) <= 10 takes   0.04 s (Solaire)
 R(4,4) >  13 takes   0.18 s (Solaire)
 R(4,4) >  14 takes 312    s (Solaire)
 R(3,5) >  13 takes   2.45 s (Solaire)
-R(3,5) =  14 didn't finish in a few mins
+R(3,5) =  14 didn't finish in a few hours
 
 One of the next task should be to verify some of these counter examples, because they are getting too large to just look at.
 
