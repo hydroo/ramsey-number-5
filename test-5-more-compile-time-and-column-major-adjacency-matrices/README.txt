@@ -143,3 +143,23 @@ One of the next task should be to verify some of these counter examples, because
                    011                     00
                     10                      1]
                      1]
+
+# Possible Next Steps
+- Verify some of the counter examples
+- GPU
+    - Transform recursive enumeration into iterative and find out howto best put it on a GPU.
+- CPU
+    - I read a bit of the assembly. It does not use simd, but does an interleaved and[0], cmp[0], ifneq, and[1], cmp[1], ifneq on the bitset. (The code itself does (a & b) == b per bitset/(128bit so far))
+    - I'm reasonably sure I could write my own bitset and handcraft parts of the algorithm to speed it up considerably (2x or a lot more)
+      https://software.intel.com/sites/landingpage/IntrinsicsGuide
+      Perhaps I can do (a & b) == b in one instruction rather than two.
+- What I didn't do is remove the inner ifs in the bitmask testing loops, because it gets slower on CPU. This should be done eventually for parallelism(ilp as well as tlp)
+- If I could get rid of vector<> in std::array<std::vector<std::bitset<config::e>>, config::e + 1> edgeMasksCompleteByLastOne, that'd be great.
+  Maybe template nextEdge in the local function, thus fixing the loop length.
+  Might also be a terrible idea.
+- Instead of having two loops for the search for complete and empty subgraphs, I might be able to put it into one big vector (and loop) by manipulating the masks cleverly. Maybe the operations need some tweaking then, too.
+
+- The biggest speedups, of course, still lie in improving the enumeration / tree pruning / the overall algorithm.
+  I.e. more pruning, and
+  avoiding to check graphs that are isomorphic to something I checked or will definitely check later.
+  Or perhaps replace the whole bitmask-based subgraph search which this test-5 is based on.
