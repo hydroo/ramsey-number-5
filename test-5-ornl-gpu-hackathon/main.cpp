@@ -109,6 +109,51 @@ int main(int argc, char** args) {
     int64_t coloringsChecked = 0;
     int64_t edgeMaskChecks = 0;
 
+    // // unused progress towards making this nonrecursive
+    //
+    // coloring.set();
+    //
+    // int oldLastChanged = config::e-1;
+    // int nextLastChanged = 0;
+    // do {
+
+    //     //std::cerr << "x   " << coloring << " " << oldLastChanged << " " << nextLastChanged << std::endl;
+
+    //     if (nextLastChanged <= oldLastChanged) {
+    //         for (int i = nextLastChanged; i <= oldLastChanged; i += 1) {
+    //             std::cerr << "a   " << coloring << ", next edge " << i+1 << std::endl;
+    //             // check
+    //         }
+    //     } else {
+    //         std::cerr << "b   " << coloring << ", next edge " << nextLastChanged+1 << std::endl;
+    //         // check
+    //     }
+    //     // todo, how do you prune the tree
+
+    //     oldLastChanged = nextLastChanged;
+
+    //     for (int i = config::e-1; i >= 0; i -= 1) {
+    //         if (coloring.test(i) == true) {
+    //             nextLastChanged = i;
+    //             break;
+    //         }
+    //     }
+
+    //     bool continueEnumerating = false;
+    //     for (int i = config::e-1; i >= 0; i -= 1) {
+    //         coloring.flip(i);
+    //         if (coloring.test(i) == false) {
+    //             continueEnumerating = true;
+    //             break;
+    //         }
+    //     }
+
+    //     if (continueEnumerating) { continue; }
+    //     else                     { break   ; }
+    // } while (true);
+
+    // std::abort();
+
     std::function<bool(int)> foreachColoringHasCompleteOrEmptySubgraph = [&coloring, &edgeMasksCompleteByLastOne,
             &edgeMasksEmptyByLastZero, &counterExample, &recursionSteps, &coloringsChecked, &edgeMaskChecks,
             &foreachColoringHasCompleteOrEmptySubgraph](int nextEdge) -> bool {
