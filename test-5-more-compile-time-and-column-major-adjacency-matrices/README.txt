@@ -146,6 +146,7 @@ One of the next task should be to verify some of these counter examples, because
 
 # Possible Next Steps
 - Verify some of the counter examples
+- Output counterexamples / graphs with wildcards/do-not-care terms (because most counter examples are overspecified, and this is also helpful for reducing memory requirements when storing counterexamples in future versions)
 - GPU
     - Transform recursive enumeration into iterative and find out howto best put it on a GPU.
 - CPU
