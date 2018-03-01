@@ -54,8 +54,7 @@ template <int edges, int nodes, int subGraphSize, bool digit>
 void subGraphEdgeMasksByLastDigit(std::array<std::bitset<edges>, nChooseK(nodes, subGraphSize)> edgeMasks,
         std::array<std::vector<std::bitset<edges>>, edges + 1>* edgeMasksByLastDigit) {
     for (const auto& mask : edgeMasks) {
-        int last =
-                -1;  // offset everything by +1 so that we can use -1, and don't have to worry about array[nextEdge-1]
+        int last = -1;  // offset everything by +1 so that we can use -1, and don't have to worry about array[nextEdge-1]
         for (int i = ((int)mask.size()) - 1; i >= 0; i -= 1) {
             if (mask[i] == digit) {
                 last = i;

@@ -9,7 +9,7 @@ for rs in "1 1" "1 2" "1 3" "1 4" \
 	n=$(echo $rs | awk '{print $2;}')
 	while true; do
 
-		echo "R($rs) <= $n ?"
+		echo "R($(echo $rs | sed "s/ /,/g")) <= $n ?"
 
 		./build.sh $rs $n &> /dev/null
 
