@@ -1,3 +1,7 @@
+# Gist
+
+More compile-time stuff, and column-major adjacency matrices
+
 # initial test-5 commit (Oct 9th):
 
 Same as test-3 except with bitsets instead of dynamic_bitsets,
