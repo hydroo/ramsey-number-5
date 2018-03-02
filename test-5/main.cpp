@@ -3,6 +3,13 @@
 #include "check.hpp"
 #include "config.hpp"
 
+/* Returns an array of bitsets that represent adjacency matrices.
+ * `edgeMasks` is the set of all possible graphs that have exactly one complete subgraph of size `subGraphSize`.
+ *
+ * Indexing into an adjacency matrix is column-major:
+ * Index 0 = edge between 0 and 1; 1 = 0,2; 2 = 1,2; 3 = 0, 3; 4 = 1,3; 5 = 2,3;
+ * (The matrix is symmetric and irreflexive / a triangle without the diagonal.)
+ */
 template <int edges, int nodes, int subGraphSize>
 void subGraphEdgeMasks(std::array<std::bitset<edges>, nChooseK(nodes, subGraphSize)>* edgeMasks) {
     std::array<bool, nodes> nodeMask;
@@ -43,6 +50,7 @@ void subGraphEdgeMasks(std::array<std::bitset<edges>, nChooseK(nodes, subGraphSi
     } while (std::prev_permutation(std::begin(nodeMask), std::end(nodeMask)));
 }
 
+// Converts a set of complete subgraphs into a set of empty subgraphs
 template <int edges, int nodes, int subGraphSize>
 void invertSubgraphEdgeMasks(std::array<std::bitset<edges>, nChooseK(nodes, subGraphSize)>* masks) {
     for (auto&& m : *masks) {
@@ -50,6 +58,16 @@ void invertSubgraphEdgeMasks(std::array<std::bitset<edges>, nChooseK(nodes, subG
     }
 }
 
+/* Split the set of graphs into multiple sets,
+ * where each set with index `i` contains all graphs where the last edge of the complete subgraph is `i`.
+ * This will be used to only compare a complete subgraph if the enumerated graph has exactly
+ * reached this number of edges, not more, not less.
+ *
+ * It is useless to compare a smaller enumerated graph (I.e. not enough edges have been enumerated)
+ * to a complete subgraph that needs an edge at a position that is not yet enumerated.
+ * On the other hand it is useless to compare an enumerated graph that is larger than the complete subgraph,
+ * because the result is the same as comparing it to one which has fewer edges.
+ */
 template <int edges, int nodes, int subGraphSize, bool digit>
 void subGraphEdgeMasksByLastDigit(std::array<std::bitset<edges>, nChooseK(nodes, subGraphSize)> edgeMasks,
         std::array<std::vector<std::bitset<edges>>, edges + 1>* edgeMasksByLastDigit) {
@@ -73,9 +91,11 @@ int main(int argc, char** args) {
 
     auto t1 = std::chrono::steady_clock::now();
 
+    // static sizing for speed
     std::array<std::bitset<config::e>, nChooseK(config::n, config::r)> edgeMasksComplete;
     std::array<std::bitset<config::e>, nChooseK(config::n, config::s)> edgeMasksEmpty;
 
+    // generate all complete and empty subgraph configurations
     subGraphEdgeMasks<config::e, config::n, config::r>(&edgeMasksComplete);
     subGraphEdgeMasks<config::e, config::n, config::s>(&edgeMasksEmpty);
 
@@ -84,6 +104,7 @@ int main(int argc, char** args) {
     std::array<std::vector<std::bitset<config::e>>, config::e + 1> edgeMasksCompleteByLastOne;
     std::array<std::vector<std::bitset<config::e>>, config::e + 1> edgeMasksEmptyByLastZero;
 
+    // index the generated graphs by lastly set edge
     subGraphEdgeMasksByLastDigit<config::e, config::n, config::r, true>(edgeMasksComplete, &edgeMasksCompleteByLastOne);
     subGraphEdgeMasksByLastDigit<config::e, config::n, config::s, false>(edgeMasksEmpty, &edgeMasksEmptyByLastZero);
 
@@ -153,6 +174,8 @@ int main(int argc, char** args) {
 
     // std::abort();
 
+    // Enumerates all graphs recursively.
+    // I.e. for each edge, set it to 0, recurse, set it to 1, recurse.
     std::function<bool(int)> foreachColoringHasCompleteOrEmptySubgraph = [&coloring, &edgeMasksCompleteByLastOne,
             &edgeMasksEmptyByLastZero, &counterExample, &recursionSteps, &coloringsChecked, &edgeMaskChecks,
             &foreachColoringHasCompleteOrEmptySubgraph](int nextEdge) -> bool {
@@ -161,6 +184,8 @@ int main(int argc, char** args) {
 
         // std::cerr << "  " << coloring << " nextEdge " << nextEdge << std::endl;
 
+        // Compare this graph against all appropriate complete subgraphs.
+        // Appropriate means every graph whos complete subgraph's laste edge is exactly the lastly enumerated edge
         const auto& currentEdgeMasksComplete = edgeMasksCompleteByLastOne[nextEdge - 1 + 1];
         BENCH(edgeMaskChecks += currentEdgeMasksComplete.size());
         for (size_t i = 0; i < currentEdgeMasksComplete.size(); i += 1) {
@@ -173,6 +198,7 @@ int main(int argc, char** args) {
             }
         }
 
+        // Do the same for empty subgraphs
         const auto& currentEdgeMasksEmpty = edgeMasksEmptyByLastZero[nextEdge - 1 + 1];
         BENCH(edgeMaskChecks += currentEdgeMasksEmpty.size());
         for (size_t i = 0; i < currentEdgeMasksEmpty.size(); i += 1) {
@@ -185,6 +211,8 @@ int main(int argc, char** args) {
             }
         }
 
+        // If this graph is completely enumerated and no complete or empty subgraph has been found,
+        // return false and provide this graph as a counter example.
         if (nextEdge == config::e) {
             BENCH(coloringsChecked += 1);
             counterExample = coloring;
@@ -207,6 +235,8 @@ int main(int argc, char** args) {
     };
 
     auto t3 = std::chrono::steady_clock::now();
+    // enumerate all graphs of size `n` and find out whether all have a complete subgraph of size `r`
+    // or an empty subgraph of size `s`
     bool allColoringsHaveCompleteOrEmptySubgraph = foreachColoringHasCompleteOrEmptySubgraph(0);
     auto t4 = std::chrono::steady_clock::now();
     std::cerr << "Timing: Check all colorings:         " << std::fixed
