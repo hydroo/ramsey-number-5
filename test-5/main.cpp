@@ -89,7 +89,7 @@ int main(int argc, char** args) {
 
     auto t2 = std::chrono::steady_clock::now();
 
-    std::cerr << "Timing: Create subgraph edge masks:              " << std::fixed
+    std::cerr << "Timing: Create subgraph edge masks:  " << std::fixed
               << std::chrono::duration<double>(t2 - t1).count() << " seconds" << std::endl;
 
     // std::cerr << "Complete edge masks:                             " << edgeMasksComplete << std::endl;
@@ -209,7 +209,7 @@ int main(int argc, char** args) {
     auto t3 = std::chrono::steady_clock::now();
     bool allColoringsHaveCompleteOrEmptySubgraph = foreachColoringHasCompleteOrEmptySubgraph(0);
     auto t4 = std::chrono::steady_clock::now();
-    std::cerr << "Timing: Check all colorings:          " << std::fixed
+    std::cerr << "Timing: Check all colorings:         " << std::fixed
               << std::chrono::duration<double>(t4 - t3).count() << " seconds" << std::endl;
     std::cerr.imbue(std::locale("en_US.UTF-8"));
     std::cerr << "Timing: Number of recursion steps:   " << std::setw(15) << recursionSteps << std::endl;
