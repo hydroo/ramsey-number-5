@@ -1,11 +1,13 @@
 #include "prereqs.hpp"
 
+#include <gtest/gtest.h>
+
 #include "adjacencymatrix.hpp"
 
 using std::cerr;
 using std::endl;
 
-void create_constexpr_triangular() {
+TEST(AdjacencyMatrix, create_constexpr_triangular) {
     constexpr AdjacencyMatrix<  0> m0;
         STATIC_ASSERT(m0.compile_time() == true);
         STATIC_ASSERT(m0.nodes()        == 0);
@@ -46,7 +48,7 @@ void create_constexpr_triangular() {
 
 }
 
-void create_constexpr_nontriangular() {
+TEST(AdjacencyMatrix, create_constexpr_nontriangular) {
     constexpr AdjacencyMatrix<  0, false> m0;
         STATIC_ASSERT(m0.compile_time() == true);
     constexpr AdjacencyMatrix<  1, false> m1;
@@ -57,26 +59,23 @@ void create_constexpr_nontriangular() {
         STATIC_ASSERT(m3.bits()         == 9);
 }
 
-void create_nonconstexpr_triangular() {
+TEST(AdjacencyMatrix, create_nonconstexpr_triangular) {
     AdjacencyMatrix<-1> m4(4);
-        ASSERT(m4.compile_time() == false);
-        ASSERT(m4.nodes()        == 4);
-        ASSERT(m4.edges()        == 6);
-        ASSERT(m4.bits()         == 6);
+        ASSERT_EQ(m4.compile_time(), false);
+        ASSERT_EQ(m4.nodes()       , 4);
+        ASSERT_EQ(m4.edges()       , 6);
+        ASSERT_EQ(m4.bits()        , 6);
 }
 
-void create_nonconstexpr_nontriangular() {
+TEST(AdjacencyMatrix, create_nonconstexpr_nontriangular) {
     AdjacencyMatrix< -1, false> m4(4);
-        ASSERT(m4.compile_time() == false);
-        ASSERT(m4.nodes()        == 4);
-        ASSERT(m4.edges()        == 6);
-        ASSERT(m4.bits()         == 16);
+        ASSERT_EQ(m4.compile_time(), false);
+        ASSERT_EQ(m4.nodes()       , 4);
+        ASSERT_EQ(m4.edges()       , 6);
+        ASSERT_EQ(m4.bits()        , 16);
 }
 
-int main() {
-    create_constexpr_triangular();
-    create_constexpr_nontriangular();
-    create_constexpr_nontriangular();
-    create_nonconstexpr_triangular();
-    return 0;
+int main(int argc, char** args) {
+    ::testing::InitGoogleTest(&argc, args);
+    return RUN_ALL_TESTS();
 }
