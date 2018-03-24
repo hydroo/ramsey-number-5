@@ -1,12 +1,9 @@
 #ifndef PREREQS_HPP
 #define PREREQS_HPP
 
-#include <cmath>
 #include <stdint.h>
 
 #include <iostream>
-#include <type_traits>
-#include <utility>
 
 using s64 =  int64_t;
 using u64 = uint64_t;
