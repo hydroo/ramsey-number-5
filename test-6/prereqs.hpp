@@ -1,10 +1,12 @@
 #ifndef PREREQS_HPP
 #define PREREQS_HPP
 
+#include <cmath>
 #include <stdint.h>
 
 #include <iostream>
 #include <type_traits>
+#include <utility>
 
 using s64 =  int64_t;
 using u64 = uint64_t;
@@ -38,5 +40,11 @@ template<typename T, T t> struct CompileTimePrintTemplate;
 #define UNIQUE_NAME(base) PP_CAT(base, __COUNTER__)
 
 #define CompileTimePrint(x) CompileTimePrintTemplate<decltype(x), x> UNIQUE_NAME(compileTimePrint)
+
+template <typename T, typename U>
+std::ostream& operator<<(std::ostream& o, const std::pair<T, U>& p) {
+    o << '(' << p.first << "," << p.second << ")";
+    return o;
+}
 
 #endif

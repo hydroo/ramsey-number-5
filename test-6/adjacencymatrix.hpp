@@ -14,7 +14,6 @@ public:
     constexpr s64 bits()     const { return bits_; }
     constexpr s64 elements() const { return elements_; }
 
-
     constexpr bool compile_time() const { return true; }
 
 private:
