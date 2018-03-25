@@ -20,30 +20,30 @@ private:
     static constexpr s64 bits_     = Triangular ? Nodes*(Nodes-1) / 2 : Nodes*Nodes;
     static constexpr s64 elements_ = (bits_-1) / 64 + 1;
 
-    u64 v_[elements_];
+    u64 _v[elements_];
 };
 
 template<s64 Nodes, bool Triangular>
 class BaseAdjacencyMatrix<Nodes, Triangular, std::enable_if_t<(Nodes < 0)>> {
 public:
-    s64 nodes()    const { return nodes_; }
-    s64 edges()    const { return nodes_ * (nodes_ - 1) / 2; }
-    s64 bits()     const { return Triangular ? nodes_*(nodes_-1) / 2 : nodes_*nodes_; }
+    s64 nodes()    const { return _nodes; }
+    s64 edges()    const { return _nodes * (_nodes - 1) / 2; }
+    s64 bits()     const { return Triangular ? _nodes*(_nodes-1) / 2 : _nodes*_nodes; }
     s64 elements() const { return (bits()-1) / 64 + 1; }
 
     constexpr bool compile_time() const { return false; }
 
-    BaseAdjacencyMatrix(size_t nodes__) : nodes_(nodes__) {
-        v_ = (u64*) malloc(sizeof(u64) * elements());
+    BaseAdjacencyMatrix(size_t nodes_) : _nodes(nodes_) {
+        _v = (u64*) malloc(sizeof(u64) * elements());
     }
 
     ~BaseAdjacencyMatrix() {
-        free(v_);
+        free(_v);
     }
 
 private:
-    s64 nodes_;
-    u64* v_;
+    s64 _nodes;
+    u64* _v;
 };
 
 template<s64 Nodes, bool Triangular = true>
