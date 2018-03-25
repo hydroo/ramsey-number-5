@@ -45,7 +45,6 @@ TEST(AdjacencyMatrix, create_constexpr_triangular) {
         STATIC_ASSERT(m16.elements()     == 2);
     constexpr AdjacencyMatrix< 17> m17;
         STATIC_ASSERT(m17.elements()     == 3);
-
 }
 
 TEST(AdjacencyMatrix, create_constexpr_nontriangular) {
@@ -73,6 +72,68 @@ TEST(AdjacencyMatrix, create_nonconstexpr_nontriangular) {
         ASSERT_EQ(m4.nodes()       , 4);
         ASSERT_EQ(m4.edges()       , 6);
         ASSERT_EQ(m4.bits()        , 16);
+}
+
+TEST(AdjacencyMatrix, setedge_constexpr_triangular) {
+    // TODO
+    ASSERT_TRUE(false);
+}
+
+TEST(AdjacencyMatrix, setedge_constexpr_nontriangular) {
+    // TODO
+    ASSERT_TRUE(false);
+}
+
+TEST(AdjacencyMatrix, setedge_nonconstexpr_triangular) {
+    constexpr s64 nodes = 4;
+    AdjacencyMatrix< -1> m(nodes);
+
+    for (s64 c = 0; c < nodes; c += 1) {
+        for (s64 r = 0; r < nodes; r += 1) {
+            if (c == r) { continue; }
+            m.unsetEdge(c, r);
+            ASSERT_EQ(m.edge(c, r), false);
+            ASSERT_EQ(m.edge(r, c), false);
+            m.setEdge(c, r);
+
+            // all previously set edges and this one ought to be set
+            for (s64 c2 = 0; c2 <= c; c2 += 1) {
+                for (s64 r2 = 0; r2 <= r; r2 += 1) {
+                    if (c2 == r2) { continue; }
+                    ASSERT_EQ(m.edge(c2, r2), true);
+                    ASSERT_EQ(m.edge(r2, c2), true);
+                }
+            }
+
+            // cerr << " c " << c << ", r " << r << ", " << m.print() << endl << m.print(true, "  ") << endl;
+        }
+    }
+}
+
+TEST(AdjacencyMatrix, setedge_nonconstexpr_nontriangular) {
+    constexpr s64 nodes = 4;
+    AdjacencyMatrix< -1, false> m(nodes);
+
+    for (s64 c = 0; c < nodes; c += 1) {
+        for (s64 r = 0; r < nodes; r += 1) {
+            if (c == r) { continue; }
+            m.unsetEdge(c, r);
+            ASSERT_EQ(m.edge(c, r), false);
+            ASSERT_EQ(m.edge(r, c), false);
+            m.setEdge(c, r);
+
+            // all previously set edges and this one ought to be set
+            for (s64 c2 = 0; c2 <= c; c2 += 1) {
+                for (s64 r2 = 0; r2 <= r; r2 += 1) {
+                    if (c2 == r2) { continue; }
+                    ASSERT_EQ(m.edge(c2, r2), true);
+                    ASSERT_EQ(m.edge(r2, c2), true);
+                }
+            }
+
+            // cerr << " c " << c << ", r " << r << ", " << m.print() << endl << m.print(true, "  ") << endl;
+        }
+    }
 }
 
 int main(int argc, char** args) {
