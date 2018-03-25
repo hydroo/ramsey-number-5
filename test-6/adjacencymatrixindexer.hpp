@@ -10,20 +10,20 @@
 template<s64 Nodes, bool Triangular = true>
 class AdjacencyMatrixIndexer {
 public:
-    static constexpr s64 index(s64 row, s64 column) {
+    static constexpr s64 index(s64 column, s64 row) {
         if(Triangular == true) {
-            if (row == column) {
+            if (column == row) {
                 return -1;
             } else {
-                if (row > column) {
-                    auto t = row;
-                    row = column;
-                    column = t;
+                if (column < row) {
+                    auto t = column;
+                    column = row;
+                    row = t;
                 }
-                return (Nodes*(Nodes-1)/2) - (Nodes-row)*((Nodes-row)-1)/2 + column - row - 1;
+                return column*(column-1)/2 + row;
             }
         } else {
-            return row*Nodes + column;
+            return column*Nodes + row;
         }
     }
 
@@ -37,13 +37,13 @@ public:
 
     static constexpr std::pair<s64, s64> reverse(s64 i) {
         if (Triangular == true) {
-            s64 row = Nodes - 2 - std::floor(std::sqrt(-8*i + 4*Nodes*(Nodes-1)-7)/2.0 - 0.5);
-            s64 column = i + row + 1 - Nodes*(Nodes-1)/2 + (Nodes-row)*((Nodes-row)-1)/2;
-            return std::make_pair(row, column);
+            s64 column = (s64) floor(0.5 + sqrt(0.25 + 2*i));
+            s64 row    = i - column*(column-1)/2;
+            return std::make_pair(column, row);
         } else {
-            s64 column = i % Nodes;
-            s64 row = (i - column) / Nodes;
-            return std::make_pair(row, column);
+            s64 row    = i % Nodes;
+            s64 column = (i - row) / Nodes;
+            return std::make_pair(column, row);
         }
     }
 
