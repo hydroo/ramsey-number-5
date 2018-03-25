@@ -35,6 +35,12 @@ public:
 
     BaseAdjacencyMatrix(s64 nodes_) : _nodes(nodes_) {
         _v = (u64*) malloc(sizeof(u64) * elements());
+
+        if (Triangular == false) { // set main diagonal to 0
+            for (s64 n = 0; n < _nodes; n += 1) {
+                unsetEdge(n, n);
+            }
+        }
     }
 
     ~BaseAdjacencyMatrix() {
