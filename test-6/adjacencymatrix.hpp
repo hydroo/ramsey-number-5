@@ -33,7 +33,7 @@ public:
 
     constexpr bool compile_time() const { return false; }
 
-    BaseAdjacencyMatrix(size_t nodes_) : _nodes(nodes_) {
+    BaseAdjacencyMatrix(s64 nodes_) : _nodes(nodes_) {
         _v = (u64*) malloc(sizeof(u64) * elements());
     }
 
@@ -52,7 +52,7 @@ public:
     constexpr AdjacencyMatrix() {}
 
     template<s64 Nodes2 = Nodes>
-    AdjacencyMatrix(int nodes, typename std::enable_if<(Nodes2 < 0)>::type* = 0) : BaseAdjacencyMatrix<Nodes, Triangular>(nodes) {
+    AdjacencyMatrix(s64 nodes, typename std::enable_if<(Nodes2 < 0)>::type* = 0) : BaseAdjacencyMatrix<Nodes, Triangular>(nodes) {
     }
 };
 
