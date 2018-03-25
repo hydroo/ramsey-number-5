@@ -8,7 +8,7 @@ using std::cerr;
 using std::endl;
 using std::make_pair;
 
-TEST(AdjacencyMatrixIndexer, index_triangular) {
+TEST(AdjacencyMatrixIndexer, index_constexpr_triangular) {
     using I = AdjacencyMatrixIndexer<5>;
 
     STATIC_ASSERT(I::indexChecked(0, 0) == -1);
@@ -29,7 +29,7 @@ TEST(AdjacencyMatrixIndexer, index_triangular) {
     STATIC_ASSERT(I::indexChecked(3, 3) == -1);
 }
 
-TEST(AdjacencyMatrixIndexer, index_nontriangular) {
+TEST(AdjacencyMatrixIndexer, index_constexpr_nontriangular) {
     using I = AdjacencyMatrixIndexer<4, false>;
 
     STATIC_ASSERT(I::indexChecked(0, 0) ==  0);
@@ -50,8 +50,50 @@ TEST(AdjacencyMatrixIndexer, index_nontriangular) {
     STATIC_ASSERT(I::indexChecked(3, 3) == 15);
 }
 
-TEST(AdjacencyMatrixIndexer, reverse_triangular) {
-    using I = AdjacencyMatrixIndexer<5>;
+TEST(AdjacencyMatrixIndexer, index_nonconstexpr_triangular) {
+    using I = AdjacencyMatrixIndexer<-1>;
+
+    ASSERT_EQ(I::indexChecked(0, 0, 4), -1);
+    ASSERT_EQ(I::indexChecked(0, 1, 4),  0);
+    ASSERT_EQ(I::indexChecked(0, 2, 4),  1);
+    ASSERT_EQ(I::indexChecked(0, 3, 4),  3);
+    ASSERT_EQ(I::indexChecked(1, 0, 4),  0);
+    ASSERT_EQ(I::indexChecked(1, 1, 4), -1);
+    ASSERT_EQ(I::indexChecked(1, 2, 4),  2);
+    ASSERT_EQ(I::indexChecked(1, 3, 4),  4);
+    ASSERT_EQ(I::indexChecked(2, 0, 4),  1);
+    ASSERT_EQ(I::indexChecked(2, 1, 4),  2);
+    ASSERT_EQ(I::indexChecked(2, 2, 4), -1);
+    ASSERT_EQ(I::indexChecked(2, 3, 4),  5);
+    ASSERT_EQ(I::indexChecked(3, 0, 4),  3);
+    ASSERT_EQ(I::indexChecked(3, 1, 4),  4);
+    ASSERT_EQ(I::indexChecked(3, 2, 4),  5);
+    ASSERT_EQ(I::indexChecked(3, 3, 4), -1);
+}
+
+TEST(AdjacencyMatrixIndexer, index_nonconstexpr_nontriangular) {
+    using I = AdjacencyMatrixIndexer<-1, false>;
+
+    ASSERT_EQ(I::indexChecked(0, 0, 4),  0);
+    ASSERT_EQ(I::indexChecked(0, 1, 4),  1);
+    ASSERT_EQ(I::indexChecked(0, 2, 4),  2);
+    ASSERT_EQ(I::indexChecked(0, 3, 4),  3);
+    ASSERT_EQ(I::indexChecked(1, 0, 4),  4);
+    ASSERT_EQ(I::indexChecked(1, 1, 4),  5);
+    ASSERT_EQ(I::indexChecked(1, 2, 4),  6);
+    ASSERT_EQ(I::indexChecked(1, 3, 4),  7);
+    ASSERT_EQ(I::indexChecked(2, 0, 4),  8);
+    ASSERT_EQ(I::indexChecked(2, 1, 4),  9);
+    ASSERT_EQ(I::indexChecked(2, 2, 4), 10);
+    ASSERT_EQ(I::indexChecked(2, 3, 4), 11);
+    ASSERT_EQ(I::indexChecked(3, 0, 4), 12);
+    ASSERT_EQ(I::indexChecked(3, 1, 4), 13);
+    ASSERT_EQ(I::indexChecked(3, 2, 4), 14);
+    ASSERT_EQ(I::indexChecked(3, 3, 4), 15);
+}
+
+TEST(AdjacencyMatrixIndexer, reverse_constexpr_triangular) {
+    using I = AdjacencyMatrixIndexer<4>;
 
     STATIC_ASSERT((I::reverseChecked(0) == make_pair<s64, s64>(1, 0)));
     STATIC_ASSERT((I::reverseChecked(1) == make_pair<s64, s64>(2, 0)));
@@ -61,7 +103,7 @@ TEST(AdjacencyMatrixIndexer, reverse_triangular) {
     STATIC_ASSERT((I::reverseChecked(5) == make_pair<s64, s64>(3, 2)));
 }
 
-TEST(AdjacencyMatrixIndexer, reverse_nontriangular) {
+TEST(AdjacencyMatrixIndexer, reverse_constexpr_nontriangular) {
     using I = AdjacencyMatrixIndexer<4, false>;
 
     STATIC_ASSERT((I::reverseChecked( 0) == make_pair<s64, s64>(0, 0)));
@@ -80,6 +122,38 @@ TEST(AdjacencyMatrixIndexer, reverse_nontriangular) {
     STATIC_ASSERT((I::reverseChecked(13) == make_pair<s64, s64>(3, 1)));
     STATIC_ASSERT((I::reverseChecked(14) == make_pair<s64, s64>(3, 2)));
     STATIC_ASSERT((I::reverseChecked(15) == make_pair<s64, s64>(3, 3)));
+}
+
+TEST(AdjacencyMatrixIndexer, reverse_nonconstexpr_triangular) {
+    using I = AdjacencyMatrixIndexer<-1>;
+
+    ASSERT_EQ(I::reverseChecked(0, 4), (make_pair<s64, s64>(1, 0)));
+    ASSERT_EQ(I::reverseChecked(1, 4), (make_pair<s64, s64>(2, 0)));
+    ASSERT_EQ(I::reverseChecked(2, 4), (make_pair<s64, s64>(2, 1)));
+    ASSERT_EQ(I::reverseChecked(3, 4), (make_pair<s64, s64>(3, 0)));
+    ASSERT_EQ(I::reverseChecked(4, 4), (make_pair<s64, s64>(3, 1)));
+    ASSERT_EQ(I::reverseChecked(5, 4), (make_pair<s64, s64>(3, 2)));
+}
+
+TEST(AdjacencyMatrixIndexer, reverse_nonconstexpr_nontriangular) {
+    using I = AdjacencyMatrixIndexer<-1, false>;
+
+    ASSERT_EQ(I::reverseChecked( 0, 4), (make_pair<s64, s64>(0, 0)));
+    ASSERT_EQ(I::reverseChecked( 1, 4), (make_pair<s64, s64>(0, 1)));
+    ASSERT_EQ(I::reverseChecked( 2, 4), (make_pair<s64, s64>(0, 2)));
+    ASSERT_EQ(I::reverseChecked( 3, 4), (make_pair<s64, s64>(0, 3)));
+    ASSERT_EQ(I::reverseChecked( 4, 4), (make_pair<s64, s64>(1, 0)));
+    ASSERT_EQ(I::reverseChecked( 5, 4), (make_pair<s64, s64>(1, 1)));
+    ASSERT_EQ(I::reverseChecked( 6, 4), (make_pair<s64, s64>(1, 2)));
+    ASSERT_EQ(I::reverseChecked( 7, 4), (make_pair<s64, s64>(1, 3)));
+    ASSERT_EQ(I::reverseChecked( 8, 4), (make_pair<s64, s64>(2, 0)));
+    ASSERT_EQ(I::reverseChecked( 9, 4), (make_pair<s64, s64>(2, 1)));
+    ASSERT_EQ(I::reverseChecked(10, 4), (make_pair<s64, s64>(2, 2)));
+    ASSERT_EQ(I::reverseChecked(11, 4), (make_pair<s64, s64>(2, 3)));
+    ASSERT_EQ(I::reverseChecked(12, 4), (make_pair<s64, s64>(3, 0)));
+    ASSERT_EQ(I::reverseChecked(13, 4), (make_pair<s64, s64>(3, 1)));
+    ASSERT_EQ(I::reverseChecked(14, 4), (make_pair<s64, s64>(3, 2)));
+    ASSERT_EQ(I::reverseChecked(15, 4), (make_pair<s64, s64>(3, 3)));
 }
 
 int main(int argc, char** args) {
