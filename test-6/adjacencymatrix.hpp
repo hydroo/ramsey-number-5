@@ -55,7 +55,7 @@ public:
 
     bool edge(s64 column, s64 row) const {
         s64 i = Indexer::index(column, row, _nodes);
-        return (bool) (_v[i/bitsPerElement]>>(i%bitsPerElement))&0x1;
+        return (bool) ((_v[i/bitsPerElement]>>(i%bitsPerElement))&0x1);
     }
 
     bool edgeChecked(s64 column, s64 row) const {
