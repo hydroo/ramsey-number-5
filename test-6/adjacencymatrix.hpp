@@ -172,8 +172,8 @@ class AdjacencyMatrix : public BaseAdjacencyMatrix<Nodes, Triangular> {
 public:
     constexpr AdjacencyMatrix() {}
 
-    template<s64 Nodes2 = Nodes>
-    AdjacencyMatrix(s64 nodes, typename std::enable_if<(Nodes2 < 0)>::type* = 0) : BaseAdjacencyMatrix<Nodes, Triangular>(nodes) {
+    template<typename = std::enable_if_t<Nodes < 0>>
+    AdjacencyMatrix(s64 nodes) : BaseAdjacencyMatrix<Nodes, Triangular>(nodes) {
     }
 };
 

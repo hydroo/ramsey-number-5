@@ -10,8 +10,8 @@
 template<s64 Nodes, bool Triangular = true>
 class AdjacencyMatrixIndexer {
 public:
-    template<s64 Nodes2 = Nodes>
-    static constexpr s64 index(s64 column, s64 row, typename std::enable_if<Nodes2 >= 0>::type* = 0) {
+    template<typename = std::enable_if_t<Nodes >= 0>>
+    static constexpr s64 index(s64 column, s64 row) {
         if(Triangular == true) {
             if (column == row) {
                 return -1;
@@ -28,8 +28,8 @@ public:
         }
     }
 
-    template<s64 Nodes2 = Nodes>
-    static constexpr s64 indexChecked(s64 row, s64 column, typename std::enable_if<Nodes2 >= 0>::type* = 0) {
+    template<typename = std::enable_if_t<Nodes >= 0>>
+    static constexpr s64 indexChecked(s64 row, s64 column) {
         ASSERT(row    >= 0);
         ASSERT(row    <= Nodes-1);
         ASSERT(column >= 0);
@@ -37,8 +37,8 @@ public:
         return index(row, column);
     }
 
-    template<s64 Nodes2 = Nodes>
-    static constexpr std::pair<s64, s64> reverse(s64 i, typename std::enable_if<Nodes2 >= 0>::type* = 0) {
+    template<typename = std::enable_if_t<Nodes >= 0>>
+    static constexpr std::pair<s64, s64> reverse(s64 i) {
         if (Triangular == true) {
             s64 column = (s64) floor(0.5 + sqrt(0.25 + 2*i));
             s64 row    = i - column*(column-1)/2;
@@ -50,8 +50,8 @@ public:
         }
     }
 
-    template<s64 Nodes2 = Nodes>
-    static constexpr std::pair<s64, s64> reverseChecked(s64 i, typename std::enable_if<Nodes2 >= 0>::type* = 0) {
+    template<typename = std::enable_if_t<Nodes >= 0>>
+    static constexpr std::pair<s64, s64> reverseChecked(s64 i) {
         if (Triangular == true) {
             ASSERT(i >= 0);
             ASSERT(i <= Nodes*(Nodes-1)/2);
@@ -62,8 +62,8 @@ public:
         return reverse(i);
     }
 
-    template<s64 Nodes2 = Nodes>
-    static s64 index(s64 column, s64 row, s64 nodes, typename std::enable_if<Nodes2 < 0>::type* = 0) {
+    template<typename = std::enable_if_t<Nodes < 0>>
+    static s64 index(s64 column, s64 row, s64 nodes) {
         if(Triangular == true) {
             if (column == row) {
                 return -1;
@@ -80,8 +80,8 @@ public:
         }
     }
 
-    template<s64 Nodes2 = Nodes>
-    static s64 indexChecked(s64 row, s64 column, s64 nodes, typename std::enable_if<Nodes2 < 0>::type* = 0) {
+    template<typename = std::enable_if_t<Nodes < 0>>
+    static s64 indexChecked(s64 row, s64 column, s64 nodes) {
         ASSERT(row    >= 0);
         ASSERT(row    <= nodes-1);
         ASSERT(column >= 0);
@@ -89,8 +89,8 @@ public:
         return index(row, column, nodes);
     }
 
-    template<s64 Nodes2 = Nodes>
-    static std::pair<s64, s64> reverse(s64 i, s64 nodes, typename std::enable_if<Nodes2 < 0>::type* = 0) {
+    template<typename = std::enable_if_t<Nodes < 0>>
+    static std::pair<s64, s64> reverse(s64 i, s64 nodes) {
         if (Triangular == true) {
             s64 column = (s64) floor(0.5 + sqrt(0.25 + 2*i));
             s64 row    = i - column*(column-1)/2;
@@ -102,8 +102,8 @@ public:
         }
     }
 
-    template<s64 Nodes2 = Nodes>
-    static std::pair<s64, s64> reverseChecked(s64 i, s64 nodes, typename std::enable_if<Nodes2 < 0>::type* = 0) {
+    template<typename = std::enable_if_t<Nodes < 0>>
+    static std::pair<s64, s64> reverseChecked(s64 i, s64 nodes) {
         if (Triangular == true) {
             ASSERT(i >= 0);
             ASSERT(i <= nodes*(nodes-1)/2);
