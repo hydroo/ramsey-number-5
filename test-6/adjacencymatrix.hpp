@@ -23,8 +23,9 @@ public:
     // TODO set main diagonal to 0, if not triangular on initialization (compile time)
 
 private:
+    static constexpr s64 bitsPerElement = sizeof(u64)*8;
     static constexpr s64 bits_     = Triangular ? Nodes*(Nodes-1) / 2 : Nodes*Nodes;
-    static constexpr s64 elements_ = (bits_-1) / 64 + 1;
+    static constexpr s64 elements_ = (bits_-1) / bitsPerElement + 1;
 
     u64 _v[elements_];
 };
@@ -38,7 +39,7 @@ public:
     s64 nodes()    const { return _nodes; }
     s64 edges()    const { return _nodes * (_nodes - 1) / 2; }
     s64 bits()     const { return Triangular ? _nodes*(_nodes-1) / 2 : _nodes*_nodes; }
-    s64 elements() const { return (bits()-1) / 64 + 1; }
+    s64 elements() const { return (bits()-1) / bitsPerElement + 1; }
 
     constexpr bool compile_time() const { return false; }
 
@@ -54,7 +55,7 @@ public:
 
     bool edge(s64 column, s64 row) const {
         s64 i = Indexer::index(column, row, _nodes);
-        return (bool) (_v[i/64]>>(i%64))&0x1;
+        return (bool) (_v[i/bitsPerElement]>>(i%bitsPerElement))&0x1;
     }
 
     bool edgeChecked(s64 column, s64 row) const {
