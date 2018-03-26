@@ -29,12 +29,12 @@ public:
     }
 
     template<typename = std::enable_if_t<Nodes >= 0>>
-    static constexpr s64 indexChecked(s64 row, s64 column) {
-        ASSERT(row    >= 0);
-        ASSERT(row    <= Nodes-1);
+    static constexpr s64 indexChecked(s64 column, s64 row) {
         ASSERT(column >= 0);
         ASSERT(column <= Nodes-1);
-        return index(row, column);
+        ASSERT(row    >= 0);
+        ASSERT(row    <= Nodes-1);
+        return index(column, row);
     }
 
     template<typename = std::enable_if_t<Nodes >= 0>>
@@ -81,12 +81,12 @@ public:
     }
 
     template<typename = std::enable_if_t<Nodes < 0>>
-    static s64 indexChecked(s64 row, s64 column, s64 nodes) {
-        ASSERT(row    >= 0);
-        ASSERT(row    <= nodes-1);
+    static s64 indexChecked(s64 column, s64 row, s64 nodes) {
         ASSERT(column >= 0);
         ASSERT(column <= nodes-1);
-        return index(row, column, nodes);
+        ASSERT(row    >= 0);
+        ASSERT(row    <= nodes-1);
+        return index(column, row, nodes);
     }
 
     template<typename = std::enable_if_t<Nodes < 0>>
