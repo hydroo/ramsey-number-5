@@ -9,53 +9,53 @@ using std::endl;
 
 TEST(AdjacencyMatrix, create_constexpr_triangular) {
     constexpr AdjacencyMatrix<  0> m0;
-        STATIC_ASSERT(m0.compile_time() == true);
-        STATIC_ASSERT(m0.nodes()        == 0);
-        STATIC_ASSERT(m0.edges()        == 0);
-        STATIC_ASSERT(m0.bits()         == 0);
-        //STATIC_ASSERT(m0.elements()     == 0); // is 1
+        R5_STATIC_ASSERT(m0.compile_time() == true);
+        R5_STATIC_ASSERT(m0.nodes()        == 0);
+        R5_STATIC_ASSERT(m0.edges()        == 0);
+        R5_STATIC_ASSERT(m0.bits()         == 0);
+        //R5_STATIC_ASSERT(m0.elements()     == 0); // is 1
     constexpr AdjacencyMatrix<  1> m1;
-        STATIC_ASSERT(m1.nodes()        == 1);
-        STATIC_ASSERT(m1.edges()        == 0);
-        STATIC_ASSERT(m1.bits()         == 0);
-        // STATIC_ASSERT(m1.elements()     == 0); // is 1
+        R5_STATIC_ASSERT(m1.nodes()        == 1);
+        R5_STATIC_ASSERT(m1.edges()        == 0);
+        R5_STATIC_ASSERT(m1.bits()         == 0);
+        // R5_STATIC_ASSERT(m1.elements()     == 0); // is 1
     constexpr AdjacencyMatrix<  2> m2;
-        STATIC_ASSERT(m2.nodes()        == 2);
-        STATIC_ASSERT(m2.edges()        == 1);
-        STATIC_ASSERT(m2.bits()         == 1);
-        STATIC_ASSERT(m2.elements()     == 1);
+        R5_STATIC_ASSERT(m2.nodes()        == 2);
+        R5_STATIC_ASSERT(m2.edges()        == 1);
+        R5_STATIC_ASSERT(m2.bits()         == 1);
+        R5_STATIC_ASSERT(m2.elements()     == 1);
     constexpr AdjacencyMatrix<  3> m3;
-        STATIC_ASSERT(m3.nodes()        == 3);
-        STATIC_ASSERT(m3.edges()        == 3);
-        STATIC_ASSERT(m3.bits()         == 3);
-        STATIC_ASSERT(m3.elements()     == 1);
+        R5_STATIC_ASSERT(m3.nodes()        == 3);
+        R5_STATIC_ASSERT(m3.edges()        == 3);
+        R5_STATIC_ASSERT(m3.bits()         == 3);
+        R5_STATIC_ASSERT(m3.elements()     == 1);
     constexpr AdjacencyMatrix<  4> m4;
-        STATIC_ASSERT(m4.nodes()        == 4);
-        STATIC_ASSERT(m4.edges()        == 6);
-        STATIC_ASSERT(m4.bits()         == 6);
-        STATIC_ASSERT(m4.elements()     == 1);
+        R5_STATIC_ASSERT(m4.nodes()        == 4);
+        R5_STATIC_ASSERT(m4.edges()        == 6);
+        R5_STATIC_ASSERT(m4.bits()         == 6);
+        R5_STATIC_ASSERT(m4.elements()     == 1);
     constexpr AdjacencyMatrix< 11> m11;
-        STATIC_ASSERT(m11.nodes()        == 11);
-        STATIC_ASSERT(m11.edges()        == 55);
-        STATIC_ASSERT(m11.bits()         == 55);
-        STATIC_ASSERT(m11.elements()     == 1);
+        R5_STATIC_ASSERT(m11.nodes()        == 11);
+        R5_STATIC_ASSERT(m11.edges()        == 55);
+        R5_STATIC_ASSERT(m11.bits()         == 55);
+        R5_STATIC_ASSERT(m11.elements()     == 1);
     constexpr AdjacencyMatrix< 12> m12;
-        STATIC_ASSERT(m12.elements()     == 2);
+        R5_STATIC_ASSERT(m12.elements()     == 2);
     constexpr AdjacencyMatrix< 16> m16;
-        STATIC_ASSERT(m16.elements()     == 2);
+        R5_STATIC_ASSERT(m16.elements()     == 2);
     constexpr AdjacencyMatrix< 17> m17;
-        STATIC_ASSERT(m17.elements()     == 3);
+        R5_STATIC_ASSERT(m17.elements()     == 3);
 }
 
 TEST(AdjacencyMatrix, create_constexpr_nontriangular) {
     constexpr AdjacencyMatrix<  0, false> m0;
-        STATIC_ASSERT(m0.compile_time() == true);
+        R5_STATIC_ASSERT(m0.compile_time() == true);
     constexpr AdjacencyMatrix<  1, false> m1;
-        STATIC_ASSERT(m1.bits()         == 1);
+        R5_STATIC_ASSERT(m1.bits()         == 1);
     constexpr AdjacencyMatrix<  2, false> m2;
-        STATIC_ASSERT(m2.bits()         == 4);
+        R5_STATIC_ASSERT(m2.bits()         == 4);
     constexpr AdjacencyMatrix<  3, false> m3;
-        STATIC_ASSERT(m3.bits()         == 9);
+        R5_STATIC_ASSERT(m3.bits()         == 9);
 }
 
 TEST(AdjacencyMatrix, create_nonconstexpr_triangular) {

@@ -77,10 +77,10 @@ private:
     }
 
     static constexpr s64 indexChecked_(s64 column, s64 row, s64 nodes) {
-        ASSERT(column >= 0);
-        ASSERT(column <= nodes-1);
-        ASSERT(row    >= 0);
-        ASSERT(row    <= nodes-1);
+        R5_ASSERT(column >= 0);
+        R5_ASSERT(column <= nodes-1);
+        R5_ASSERT(row    >= 0);
+        R5_ASSERT(row    <= nodes-1);
         return index_(column, row, nodes);
     }
 
@@ -98,11 +98,11 @@ private:
 
     static constexpr std::pair<s64, s64> reverseChecked_(s64 i, s64 nodes) {
         if (Triangular == true) {
-            ASSERT(i >= 0);
-            ASSERT(i <= nodes*(nodes-1)/2);
+            R5_ASSERT(i >= 0);
+            R5_ASSERT(i <= nodes*(nodes-1)/2);
         } else {
-            ASSERT(i >= 0);
-            ASSERT(i <= nodes*nodes-1);
+            R5_ASSERT(i >= 0);
+            R5_ASSERT(i <= nodes*nodes-1);
         }
         return reverse_(i, nodes);
     }

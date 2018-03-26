@@ -59,11 +59,11 @@ public:
     }
 
     bool edgeChecked(s64 column, s64 row) const {
-        ASSERT(row    != column);
-        ASSERT(column >= 0);
-        ASSERT(column <= _nodes-1);
-        ASSERT(row    >= 0);
-        ASSERT(row    <= _nodes-1);
+        R5_ASSERT(row    != column);
+        R5_ASSERT(column >= 0);
+        R5_ASSERT(column <= _nodes-1);
+        R5_ASSERT(row    >= 0);
+        R5_ASSERT(row    <= _nodes-1);
         return edge(column, row);
     }
 
@@ -98,20 +98,20 @@ public:
     }
 
     void unsetEdgeChecked(s64 column, s64 row) {
-        ASSERT(row    != column);
-        ASSERT(column >= 0);
-        ASSERT(column <= _nodes-1);
-        ASSERT(row    >= 0);
-        ASSERT(row    <= _nodes-1);
+        R5_ASSERT(row    != column);
+        R5_ASSERT(column >= 0);
+        R5_ASSERT(column <= _nodes-1);
+        R5_ASSERT(row    >= 0);
+        R5_ASSERT(row    <= _nodes-1);
         unsetEdge(column, row);
     }
 
     void setEdgeChecked(s64 column, s64 row) {
-        ASSERT(row    != column);
-        ASSERT(column >= 0);
-        ASSERT(column <= _nodes-1);
-        ASSERT(row    >= 0);
-        ASSERT(row    <= _nodes-1);
+        R5_ASSERT(row    != column);
+        R5_ASSERT(column >= 0);
+        R5_ASSERT(column <= _nodes-1);
+        R5_ASSERT(row    >= 0);
+        R5_ASSERT(row    <= _nodes-1);
         setEdge(column, row);
     }
 
