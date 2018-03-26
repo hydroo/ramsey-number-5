@@ -8,7 +8,7 @@
 #include "adjacencymatrixindexer.hpp"
 
 template<s64 Nodes, bool Triangular, typename Enable = void>
-struct BaseAdjacencyMatrix;
+class BaseAdjacencyMatrix;
 
 template<s64 Nodes, bool Triangular>
 class BaseAdjacencyMatrix<Nodes, Triangular, std::enable_if_t<(Nodes >= 0)>> {
