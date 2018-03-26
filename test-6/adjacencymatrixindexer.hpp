@@ -7,63 +7,59 @@
 
 #include <utility>
 
+
+/* Indexing into a adjacency matrix of a simple undirected graph.
+ *
+ * Provides index(), indexChecked(), reverse(), reverseChecked()
+ *
+ * Nodes >= 0 -> node count     known at compile time: functions omit 'nodes' argument
+ * Nodes <  0 -> node count not known at compile time: functions have 'nodes' argument
+ */
 template<s64 Nodes, bool Triangular = true>
 class AdjacencyMatrixIndexer {
 public:
     template<typename = std::enable_if_t<Nodes >= 0>>
     static constexpr s64 index(s64 column, s64 row) {
-        if(Triangular == true) {
-            if (column == row) {
-                return -1;
-            } else {
-                if (column < row) {
-                    auto t = column;
-                    column = row;
-                    row = t;
-                }
-                return column*(column-1)/2 + row;
-            }
-        } else {
-            return column*Nodes + row;
-        }
+        return index_(column, row, Nodes);
     }
 
     template<typename = std::enable_if_t<Nodes >= 0>>
     static constexpr s64 indexChecked(s64 column, s64 row) {
-        ASSERT(column >= 0);
-        ASSERT(column <= Nodes-1);
-        ASSERT(row    >= 0);
-        ASSERT(row    <= Nodes-1);
-        return index(column, row);
+        return indexChecked_(column, row, Nodes);
     }
 
     template<typename = std::enable_if_t<Nodes >= 0>>
     static constexpr std::pair<s64, s64> reverse(s64 i) {
-        if (Triangular == true) {
-            s64 column = (s64) floor(0.5 + sqrt(0.25 + 2*i));
-            s64 row    = i - column*(column-1)/2;
-            return std::make_pair(column, row);
-        } else {
-            s64 row    = i % Nodes;
-            s64 column = (i - row) / Nodes;
-            return std::make_pair(column, row);
-        }
+        return reverse_(i, Nodes);
     }
 
     template<typename = std::enable_if_t<Nodes >= 0>>
     static constexpr std::pair<s64, s64> reverseChecked(s64 i) {
-        if (Triangular == true) {
-            ASSERT(i >= 0);
-            ASSERT(i <= Nodes*(Nodes-1)/2);
-        } else {
-            ASSERT(i >= 0);
-            ASSERT(i <= Nodes*Nodes-1);
-        }
-        return reverse(i);
+        return reverseChecked_(i, Nodes);
     }
 
     template<typename = std::enable_if_t<Nodes < 0>>
     static s64 index(s64 column, s64 row, s64 nodes) {
+        return index_(column, row, nodes);
+    }
+
+    template<typename = std::enable_if_t<Nodes < 0>>
+    static s64 indexChecked(s64 column, s64 row, s64 nodes) {
+        return indexChecked_(column, row, nodes);
+    }
+
+    template<typename = std::enable_if_t<Nodes < 0>>
+    static std::pair<s64, s64> reverse(s64 i, s64 nodes) {
+        return reverse_(i, nodes);
+    }
+
+    template<typename = std::enable_if_t<Nodes < 0>>
+    static std::pair<s64, s64> reverseChecked(s64 i, s64 nodes) {
+        return reverseChecked_(i, nodes);
+    }
+
+private:
+    static constexpr s64 index_(s64 column, s64 row, s64 nodes) {
         if(Triangular == true) {
             if (column == row) {
                 return -1;
@@ -80,17 +76,15 @@ public:
         }
     }
 
-    template<typename = std::enable_if_t<Nodes < 0>>
-    static s64 indexChecked(s64 column, s64 row, s64 nodes) {
+    static constexpr s64 indexChecked_(s64 column, s64 row, s64 nodes) {
         ASSERT(column >= 0);
         ASSERT(column <= nodes-1);
         ASSERT(row    >= 0);
         ASSERT(row    <= nodes-1);
-        return index(column, row, nodes);
+        return index_(column, row, nodes);
     }
 
-    template<typename = std::enable_if_t<Nodes < 0>>
-    static std::pair<s64, s64> reverse(s64 i, s64 nodes) {
+    static constexpr std::pair<s64, s64> reverse_(s64 i, s64 nodes) {
         if (Triangular == true) {
             s64 column = (s64) floor(0.5 + sqrt(0.25 + 2*i));
             s64 row    = i - column*(column-1)/2;
@@ -102,8 +96,7 @@ public:
         }
     }
 
-    template<typename = std::enable_if_t<Nodes < 0>>
-    static std::pair<s64, s64> reverseChecked(s64 i, s64 nodes) {
+    static constexpr std::pair<s64, s64> reverseChecked_(s64 i, s64 nodes) {
         if (Triangular == true) {
             ASSERT(i >= 0);
             ASSERT(i <= nodes*(nodes-1)/2);
@@ -111,9 +104,10 @@ public:
             ASSERT(i >= 0);
             ASSERT(i <= nodes*nodes-1);
         }
-        return reverse(i, nodes);
+        return reverse_(i, nodes);
     }
 
+private:
     AdjacencyMatrixIndexer()                              = delete;
     AdjacencyMatrixIndexer(const AdjacencyMatrixIndexer&) = delete;
     AdjacencyMatrixIndexer(AdjacencyMatrixIndexer&&)      = delete;
