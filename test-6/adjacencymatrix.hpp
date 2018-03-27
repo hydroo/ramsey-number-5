@@ -9,6 +9,10 @@
 
 namespace r5 {
 
+namespace internal {
+    constexpr s64 bitsPerElement = sizeof(u64)*8;
+}
+
 template<s64 Nodes, bool Triangular, typename Enable = void>
 class BaseAdjacencyMatrix;
 
@@ -35,7 +39,7 @@ public:
 
     constexpr bool edge(s64 column, s64 row) const {
         s64 i = Indexer::index(column, row);
-        return (bool) ((_v[i/bitsPerElement]>>(i%bitsPerElement))&0x1);
+        return (bool) ((_v[i/internal::bitsPerElement]>>(i%internal::bitsPerElement))&0x1);
     }
 
     constexpr bool edgeChecked(s64 column, s64 row) const {
@@ -49,15 +53,15 @@ public:
 
     constexpr void unsetEdge(s64 column, s64 row) {
         s64 i = Indexer::index(column, row);
-        s64 element = i / bitsPerElement;
-        s64 indexInElement = i % bitsPerElement;
+        s64 element = i / internal::bitsPerElement;
+        s64 indexInElement = i % internal::bitsPerElement;
         _v[element] &= ~(((u64)1)<<indexInElement);
 
         // preserve symmetry by swapping row and column and repeating
         if (Triangular == false) {
             i = Indexer::index(row, column);
-            element = i / bitsPerElement;
-            indexInElement = i % bitsPerElement;
+            element = i / internal::bitsPerElement;
+            indexInElement = i % internal::bitsPerElement;
             _v[element] &= ~(((u64)1)<<indexInElement);
         }
     }
@@ -73,15 +77,15 @@ public:
 
     constexpr void setEdge(s64 column, s64 row) {
         s64 i = Indexer::index(column, row);
-        s64 element = i / bitsPerElement;
-        s64 indexInElement = i % bitsPerElement;
+        s64 element = i / internal::bitsPerElement;
+        s64 indexInElement = i % internal::bitsPerElement;
         _v[element] |= ((u64)1)<<(indexInElement);
 
         // preserve symmetry by swapping row and column and repeating
         if (Triangular == false) {
             i = Indexer::index(row, column);
-            element = i / bitsPerElement;
-            indexInElement = i % bitsPerElement;
+            element = i / internal::bitsPerElement;
+            indexInElement = i % internal::bitsPerElement;
             _v[element] |= ((u64)1)<<indexInElement;
         }
     }
@@ -137,9 +141,8 @@ public:
     }
 
 private:
-    static constexpr s64 bitsPerElement = sizeof(u64)*8;
     static constexpr s64 bits_     = Triangular ? Nodes*(Nodes-1) / 2 : Nodes*Nodes;
-    static constexpr s64 elements_ = (bits_-1) / bitsPerElement + 1;
+    static constexpr s64 elements_ = (bits_-1) / internal::bitsPerElement + 1;
 
     u64 _v[elements_]{};
 };
@@ -153,7 +156,7 @@ public:
     s64 nodes()    const { return _nodes; }
     s64 edges()    const { return _nodes * (_nodes - 1) / 2; }
     s64 bits()     const { return Triangular ? _nodes*(_nodes-1) / 2 : _nodes*_nodes; }
-    s64 elements() const { return (bits()-1) / bitsPerElement + 1; }
+    s64 elements() const { return (bits()-1) / internal::bitsPerElement + 1; }
 
     constexpr bool compile_time() const { return false; }
 
@@ -169,7 +172,7 @@ public:
 
     bool edge(s64 column, s64 row) const {
         s64 i = Indexer::index(column, row, _nodes);
-        return (bool) ((_v[i/bitsPerElement]>>(i%bitsPerElement))&0x1);
+        return (bool) ((_v[i/internal::bitsPerElement]>>(i%internal::bitsPerElement))&0x1);
     }
 
     bool edgeChecked(s64 column, s64 row) const {
@@ -183,15 +186,15 @@ public:
 
     void unsetEdge(s64 column, s64 row) {
         s64 i = Indexer::index(column, row, _nodes);
-        s64 element = i / bitsPerElement;
-        s64 indexInElement = i % bitsPerElement;
+        s64 element = i / internal::bitsPerElement;
+        s64 indexInElement = i % internal::bitsPerElement;
         _v[element] &= ~(((u64)1)<<indexInElement);
 
         // preserve symmetry by swapping row and column and repeating
         if (Triangular == false) {
             i = Indexer::index(row, column, _nodes);
-            element = i / bitsPerElement;
-            indexInElement = i % bitsPerElement;
+            element = i / internal::bitsPerElement;
+            indexInElement = i % internal::bitsPerElement;
             _v[element] &= ~(((u64)1)<<indexInElement);
         }
     }
@@ -207,15 +210,15 @@ public:
 
     void setEdge(s64 column, s64 row) {
         s64 i = Indexer::index(column, row, _nodes);
-        s64 element = i / bitsPerElement;
-        s64 indexInElement = i % bitsPerElement;
+        s64 element = i / internal::bitsPerElement;
+        s64 indexInElement = i % internal::bitsPerElement;
         _v[element] |= ((u64)1)<<(indexInElement);
 
         // preserve symmetry by swapping row and column and repeating
         if (Triangular == false) {
             i = Indexer::index(row, column, _nodes);
-            element = i / bitsPerElement;
-            indexInElement = i % bitsPerElement;
+            element = i / internal::bitsPerElement;
+            indexInElement = i % internal::bitsPerElement;
             _v[element] |= ((u64)1)<<indexInElement;
         }
     }
@@ -277,8 +280,6 @@ public:
 private:
     s64 _nodes;
     u64* _v;
-
-    static constexpr s64 bitsPerElement = sizeof(u64)*8;
 };
 
 template<s64 Nodes, bool Triangular = true>
