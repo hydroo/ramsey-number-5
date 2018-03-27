@@ -18,42 +18,42 @@
 template<s64 Nodes, bool Triangular = true>
 class AdjacencyMatrixIndexer {
 public:
-    template<typename = std::enable_if_t<Nodes >= 0>>
+    template<s64 Nodes2 = Nodes, typename = std::enable_if_t<Nodes2 >= 0>>
     static constexpr s64 index(s64 column, s64 row) {
         return index_(column, row, Nodes);
     }
 
-    template<typename = std::enable_if_t<Nodes >= 0>>
+    template<s64 Nodes2 = Nodes, typename = std::enable_if_t<Nodes2 >= 0>>
     static constexpr s64 indexChecked(s64 column, s64 row) {
         return indexChecked_(column, row, Nodes);
     }
 
-    template<typename = std::enable_if_t<Nodes >= 0>>
+    template<s64 Nodes2 = Nodes, typename = std::enable_if_t<Nodes2 >= 0>>
     static constexpr std::pair<s64, s64> reverse(s64 i) {
         return reverse_(i, Nodes);
     }
 
-    template<typename = std::enable_if_t<Nodes >= 0>>
+    template<s64 Nodes2 = Nodes, typename = std::enable_if_t<Nodes2 >= 0>>
     static constexpr std::pair<s64, s64> reverseChecked(s64 i) {
         return reverseChecked_(i, Nodes);
     }
 
-    template<typename = std::enable_if_t<Nodes < 0>>
+    template<s64 Nodes2 = Nodes, typename = std::enable_if_t<Nodes2 < 0>>
     static s64 index(s64 column, s64 row, s64 nodes) {
         return index_(column, row, nodes);
     }
 
-    template<typename = std::enable_if_t<Nodes < 0>>
+    template<s64 Nodes2 = Nodes, typename = std::enable_if_t<Nodes2 < 0>>
     static s64 indexChecked(s64 column, s64 row, s64 nodes) {
         return indexChecked_(column, row, nodes);
     }
 
-    template<typename = std::enable_if_t<Nodes < 0>>
+    template<s64 Nodes2 = Nodes, typename = std::enable_if_t<Nodes2 < 0>>
     static std::pair<s64, s64> reverse(s64 i, s64 nodes) {
         return reverse_(i, nodes);
     }
 
-    template<typename = std::enable_if_t<Nodes < 0>>
+    template<s64 Nodes2 = Nodes, typename = std::enable_if_t<Nodes2 < 0>>
     static std::pair<s64, s64> reverseChecked(s64 i, s64 nodes) {
         return reverseChecked_(i, nodes);
     }
