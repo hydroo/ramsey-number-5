@@ -74,14 +74,28 @@ TEST(AdjacencyMatrix, create_nonconstexpr_nontriangular) {
         ASSERT_EQ(m4.bits()        , 16);
 }
 
-TEST(AdjacencyMatrix, setedge_constexpr_triangular) {
-    // TODO
-    ASSERT_TRUE(false);
-}
+TEST(AdjacencyMatrix, setedge_constexpr) {
+    constexpr AdjacencyMatrix<4> m1;
+    R5_STATIC_ASSERT(m1.edge(3, 2) == false);
 
-TEST(AdjacencyMatrix, setedge_constexpr_nontriangular) {
-    // TODO
-    ASSERT_TRUE(false);
+    constexpr auto m2 = []() -> AdjacencyMatrix<4> {
+        AdjacencyMatrix<4> m;
+        m.unsetEdge(3, 2);
+        m.setEdge(3, 2);
+        return m;
+    }();
+    R5_STATIC_ASSERT(m2.edge(3, 2) == true);
+
+    constexpr AdjacencyMatrix<4, false> m3;
+    R5_STATIC_ASSERT(m3.edge(3, 2) == false);
+
+    constexpr auto m4 = []() -> AdjacencyMatrix<4, false> {
+        AdjacencyMatrix<4, false> m;
+        m.unsetEdge(3, 2);
+        m.setEdge(3, 2);
+        return m;
+    }();
+    R5_STATIC_ASSERT(m4.edge(3, 2) == true);
 }
 
 TEST(AdjacencyMatrix, setedge_nonconstexpr_triangular) {
@@ -135,6 +149,15 @@ TEST(AdjacencyMatrix, setedge_nonconstexpr_nontriangular) {
         }
     }
 }
+
+// // print() can't be constexpr because std::ostringstream and std::string
+// TEST(AdjacencyMatrix, print_constexpr) {
+//     constexpr AdjacencyMatrix<3> m1;
+//     constexpr auto s1 = m1.print();
+// 
+//     constexpr AdjacencyMatrix<3, false> m2;
+//     constexpr auto s2 = m2.print();
+// }
 
 int main(int argc, char** args) {
     ::testing::InitGoogleTest(&argc, args);
