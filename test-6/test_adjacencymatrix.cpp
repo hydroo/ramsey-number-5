@@ -7,6 +7,8 @@
 using std::cerr;
 using std::endl;
 
+using r5::AdjacencyMatrix;
+
 TEST(AdjacencyMatrix, create_constexpr_triangular) {
     constexpr AdjacencyMatrix<  0> m0;
         R5_STATIC_ASSERT(m0.compile_time() == true);

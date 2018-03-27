@@ -7,6 +7,7 @@
 
 #include <utility>
 
+namespace r5 {
 
 /* Indexing into a adjacency matrix of a simple undirected graph.
  *
@@ -112,5 +113,7 @@ private:
     AdjacencyMatrixIndexer(const AdjacencyMatrixIndexer&) = delete;
     AdjacencyMatrixIndexer(AdjacencyMatrixIndexer&&)      = delete;
 };
+
+} // namespace r5
 
 #endif // ADJACENCYMATRIXINDEXER_HPP

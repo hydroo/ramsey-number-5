@@ -7,6 +7,8 @@
 
 #include "adjacencymatrixindexer.hpp"
 
+namespace r5 {
+
 template<s64 Nodes, bool Triangular, typename Enable = void>
 class BaseAdjacencyMatrix;
 
@@ -288,5 +290,7 @@ public:
     AdjacencyMatrix(s64 nodes) : BaseAdjacencyMatrix<Nodes, Triangular>(nodes) {
     }
 };
+
+} // namespace r5
 
 #endif

@@ -28,7 +28,9 @@ using u64 = uint64_t;
 #endif
 
 
-template<typename T, T t> struct R5CompileTimePrint;
+namespace r5 {
+template<typename T, T t> struct CompileTimePrint;
+}
 
 #define R5_VALUE2(x) #x
 #define R5_VALUE(x) R5_VALUE2(x)
@@ -39,7 +41,7 @@ template<typename T, T t> struct R5CompileTimePrint;
 
 #define R5_UNIQUE_NAME(base) R5_CAT(base, __COUNTER__)
 
-#define R5_COMPILETIME_PRINT(x) CompileTimePrint<decltype(x), x> R5_UNIQUE_NAME(compileTimePrint)
+#define R5_COMPILETIME_PRINT(x) r5::CompileTimePrint<decltype(x), x> R5_UNIQUE_NAME(compileTimePrint)
 
 template <typename T, typename U>
 std::ostream& operator<<(std::ostream& o, const std::pair<T, U>& p) {

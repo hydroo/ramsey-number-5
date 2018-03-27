@@ -8,6 +8,8 @@ using std::cerr;
 using std::endl;
 using std::make_pair;
 
+using r5::AdjacencyMatrixIndexer;
+
 TEST(AdjacencyMatrixIndexer, index_constexpr_triangular) {
     using I = AdjacencyMatrixIndexer<5>;
 
