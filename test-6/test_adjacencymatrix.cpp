@@ -11,7 +11,6 @@ using r5::AdjacencyMatrix;
 
 TEST(AdjacencyMatrix, create_constexpr_triangular) {
     constexpr AdjacencyMatrix<  0> m0;
-        R5_STATIC_ASSERT(m0.compile_time() == true);
         R5_STATIC_ASSERT(m0.nodes()        == 0);
         R5_STATIC_ASSERT(m0.edges()        == 0);
         R5_STATIC_ASSERT(m0.bits()         == 0);
@@ -50,8 +49,6 @@ TEST(AdjacencyMatrix, create_constexpr_triangular) {
 }
 
 TEST(AdjacencyMatrix, create_constexpr_nontriangular) {
-    constexpr AdjacencyMatrix<  0, false> m0;
-        R5_STATIC_ASSERT(m0.compile_time() == true);
     constexpr AdjacencyMatrix<  1, false> m1;
         R5_STATIC_ASSERT(m1.bits()         == 1);
     constexpr AdjacencyMatrix<  2, false> m2;
@@ -62,7 +59,6 @@ TEST(AdjacencyMatrix, create_constexpr_nontriangular) {
 
 TEST(AdjacencyMatrix, create_nonconstexpr_triangular) {
     AdjacencyMatrix<-1> m4(4);
-        ASSERT_EQ(m4.compile_time(), false);
         ASSERT_EQ(m4.nodes()       , 4);
         ASSERT_EQ(m4.edges()       , 6);
         ASSERT_EQ(m4.bits()        , 6);
@@ -70,7 +66,6 @@ TEST(AdjacencyMatrix, create_nonconstexpr_triangular) {
 
 TEST(AdjacencyMatrix, create_nonconstexpr_nontriangular) {
     AdjacencyMatrix< -1, false> m4(4);
-        ASSERT_EQ(m4.compile_time(), false);
         ASSERT_EQ(m4.nodes()       , 4);
         ASSERT_EQ(m4.edges()       , 6);
         ASSERT_EQ(m4.bits()        , 16);

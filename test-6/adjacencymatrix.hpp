@@ -11,14 +11,119 @@ namespace r5 {
 
 template<s64 Nodes, bool Triangular>
 class BaseAdjacencyMatrix {
-public:
-
+protected:
     static constexpr s64 bitsPerElement = sizeof(u64)*8;
 
     using Indexer = AdjacencyMatrixIndexer<Nodes, Triangular>;
 
+    static constexpr s64 nodes   (s64 n) { return n < 0 ? 0 : n; }
+    static constexpr s64 edges   (s64 n) { return n*(n-1)/2; }
+    static constexpr s64 bits    (s64 n) { return Triangular ? edges(n) : n*n; }
+    static constexpr s64 elements(s64 n) { return (bits(n)-1) / bitsPerElement + 1; }
 
-protected:
+    constexpr void initialize(s64 n, u64* v) {
+         // set main diagonal to 0
+         if (Triangular == false) {
+            for (s64 i = 0; i < n; i += 1) {
+                unsetEdge(i, i, n, v);
+            }
+        }
+    }
+
+    constexpr bool edge(s64 column, s64 row, s64 nodes, const u64* v) const {
+        s64 i = Indexer::index(column, row, nodes);
+        return (bool) ((v[i/bitsPerElement]>>(i%bitsPerElement))&0x1);
+    }
+
+    constexpr bool edgeChecked(s64 column, s64 row, s64 nodes, const u64* v) const {
+        R5_ASSERT(row    != column);
+        R5_ASSERT(column >= 0);
+        R5_ASSERT(column <= nodes-1);
+        R5_ASSERT(row    >= 0);
+        R5_ASSERT(row    <= nodes-1);
+        return edge(column, row, nodes, v);
+    }
+
+    constexpr void unsetEdge(s64 column, s64 row, s64 nodes, u64* v) {
+        auto f = [nodes, v](s64 column, s64 row) {
+            s64 i = Indexer::index(column, row, nodes);
+            s64 element = i / bitsPerElement;
+            s64 indexInElement = i % bitsPerElement;
+            v[element] &= ~(((u64)1)<<indexInElement);
+        };
+        f(column, row);
+        if (Triangular == false) { f(row, column); }
+    }
+
+    constexpr void unsetEdgeChecked(s64 column, s64 row, s64 nodes, u64* v) {
+        R5_ASSERT(row    != column);
+        R5_ASSERT(column >= 0);
+        R5_ASSERT(column <= nodes-1);
+        R5_ASSERT(row    >= 0);
+        R5_ASSERT(row    <= nodes-1);
+        unsetEdge(column, row, nodes, v);
+    }
+
+    constexpr void setEdge(s64 column, s64 row, s64 nodes, u64* v) {
+        auto f = [nodes, v](s64 column, s64 row) {
+            s64 i = Indexer::index(column, row, nodes);
+            s64 element = i / bitsPerElement;
+            s64 indexInElement = i % bitsPerElement;
+            v[element] |= ((u64)1)<<(indexInElement);
+        };
+        f(column, row);
+        if (Triangular == false) { f(row, column); }
+    }
+
+    constexpr void setEdgeChecked(s64 column, s64 row, s64 nodes, u64* v) {
+        R5_ASSERT(row    != column);
+        R5_ASSERT(column >= 0);
+        R5_ASSERT(column <= nodes-1);
+        R5_ASSERT(row    >= 0);
+        R5_ASSERT(row    <= nodes-1);
+        setEdge(column, row, nodes, v);
+    }
+
+    std::string print(bool multiline, std::string indent, s64 nodes, const u64* v) const {
+        std::ostringstream o;
+
+        if(Triangular == true) {
+
+            if (multiline == false) {
+                for (s64 c = 1; c < nodes; c += 1) {
+                    for (s64 r = 0; r < c; r += 1) {
+                        o << edge(c, r, nodes, v);
+                    }
+                    o << ' ';
+                }
+            } else {
+                for (s64 r = 0; r < nodes-1; r += 1) {
+                    o << indent;
+                    for (s64 a = 0; a < r; a += 1) {
+                        o << ' ';
+                    }
+                    for (s64 c = r+1; c < nodes; c += 1) {
+                        o << edge(c, r, nodes, v);
+                    }
+                    o << std::endl;
+                }
+            }
+        } else {
+            for (s64 r = 0; r < nodes; r += 1) {
+                if (multiline) { o << indent; }
+                for(s64 c = 0; c < nodes; c += 1) {
+                    o << edge(c, r, nodes, v);
+                }
+                if (multiline == false) {
+                    o << ' ';
+                } else {
+                    o << std::endl;
+                }
+            }
+        }
+
+        return o.str();
+    }
 };
 
 template<s64 Nodes, bool Triangular, typename Enable = void>
@@ -31,129 +136,45 @@ public:
     using Base    = BaseAdjacencyMatrix<Nodes, Triangular>;
     using Indexer = typename Base::Indexer;
 
-    constexpr s64 nodes()    const { return Nodes < 0 ? 0 : Nodes; }
-    constexpr s64 edges()    const { return Nodes * (Nodes - 1) / 2; }
-    constexpr s64 bits()     const { return bits_; }
-    constexpr s64 elements() const { return elements_; }
-
-    constexpr bool compile_time() const { return true; }
+    constexpr s64 nodes()    const { return Base::nodes   (Nodes); }
+    constexpr s64 edges()    const { return Base::edges   (Nodes); }
+    constexpr s64 bits()     const { return Base::bits    (Nodes); }
+    constexpr s64 elements() const { return Base::elements(Nodes); }
 
     constexpr BaseAdjacencyMatrix2() {
-        if (Triangular == false) { // set main diagonal to 0
-            for (s64 n = 0; n < Nodes; n += 1) {
-                unsetEdge(n, n);
-            }
-        }
+        Base::initialize(Nodes, _v);
     }
 
     constexpr bool edge(s64 column, s64 row) const {
-        s64 i = Indexer::index(column, row);
-        return (bool) ((_v[i/Base::bitsPerElement]>>(i%Base::bitsPerElement))&0x1);
+        return Base::edge(column, row, Nodes, _v);
     }
 
     constexpr bool edgeChecked(s64 column, s64 row) const {
-        R5_ASSERT(row    != column);
-        R5_ASSERT(column >= 0);
-        R5_ASSERT(column <= Nodes-1);
-        R5_ASSERT(row    >= 0);
-        R5_ASSERT(row    <= Nodes-1);
-        return edge(column, row);
+        return Base::edgeChecked(column, row, Nodes, _v);
     }
 
     constexpr void unsetEdge(s64 column, s64 row) {
-        s64 i = Indexer::index(column, row);
-        s64 element = i / Base::bitsPerElement;
-        s64 indexInElement = i % Base::bitsPerElement;
-        _v[element] &= ~(((u64)1)<<indexInElement);
-
-        // preserve symmetry by swapping row and column and repeating
-        if (Triangular == false) {
-            i = Indexer::index(row, column);
-            element = i / Base::bitsPerElement;
-            indexInElement = i % Base::bitsPerElement;
-            _v[element] &= ~(((u64)1)<<indexInElement);
-        }
+        Base::unsetEdge(column, row, Nodes, _v);
     }
 
     constexpr void unsetEdgeChecked(s64 column, s64 row) {
-        R5_ASSERT(row    != column);
-        R5_ASSERT(column >= 0);
-        R5_ASSERT(column <= Nodes-1);
-        R5_ASSERT(row    >= 0);
-        R5_ASSERT(row    <= Nodes-1);
-        unsetEdge(column, row);
+        Base::unsetEdgeChecked(column, row, Nodes, _v);
     }
 
     constexpr void setEdge(s64 column, s64 row) {
-        s64 i = Indexer::index(column, row);
-        s64 element = i / Base::bitsPerElement;
-        s64 indexInElement = i % Base::bitsPerElement;
-        _v[element] |= ((u64)1)<<(indexInElement);
-
-        // preserve symmetry by swapping row and column and repeating
-        if (Triangular == false) {
-            i = Indexer::index(row, column);
-            element = i / Base::bitsPerElement;
-            indexInElement = i % Base::bitsPerElement;
-            _v[element] |= ((u64)1)<<indexInElement;
-        }
+        Base::setEdge(column, row, Nodes, _v);
     }
 
     constexpr void setEdgeChecked(s64 column, s64 row) {
-        R5_ASSERT(row    != column);
-        R5_ASSERT(column >= 0);
-        R5_ASSERT(column <= Nodes-1);
-        R5_ASSERT(row    >= 0);
-        R5_ASSERT(row    <= Nodes-1);
-        setEdge(column, row);
+        Base::setEdgesChecked(column, row, Nodes, _v);
     }
 
     std::string print(bool multiline = false, std::string indent = "") const {
-        std::ostringstream o;
-
-        if(Triangular == true) {
-
-            if (multiline == false) {
-                for (s64 c = 1; c < Nodes; c += 1) {
-                    for (s64 r = 0; r < c; r += 1) {
-                        o << edge(c, r);
-                    }
-                    o << ' ';
-                }
-            } else {
-                for (s64 r = 0; r < Nodes-1; r += 1) {
-                    o << indent;
-                    for (s64 a = 0; a < r; a += 1) {
-                        o << ' ';
-                    }
-                    for (s64 c = r+1; c < Nodes; c += 1) {
-                        o << edge(c, r);
-                    }
-                    o << std::endl;
-                }
-            }
-        } else {
-            for (s64 r = 0; r < Nodes; r += 1) {
-                if (multiline) { o << indent; }
-                for(s64 c = 0; c < Nodes; c += 1) {
-                    o << edge(c, r);
-                }
-                if (multiline == false) {
-                    o << ' ';
-                } else {
-                    o << std::endl;
-                }
-            }
-        }
-
-        return o.str();
+        return Base::print(multiline, indent, Nodes, _v);
     }
 
 private:
-    static constexpr s64 bits_     = Triangular ? Nodes*(Nodes-1) / 2 : Nodes*Nodes;
-    static constexpr s64 elements_ = (bits_-1) / Base::bitsPerElement + 1;
-
-    u64 _v[elements_]{};
+    u64 _v[Base::elements(Nodes)]{};
 };
 
 template<s64 Nodes, bool Triangular>
@@ -162,124 +183,42 @@ public:
     using Base    = BaseAdjacencyMatrix<Nodes, Triangular>;
     using Indexer = typename Base::Indexer;
 
-    s64 nodes()    const { return _nodes; }
-    s64 edges()    const { return _nodes * (_nodes - 1) / 2; }
-    s64 bits()     const { return Triangular ? _nodes*(_nodes-1) / 2 : _nodes*_nodes; }
-    s64 elements() const { return (bits()-1) / Base::bitsPerElement + 1; }
-
-    constexpr bool compile_time() const { return false; }
+    s64 nodes()    const { return Base::nodes   (_nodes); }
+    s64 edges()    const { return Base::edges   (_nodes); }
+    s64 bits()     const { return Base::bits    (_nodes); }
+    s64 elements() const { return Base::elements(_nodes); }
 
     BaseAdjacencyMatrix2(s64 nodes_) : _nodes(nodes_) {
         _v = (u64*) malloc(sizeof(u64) * elements());
-
-        if (Triangular == false) { // set main diagonal to 0
-            for (s64 n = 0; n < _nodes; n += 1) {
-                unsetEdge(n, n);
-            }
-        }
+        Base::initialize(_nodes, _v);
     }
 
     bool edge(s64 column, s64 row) const {
-        s64 i = Indexer::index(column, row, _nodes);
-        return (bool) ((_v[i/Base::bitsPerElement]>>(i%Base::bitsPerElement))&0x1);
+        return Base::edge(column, row, _nodes, _v);
     }
 
     bool edgeChecked(s64 column, s64 row) const {
-        R5_ASSERT(row    != column);
-        R5_ASSERT(column >= 0);
-        R5_ASSERT(column <= _nodes-1);
-        R5_ASSERT(row    >= 0);
-        R5_ASSERT(row    <= _nodes-1);
-        return edge(column, row);
+        return Base::edgeChecked(column, row, _nodes, _v);
     }
 
     void unsetEdge(s64 column, s64 row) {
-        s64 i = Indexer::index(column, row, _nodes);
-        s64 element = i / Base::bitsPerElement;
-        s64 indexInElement = i % Base::bitsPerElement;
-        _v[element] &= ~(((u64)1)<<indexInElement);
-
-        // preserve symmetry by swapping row and column and repeating
-        if (Triangular == false) {
-            i = Indexer::index(row, column, _nodes);
-            element = i / Base::bitsPerElement;
-            indexInElement = i % Base::bitsPerElement;
-            _v[element] &= ~(((u64)1)<<indexInElement);
-        }
+        Base::unsetEdge(column, row, _nodes, _v);
     }
 
     void unsetEdgeChecked(s64 column, s64 row) {
-        R5_ASSERT(row    != column);
-        R5_ASSERT(column >= 0);
-        R5_ASSERT(column <= _nodes-1);
-        R5_ASSERT(row    >= 0);
-        R5_ASSERT(row    <= _nodes-1);
-        unsetEdge(column, row);
+        Base::unsetEdgeChecked(column, row, _nodes, _v);
     }
 
     void setEdge(s64 column, s64 row) {
-        s64 i = Indexer::index(column, row, _nodes);
-        s64 element = i / Base::bitsPerElement;
-        s64 indexInElement = i % Base::bitsPerElement;
-        _v[element] |= ((u64)1)<<(indexInElement);
-
-        // preserve symmetry by swapping row and column and repeating
-        if (Triangular == false) {
-            i = Indexer::index(row, column, _nodes);
-            element = i / Base::bitsPerElement;
-            indexInElement = i % Base::bitsPerElement;
-            _v[element] |= ((u64)1)<<indexInElement;
-        }
+        Base::setEdge(column, row, _nodes, _v);
     }
 
     void setEdgeChecked(s64 column, s64 row) {
-        R5_ASSERT(row    != column);
-        R5_ASSERT(column >= 0);
-        R5_ASSERT(column <= _nodes-1);
-        R5_ASSERT(row    >= 0);
-        R5_ASSERT(row    <= _nodes-1);
-        setEdge(column, row);
+        Base::setEdgeChecked(column, row, _nodes, _v);
     }
 
     std::string print(bool multiline = false, std::string indent = "") const {
-        std::ostringstream o;
-
-        if(Triangular == true) {
-
-            if (multiline == false) {
-                for (s64 c = 1; c < _nodes; c += 1) {
-                    for (s64 r = 0; r < c; r += 1) {
-                        o << edge(c, r);
-                    }
-                    o << ' ';
-                }
-            } else {
-                for (s64 r = 0; r < _nodes-1; r += 1) {
-                    o << indent;
-                    for (s64 a = 0; a < r; a += 1) {
-                        o << ' ';
-                    }
-                    for (s64 c = r+1; c < _nodes; c += 1) {
-                        o << edge(c, r);
-                    }
-                    o << std::endl;
-                }
-            }
-        } else {
-            for (s64 r = 0; r < _nodes; r += 1) {
-                if (multiline) { o << indent; }
-                for(s64 c = 0; c < _nodes; c += 1) {
-                    o << edge(c, r);
-                }
-                if (multiline == false) {
-                    o << ' ';
-                } else {
-                    o << std::endl;
-                }
-            }
-        }
-
-        return o.str();
+        return Base::print(multiline, indent, _nodes, _v);
     }
 
     ~BaseAdjacencyMatrix2() {
