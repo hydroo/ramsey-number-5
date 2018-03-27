@@ -82,6 +82,15 @@ public:
         }
     }
 
+    void unsetEdgeChecked(s64 column, s64 row) {
+        R5_ASSERT(row    != column);
+        R5_ASSERT(column >= 0);
+        R5_ASSERT(column <= _nodes-1);
+        R5_ASSERT(row    >= 0);
+        R5_ASSERT(row    <= _nodes-1);
+        unsetEdge(column, row);
+    }
+
     void setEdge(s64 column, s64 row) {
         s64 i = Indexer::index(column, row, _nodes);
         s64 element = i / bitsPerElement;
@@ -95,15 +104,6 @@ public:
             indexInElement = i % bitsPerElement;
             _v[element] |= ((u64)1)<<indexInElement;
         }
-    }
-
-    void unsetEdgeChecked(s64 column, s64 row) {
-        R5_ASSERT(row    != column);
-        R5_ASSERT(column >= 0);
-        R5_ASSERT(column <= _nodes-1);
-        R5_ASSERT(row    >= 0);
-        R5_ASSERT(row    <= _nodes-1);
-        unsetEdge(column, row);
     }
 
     void setEdgeChecked(s64 column, s64 row) {
