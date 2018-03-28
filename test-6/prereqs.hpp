@@ -8,6 +8,18 @@
 using s64 =  int64_t;
 using u64 = uint64_t;
 
+namespace r5 {
+
+// std::copy is not constexpr until c++20, remove this when it's available
+template<typename T>
+constexpr void copy(const T* from, s64 count, T* to) {
+    for (s64 i = 0; i < count; i += 1) {
+        to[i] = from[i];
+    }
+}
+
+}
+
 #define R5_STATIC_ASSERT(expr) static_assert(expr)
 
 #define R5_ASSERT(expr)                                                                             \

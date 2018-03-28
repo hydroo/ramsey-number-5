@@ -156,6 +156,101 @@ TEST(AdjacencyMatrix, setedge_nonconstexpr_nontriangular) {
 //     constexpr auto s2 = m2.print();
 // }
 
+TEST(AdjacencyMatrix, copyconstruct) {
+    constexpr auto ct = []() -> auto {
+        AdjacencyMatrix<5> m;
+        m.setEdge(2, 0);
+        m.setEdge(1, 3);
+        return m;
+    }();
+
+    constexpr auto cn = []() -> auto {
+        AdjacencyMatrix<5, false> m;
+        m.setEdge(2, 0);
+        m.setEdge(1, 3);
+        return m;
+    }();
+
+    AdjacencyMatrix<5> nct;
+    nct.setEdge(2, 0);
+    nct.setEdge(1, 3);
+
+    AdjacencyMatrix<5, false> ncn;
+    ncn.setEdge(2, 0);
+    ncn.setEdge(1, 3);
+
+    AdjacencyMatrix<-1> rt(5);
+    rt.setEdge(2, 0);
+    rt.setEdge(1, 3);
+
+    AdjacencyMatrix<-1, false> rn(5);
+    rn.setEdge(2, 0);
+    rn.setEdge(1, 3);
+
+    // from compile-time triangular (ct)
+    constexpr AdjacencyMatrix< 5>        ct_from_ct(ct);
+        R5_STATIC_ASSERT(ct_from_ct.edge(2, 0) == true);
+        R5_STATIC_ASSERT(ct_from_ct.edge(1, 3) == true);
+    AdjacencyMatrix          < 5>        nct_from_ct(ct);
+        ASSERT_EQ(nct_from_ct.edge(2, 0), true);
+        ASSERT_EQ(nct_from_ct.edge(1, 3), true);
+    AdjacencyMatrix          <-1>        rt_from_ct(ct);
+        ASSERT_EQ(rt_from_ct.edge(2, 0), true);
+        ASSERT_EQ(rt_from_ct.edge(1, 3), true);
+
+    // from compile-time non-triangular (cn)
+    constexpr AdjacencyMatrix< 5, false> cn_from_cn(cn);
+        R5_STATIC_ASSERT(cn_from_cn.edge(2, 0) == true);
+        R5_STATIC_ASSERT(cn_from_cn.edge(0, 2) == true);
+        R5_STATIC_ASSERT(cn_from_cn.edge(3, 1) == true);
+        R5_STATIC_ASSERT(cn_from_cn.edge(1, 3) == true);
+    AdjacencyMatrix          < 5, false> ncn_from_cn(cn);
+        ASSERT_EQ(ncn_from_cn.edge(2, 0), true);
+        ASSERT_EQ(ncn_from_cn.edge(1, 3), true);
+    AdjacencyMatrix          <-1, false> rn_from_cn(cn);
+        ASSERT_EQ(rn_from_cn.edge(2, 0), true);
+        ASSERT_EQ(rn_from_cn.edge(1, 3), true);
+
+    // from non-compile-time triangular (nct)
+    AdjacencyMatrix< 5> nct_from_nct(nct);
+        ASSERT_EQ(nct_from_nct.edge(2, 0), true);
+        ASSERT_EQ(nct_from_nct.edge(1, 3), true);
+    AdjacencyMatrix<-1> rt_from_nct(nct);
+        ASSERT_EQ(rt_from_nct.edge(2, 0), true);
+        ASSERT_EQ(rt_from_nct.edge(1, 3), true);
+    // constexpr AdjacencyMatrix<5> ct_from_nct(nct); // Compilation error: Cannot create constexpr from non-constexpr
+
+    // from non-compile-time non-triangular (ncn)
+    AdjacencyMatrix< 5, false> ncn_from_ncn(ncn);
+        ASSERT_EQ(ncn_from_ncn.edge(2, 0), true);
+        ASSERT_EQ(ncn_from_ncn.edge(1, 3), true);
+    AdjacencyMatrix<-1, false> rn_from_ncn(ncn);
+        ASSERT_EQ(rn_from_ncn.edge(2, 0), true);
+        ASSERT_EQ(rn_from_ncn.edge(1, 3), true);
+    // constexpr AdjacencyMatrix<5, false> ct_from_ncn(ncn); // Compilation error: Cannot create constexpr from non-constexpr
+
+    // from runtime triangular (rt)
+    AdjacencyMatrix<-1> rt_from_rt(rt);
+        ASSERT_EQ(rt_from_rt.edge(2, 0), true);
+        ASSERT_EQ(rt_from_rt.edge(1, 3), true);
+    AdjacencyMatrix<5> nct_from_rt(rt);
+        ASSERT_EQ(nct_from_rt.edge(2, 0), true);
+        ASSERT_EQ(nct_from_rt.edge(1, 3), true);
+    // constexpr AdjacencyMatrix<5> ct_from_rt(rt);   // Compilation error: Cannot create constexpr from runtime
+    //           AdjacencyMatrix<4> nct2_from_rt(rt); // Runtime error: Wrong node count
+
+    // from runtime non-triangular (rn)
+    AdjacencyMatrix<-1, false> rn_from_rn(rn);
+        ASSERT_EQ(rn_from_rn.edge(2, 0), true);
+        ASSERT_EQ(rn_from_rn.edge(0, 2), true);
+        ASSERT_EQ(rn_from_rn.edge(1, 3), true);
+    AdjacencyMatrix<5, false> ncn_from_rn(rn);
+        ASSERT_EQ(ncn_from_rn.edge(2, 0), true);
+        ASSERT_EQ(ncn_from_rn.edge(1, 3), true);
+    // constexpr AdjacencyMatrix<5, false> ct_from_rt(rt);   // Compilation error: Cannot create constexpr from runtime
+    //           AdjacencyMatrix<4, false> ncn2_from_rt(rn); // Runtime error: Wrong node count
+}
+
 int main(int argc, char** args) {
     ::testing::InitGoogleTest(&argc, args);
     return RUN_ALL_TESTS();

@@ -124,6 +124,10 @@ protected:
 
         return o.str();
     }
+
+    constexpr void assign(const u64* m, s64 nodes, u64* v) {
+        r5::copy(m, elements(nodes), v);
+    }
 };
 
 template<s64 Nodes, bool Triangular, typename Enable = void>
@@ -143,6 +147,16 @@ public:
 
     constexpr BaseAdjacencyMatrix2() {
         Base::initialize(Nodes, _v);
+    }
+
+    constexpr BaseAdjacencyMatrix2(const BaseAdjacencyMatrix2& m) {
+        Base::assign(m._v, Nodes, _v);
+    }
+
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 < 0>>
+    constexpr BaseAdjacencyMatrix2(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) {
+        R5_ASSERT(m.nodes() == Nodes);
+        Base::assign(m._v, Nodes, _v);
     }
 
     constexpr bool edge(s64 column, s64 row) const {
@@ -173,6 +187,9 @@ public:
         return Base::print(multiline, indent, Nodes, _v);
     }
 
+    template<s64 Nodes2, bool Triangular2, typename Enable2>
+    friend class BaseAdjacencyMatrix2;
+
 private:
     u64 _v[Base::elements(Nodes)]{};
 };
@@ -189,8 +206,19 @@ public:
     s64 elements() const { return Base::elements(_nodes); }
 
     BaseAdjacencyMatrix2(s64 nodes_) : _nodes(nodes_) {
-        _v = (u64*) malloc(sizeof(u64) * elements());
+        allocate();
         Base::initialize(_nodes, _v);
+    }
+
+    BaseAdjacencyMatrix2(const BaseAdjacencyMatrix2& m) : _nodes(m._nodes) {
+        allocate();
+        Base::assign(m._v, _nodes, _v);
+    }
+
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 >= 0>>
+    BaseAdjacencyMatrix2(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) : _nodes(Nodes2) {
+        allocate();
+        Base::assign(m._v, _nodes, _v);
     }
 
     bool edge(s64 column, s64 row) const {
@@ -222,6 +250,18 @@ public:
     }
 
     ~BaseAdjacencyMatrix2() {
+        deallocate();
+    }
+
+    template<s64 Nodes2, bool Triangular2, typename Enable2>
+    friend class BaseAdjacencyMatrix2;
+
+private:
+    void allocate() {
+        _v = (u64*) malloc(sizeof(u64) * elements());
+    }
+
+    void deallocate() {
         free(_v);
     }
 
@@ -233,10 +273,18 @@ private:
 template<s64 Nodes, bool Triangular = true>
 class AdjacencyMatrix : public BaseAdjacencyMatrix2<Nodes, Triangular> {
 public:
-    constexpr AdjacencyMatrix() {}
+
+    using Base = BaseAdjacencyMatrix2<Nodes, Triangular>;
+
+    constexpr AdjacencyMatrix() {
+    }
+
+    template<s64 Nodes2>
+    constexpr AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {
+    }
 
     template<typename = std::enable_if_t<Nodes < 0>>
-    AdjacencyMatrix(s64 nodes) : BaseAdjacencyMatrix2<Nodes, Triangular>(nodes) {
+    AdjacencyMatrix(s64 nodes) : Base(nodes) {
     }
 };
 
