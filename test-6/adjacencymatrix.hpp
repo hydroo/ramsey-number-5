@@ -154,7 +154,7 @@ public:
     }
 
     template<s64 Nodes2, typename = std::enable_if_t<Nodes2 == -1>>
-    constexpr BaseAdjacencyMatrix2(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) {
+    BaseAdjacencyMatrix2(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) {
         R5_ASSERT(m.nodes() == Nodes);
         Base::assign(m._v, Nodes, _v);
     }
