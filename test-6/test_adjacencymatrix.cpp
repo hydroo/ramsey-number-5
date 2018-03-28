@@ -251,6 +251,90 @@ TEST(AdjacencyMatrix, copyconstruct) {
     //           AdjacencyMatrix<4, false> ncn2_from_rt(rn); // Runtime error: Wrong node count
 }
 
+TEST(AdjacencyMatrix, assign) {
+    constexpr auto ct = []() -> auto {
+        AdjacencyMatrix<5> m;
+        m.setEdge(1, 3);
+        return m;
+    }();
+
+    constexpr auto cn = []() -> auto {
+        AdjacencyMatrix<5, false> m;
+        m.setEdge(1, 3);
+        return m;
+    }();
+
+    AdjacencyMatrix<5> nct;
+    nct.setEdge(1, 3);
+
+    AdjacencyMatrix<5, false> ncn;
+    ncn.setEdge(1, 3);
+
+    AdjacencyMatrix<-1> rt(5);
+    rt.setEdge(1, 3);
+
+    AdjacencyMatrix<-1, false> rn(5);
+    rn.setEdge(1, 3);
+
+    AdjacencyMatrix< 5>        nct_from_ct    ;
+    AdjacencyMatrix<-1>        rt_from_ct  (0);
+    AdjacencyMatrix< 5, false> ncn_from_cn    ;
+    AdjacencyMatrix<-1, false> rn_from_cn  (0);
+    AdjacencyMatrix< 5>        nct_from_nct   ;
+    AdjacencyMatrix<-1>        rt_from_nct (0);
+    AdjacencyMatrix< 5, false> ncn_from_ncn   ;
+    AdjacencyMatrix<-1, false> rn_from_ncn (0);
+    AdjacencyMatrix<-1>        rt_from_rt  (0);
+    AdjacencyMatrix< 5>        nct_from_rt    ;
+    AdjacencyMatrix<-1, false> rn_from_rn  (0);
+    AdjacencyMatrix< 5, false> ncn_from_rn    ;
+
+    // from compile-time triangular (ct)
+    constexpr AdjacencyMatrix<5> ct_from_ct = ct;
+        R5_STATIC_ASSERT(ct_from_ct.edge(1, 3) == true);
+    nct_from_ct = ct;
+        ASSERT_EQ(nct_from_ct.edge(1, 3), true);
+    rt_from_ct  = ct;
+        ASSERT_EQ(rt_from_ct.edge(1, 3), true);
+
+    // from compile-time non-triangular (cn)
+    constexpr AdjacencyMatrix<5, false> cn_from_cn = cn;
+        R5_STATIC_ASSERT(cn_from_cn.edge(3, 1) == true);
+        R5_STATIC_ASSERT(cn_from_cn.edge(1, 3) == true);
+    ncn_from_cn = cn;
+        ASSERT_EQ(ncn_from_cn.edge(1, 3), true);
+    rn_from_cn = cn;
+        ASSERT_EQ(rn_from_cn.edge(1, 3), true);
+
+    // from non-compile-time triangular (nct)
+    nct_from_nct = nct;
+        ASSERT_EQ(nct_from_nct.edge(1, 3), true);
+    rt_from_nct = nct;
+        ASSERT_EQ(rt_from_nct.edge(1, 3), true);
+
+    // from non-compile-time non-triangular (ncn)
+    ncn_from_ncn = ncn;
+        ASSERT_EQ(ncn_from_ncn.edge(1, 3), true);
+    rn_from_ncn = ncn;
+        ASSERT_EQ(rn_from_ncn.edge(1, 3), true);
+
+    // from runtime triangular (rt)
+    rt_from_rt = rt;
+        ASSERT_EQ(rt_from_rt.edge(1, 3), true);
+    nct_from_rt = rt;
+        ASSERT_EQ(nct_from_rt.edge(1, 3), true);
+    // AdjacencyMatrix<4> nct2_from_rt; // Runtime error: Wrong node count
+    // nct2_from_rt = rt;
+
+    // from runtime non-triangular (rn)
+    rn_from_rn = rn;
+        ASSERT_EQ(rn_from_rn.edge(1, 3), true);
+    ncn_from_rn = rn;
+        ASSERT_EQ(ncn_from_rn.edge(1, 3), true);
+    // AdjacencyMatrix<4, false> ncn2_from_rt; // Runtime error: Wrong node count
+    // ncn2_from_rt = rn;
+}
+
 int main(int argc, char** args) {
     ::testing::InitGoogleTest(&argc, args);
     return RUN_ALL_TESTS();

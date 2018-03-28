@@ -161,6 +161,19 @@ public:
         Base::assign(m._v, Nodes, _v);
     }
 
+    // assignment operators
+    constexpr BaseAdjacencyMatrix2& operator=(const BaseAdjacencyMatrix2& m) {
+        Base::assign(m._v, Nodes, _v);
+        return *this;
+    }
+
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 == -1>>
+    BaseAdjacencyMatrix2& operator=(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) {
+        R5_ASSERT(m.nodes() == Nodes);
+        Base::assign(m._v, Nodes, _v);
+        return *this;
+    }
+
     constexpr bool edge(s64 column, s64 row) const {
         return Base::edge(column, row, Nodes, _v);
     }
@@ -223,6 +236,24 @@ public:
     BaseAdjacencyMatrix2(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) : _nodes(Nodes2) {
         allocate();
         Base::assign(m._v, _nodes, _v);
+    }
+
+    // assignment operators
+    BaseAdjacencyMatrix2& operator=(const BaseAdjacencyMatrix2& m) {
+        deallocate();
+        _nodes = m._nodes;
+        allocate();
+        Base::assign(m._v, _nodes, _v);
+        return *this;
+    }
+
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 >= 0>>
+    BaseAdjacencyMatrix2& operator=(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) {
+        deallocate();
+        _nodes = Nodes2;
+        allocate();
+        Base::assign(m._v, _nodes, _v);
+        return *this;
     }
 
     bool edge(s64 column, s64 row) const {
@@ -293,6 +324,15 @@ public:
     template<s64 Nodes2>
     constexpr AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {}
 
+    // assignment operators
+    constexpr AdjacencyMatrix& operator=(const AdjacencyMatrix& m) {
+        Base::operator=(m);
+        return *this;
+    }
+    template<s64 Nodes2>
+    constexpr AdjacencyMatrix& operator=(const AdjacencyMatrix<Nodes2, Triangular>& m) {
+        Base::operator=(m);
+        return *this;
     }
 };
 
