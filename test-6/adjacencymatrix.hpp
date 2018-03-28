@@ -276,7 +276,8 @@ public:
 
     using Base = BaseAdjacencyMatrix2<Nodes, Triangular>;
 
-    constexpr AdjacencyMatrix() {
+    template<typename = std::enable_if_t<Nodes >= 0>>
+    constexpr AdjacencyMatrix() : Base() {
     }
 
     template<s64 Nodes2>
