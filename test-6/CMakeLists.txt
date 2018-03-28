@@ -16,7 +16,10 @@ target_link_libraries (test_adjacencymatrix ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBR
 add_executable(test_adjacencymatrixindexer test_adjacencymatrixindexer.cpp)
 target_link_libraries (test_adjacencymatrixindexer ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
+find_program(VALGRIND valgrind)
+set(VALGRIND_OPTIONS --leak-check=full --error-exitcode=1000)
+
 enable_testing()
 
-add_test(AdjacencyMatrix        test_adjacencymatrix)
-add_test(AdjacencyMatrixIndexer test_adjacencymatrixindexer)
+add_test(AdjacencyMatrix        ${VALGRIND} ${VALGRIND_OPTIONS} ./test_adjacencymatrix)
+add_test(AdjacencyMatrixIndexer ${VALGRIND} ${VALGRIND_OPTIONS} ./test_adjacencymatrixindexer)
