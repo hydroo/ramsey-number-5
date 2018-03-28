@@ -16,7 +16,7 @@ protected:
 
     using Indexer = AdjacencyMatrixIndexer<Nodes, Triangular>;
 
-    static constexpr s64 nodes   (s64 n) { return n < 0 ? 0 : n; }
+    static constexpr s64 nodes   (s64 n) { return n; }
     static constexpr s64 edges   (s64 n) { return n*(n-1)/2; }
     static constexpr s64 bits    (s64 n) { return Triangular ? edges(n) : n*n; }
     static constexpr s64 elements(s64 n) { return (bits(n)-1) / bitsPerElement + 1; }
