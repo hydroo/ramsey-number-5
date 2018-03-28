@@ -21,7 +21,7 @@ protected:
     static constexpr s64 bits    (s64 n) { return Triangular ? edges(n) : n*n; }
     static constexpr s64 elements(s64 n) { return (bits(n)-1) / bitsPerElement + 1; }
 
-    constexpr void initialize(s64 n, u64* v) {
+    static constexpr void initialize(s64 n, u64* v) {
          // set main diagonal to 0
          if (Triangular == false) {
             for (s64 i = 0; i < n; i += 1) {
@@ -30,16 +30,16 @@ protected:
         }
     }
 
-    constexpr void assign(const u64* m, s64 nodes, u64* v) {
+    static constexpr void assign(const u64* m, s64 nodes, u64* v) {
         r5::copy(m, elements(nodes), v);
     }
 
-    constexpr bool edge(s64 column, s64 row, s64 nodes, const u64* v) const {
+    static constexpr bool edge(s64 column, s64 row, s64 nodes, const u64* v) {
         s64 i = Indexer::index(column, row, nodes);
         return (bool) ((v[i/bitsPerElement]>>(i%bitsPerElement))&0x1);
     }
 
-    constexpr bool edgeChecked(s64 column, s64 row, s64 nodes, const u64* v) const {
+    static constexpr bool edgeChecked(s64 column, s64 row, s64 nodes, const u64* v) {
         R5_ASSERT(row    != column);
         R5_ASSERT(column >= 0);
         R5_ASSERT(column <= nodes-1);
@@ -48,7 +48,7 @@ protected:
         return edge(column, row, nodes, v);
     }
 
-    constexpr void unsetEdge(s64 column, s64 row, s64 nodes, u64* v) {
+    static constexpr void unsetEdge(s64 column, s64 row, s64 nodes, u64* v) {
         auto f = [nodes, v](s64 column, s64 row) {
             s64 i = Indexer::index(column, row, nodes);
             s64 element = i / bitsPerElement;
@@ -59,7 +59,7 @@ protected:
         if (Triangular == false) { f(row, column); }
     }
 
-    constexpr void unsetEdgeChecked(s64 column, s64 row, s64 nodes, u64* v) {
+    static constexpr void unsetEdgeChecked(s64 column, s64 row, s64 nodes, u64* v) {
         R5_ASSERT(row    != column);
         R5_ASSERT(column >= 0);
         R5_ASSERT(column <= nodes-1);
@@ -68,7 +68,7 @@ protected:
         unsetEdge(column, row, nodes, v);
     }
 
-    constexpr void setEdge(s64 column, s64 row, s64 nodes, u64* v) {
+    static constexpr void setEdge(s64 column, s64 row, s64 nodes, u64* v) {
         auto f = [nodes, v](s64 column, s64 row) {
             s64 i = Indexer::index(column, row, nodes);
             s64 element = i / bitsPerElement;
@@ -79,7 +79,7 @@ protected:
         if (Triangular == false) { f(row, column); }
     }
 
-    constexpr void setEdgeChecked(s64 column, s64 row, s64 nodes, u64* v) {
+    static constexpr void setEdgeChecked(s64 column, s64 row, s64 nodes, u64* v) {
         R5_ASSERT(row    != column);
         R5_ASSERT(column >= 0);
         R5_ASSERT(column <= nodes-1);
@@ -88,7 +88,7 @@ protected:
         setEdge(column, row, nodes, v);
     }
 
-    std::string print(bool multiline, std::string indent, s64 nodes, const u64* v) const {
+    static std::string print(bool multiline, std::string indent, s64 nodes, const u64* v) {
         std::ostringstream o;
 
         if(Triangular == true) {
