@@ -153,7 +153,7 @@ public:
         Base::assign(m._v, Nodes, _v);
     }
 
-    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 < 0>>
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 == -1>>
     constexpr BaseAdjacencyMatrix2(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) {
         R5_ASSERT(m.nodes() == Nodes);
         Base::assign(m._v, Nodes, _v);
@@ -195,7 +195,7 @@ private:
 };
 
 template<s64 Nodes, bool Triangular>
-class BaseAdjacencyMatrix2<Nodes, Triangular, std::enable_if_t<(Nodes < 0)>> : public BaseAdjacencyMatrix<Nodes, Triangular> {
+class BaseAdjacencyMatrix2<Nodes, Triangular, std::enable_if_t<(Nodes == -1)>> : public BaseAdjacencyMatrix<Nodes, Triangular> {
 public:
     using Base    = BaseAdjacencyMatrix<Nodes, Triangular>;
     using Indexer = typename Base::Indexer;
@@ -284,7 +284,7 @@ public:
     constexpr AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {
     }
 
-    template<typename = std::enable_if_t<Nodes < 0>>
+    template<typename = std::enable_if_t<Nodes == -1>>
     AdjacencyMatrix(s64 nodes) : Base(nodes) {
     }
 };
