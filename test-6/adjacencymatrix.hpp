@@ -30,6 +30,10 @@ protected:
         }
     }
 
+    constexpr void assign(const u64* m, s64 nodes, u64* v) {
+        r5::copy(m, elements(nodes), v);
+    }
+
     constexpr bool edge(s64 column, s64 row, s64 nodes, const u64* v) const {
         s64 i = Indexer::index(column, row, nodes);
         return (bool) ((v[i/bitsPerElement]>>(i%bitsPerElement))&0x1);
@@ -124,10 +128,6 @@ protected:
 
         return o.str();
     }
-
-    constexpr void assign(const u64* m, s64 nodes, u64* v) {
-        r5::copy(m, elements(nodes), v);
-    }
 };
 
 template<s64 Nodes, bool Triangular, typename Enable = void>
@@ -145,10 +145,12 @@ public:
     constexpr s64 bits()     const { return Base::bits    (Nodes); }
     constexpr s64 elements() const { return Base::elements(Nodes); }
 
+    // constructor
     constexpr BaseAdjacencyMatrix2() {
         Base::initialize(Nodes, _v);
     }
 
+    // copy constructors
     constexpr BaseAdjacencyMatrix2(const BaseAdjacencyMatrix2& m) {
         Base::assign(m._v, Nodes, _v);
     }
@@ -205,11 +207,13 @@ public:
     s64 bits()     const { return Base::bits    (_nodes); }
     s64 elements() const { return Base::elements(_nodes); }
 
+    // constructor
     BaseAdjacencyMatrix2(s64 nodes_) : _nodes(nodes_) {
         allocate();
         Base::initialize(_nodes, _v);
     }
 
+    // copy constructors
     BaseAdjacencyMatrix2(const BaseAdjacencyMatrix2& m) : _nodes(m._nodes) {
         allocate();
         Base::assign(m._v, _nodes, _v);
@@ -276,19 +280,19 @@ public:
 
     using Base = BaseAdjacencyMatrix2<Nodes, Triangular>;
 
+    // default constructor only for compile-time
     template<typename = std::enable_if_t<Nodes >= 0>>
-    constexpr AdjacencyMatrix() : Base() {
-    }
+    constexpr AdjacencyMatrix() : Base() {}
 
-    constexpr AdjacencyMatrix(const AdjacencyMatrix& m) : Base(m) {
-    }
-
-    template<s64 Nodes2>
-    constexpr AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {
-    }
-
+    // nodes constructor only for runtime
     template<typename = std::enable_if_t<Nodes == -1>>
-    AdjacencyMatrix(s64 nodes) : Base(nodes) {
+    AdjacencyMatrix(s64 nodes) : Base(nodes) {}
+
+    // copy constructors
+    constexpr AdjacencyMatrix(const AdjacencyMatrix& m)                     : Base(m) {}
+    template<s64 Nodes2>
+    constexpr AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {}
+
     }
 };
 
