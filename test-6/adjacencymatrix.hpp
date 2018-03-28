@@ -280,6 +280,9 @@ public:
     constexpr AdjacencyMatrix() : Base() {
     }
 
+    constexpr AdjacencyMatrix(const AdjacencyMatrix& m) : Base(m) {
+    }
+
     template<s64 Nodes2>
     constexpr AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {
     }
