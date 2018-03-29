@@ -757,6 +757,52 @@ TEST(AdjacencyMatrix, bitwiseAnd) {
     ASSERT_THROW2(wrn1 & wrn2);
 }
 
+TEST(AdjacencyMatrix, bitwiseComplement) {
+    constexpr s64 n = 17; // 3 (triangular) or 5 (non-triangular) elements
+
+    constexpr auto ct = []() -> auto {
+        AdjacencyMatrix<n> m;
+        m.unsetAllEdges();
+        m.setEdge(4, 14);
+        return m;
+    }();
+    constexpr auto cn = []() -> auto {
+        AdjacencyMatrix<n, false> m;
+        m.unsetAllEdges();
+        m.setEdge(4, 14);
+        return m;
+    }();
+
+    AdjacencyMatrix<n>         nct;   nct.unsetAllEdges(); nct.setEdge(4, 14);
+    AdjacencyMatrix<n, false>  ncn;   ncn.unsetAllEdges(); ncn.setEdge(4, 14);
+    AdjacencyMatrix<-1>        rt(n); rt.unsetAllEdges();  rt.setEdge(4, 14);
+    AdjacencyMatrix<-1, false> rn(n); rn.unsetAllEdges();  rn.setEdge(4, 14);
+
+    auto testAllEdges = [n](auto m) {
+        for (s64 c = 0; c < n; c += 1) {
+            for (s64 r = 0; r < n; r += 1) {
+                if (c == r) { continue; }
+                if ((c == 4 && r == 14) || (c == 14 && r == 4)) {
+                    ASSERT_EQ(m.edge(c, r), false);
+                } else {
+                    ASSERT_EQ(m.edge(c, r), true);
+                }
+            }
+        }
+    };
+
+    R5_STATIC_ASSERT((~ct).edge(8, 5)  == true);
+    R5_STATIC_ASSERT((~ct).edge(14, 4) == false);
+
+    R5_STATIC_ASSERT((~cn).edge(8, 5)  == true);
+    R5_STATIC_ASSERT((~cn).edge(14, 4) == false);
+
+    testAllEdges(~nct);
+    testAllEdges(~ncn);
+    testAllEdges(~rt);
+    testAllEdges(~rn);
+}
+
 int main(int argc, char** args) {
     ::testing::InitGoogleTest(&argc, args);
     return RUN_ALL_TESTS();

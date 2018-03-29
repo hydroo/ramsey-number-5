@@ -46,6 +46,12 @@ protected:
         }
     }
 
+    static constexpr void bitwiseComplement(const u64* v1, s64 nodes, u64* v) {
+        for (s64 i = 0; i < elements(nodes); i += 1) {
+            v[i] = ~v1[i];
+        }
+    }
+
     static constexpr bool edge(s64 column, s64 row, s64 nodes, const u64* v) {
         s64 i = Indexer::index(column, row, nodes);
         return (bool) ((v[i/bitsPerElement]>>(i%bitsPerElement))&0x1);
@@ -244,6 +250,10 @@ protected:
         Base::bitwiseAnd(_v, m._v, Nodes, ret->_v);
     }
 
+    constexpr void bitwiseComplement(BaseAdjacencyMatrix2* ret) const {
+        Base::bitwiseComplement(_v, Nodes, ret->_v);
+    }
+
 private:
     u64 _v[Base::elements(Nodes)]{};
 };
@@ -349,6 +359,10 @@ protected:
         Base::bitwiseAnd(_v, m._v, _nodes, ret->_v);
     }
 
+    void bitwiseComplement(BaseAdjacencyMatrix2* ret) const {
+        Base::bitwiseComplement(_v, _nodes, ret->_v);
+    }
+
 private:
     void allocate() {
         _v = (u64*) malloc(sizeof(u64) * elements());
@@ -428,6 +442,22 @@ public:
         R5_ASSERT(m.nodes() == Base::nodes());
         AdjacencyMatrix ret(m.nodes());
         Base::bitwiseAnd(m, &ret);
+        return ret;
+    }
+
+    // bitwise complement operators
+    // Note: There are two different operators because the AdjacencyMatrix constructors are different for the two cases
+    template<typename = std::enable_if_t<Nodes >= 0>>
+    constexpr AdjacencyMatrix operator~() const {
+        AdjacencyMatrix ret;
+        Base::bitwiseComplement(&ret);
+        return ret;
+    }
+
+    template<typename = std::enable_if_t<Nodes == -1>, int dummy = 0>
+    AdjacencyMatrix operator~() const {
+        AdjacencyMatrix ret(Base::nodes());
+        Base::bitwiseComplement(&ret);
         return ret;
     }
 };
