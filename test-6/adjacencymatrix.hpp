@@ -362,11 +362,13 @@ public:
     AdjacencyMatrix(s64 nodes) : Base(nodes) {}
 
     // copy constructors
+    // Note: The bottom template would not be used as a copy constructor
     constexpr AdjacencyMatrix(const AdjacencyMatrix& m)           : Base(m) {}
     template<s64 Nodes2>
     AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {}
 
     // assignment operators
+    // Note: The bottom template would not be used as an assignment operator
     constexpr AdjacencyMatrix& operator=(const AdjacencyMatrix& m) {
         Base::operator=(m);
         return *this;
@@ -378,6 +380,7 @@ public:
     }
 
     // bitwise or operators
+    // Note: There are two different operators because the AdjacencyMatrix constructors are different for the two cases
     template<s64 Nodes2, typename = std::enable_if_t<Nodes >= 0 && (Nodes2 == Nodes || Nodes2 == -1)>>
     constexpr AdjacencyMatrix operator|(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
         R5_ASSERT(m.nodes() == Base::nodes());
