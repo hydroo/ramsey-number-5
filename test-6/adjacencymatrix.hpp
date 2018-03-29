@@ -362,7 +362,7 @@ public:
     AdjacencyMatrix(s64 nodes) : Base(nodes) {}
 
     // copy constructors
-    constexpr AdjacencyMatrix(const AdjacencyMatrix& m)                     : Base(m) {}
+    constexpr AdjacencyMatrix(const AdjacencyMatrix& m)           : Base(m) {}
     template<s64 Nodes2>
     AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {}
 
