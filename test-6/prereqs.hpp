@@ -5,6 +5,10 @@
 
 #include <iostream>
 
+#ifdef R5_GTEST
+#   include <gtest/gtest.h>
+#endif
+
 using s64 =  int64_t;
 using u64 = uint64_t;
 
@@ -30,14 +34,22 @@ constexpr void fill_n(T* to, s64 count, const T& value) {
 
 #define R5_STATIC_ASSERT(expr) static_assert(expr)
 
-#define R5_ASSERT(expr)                                                                             \
-    if ((expr) == false) {                                                                          \
-        std::cerr << "\e[0;31m\033[1m"                                                              \
-                  << "ASSERT"                                                                       \
-                  << "\033[0m\e[0;30m"                                                              \
-                  << " in " << __FILE__ << ":" << __LINE__ << ": \"" << #expr << "\"" << std::endl; \
-        std::abort();                                                                               \
-    }
+#ifndef R5_GTEST
+#   define R5_ASSERT(expr)                                                                             \
+       if ((expr) == false) {                                                                          \
+           std::cerr << "\e[0;31m\033[1m"                                                              \
+                     << "ASSERT"                                                                       \
+                     << "\033[0m\e[0;30m"                                                              \
+                     << " in " << __FILE__ << ":" << __LINE__ << ": \"" << #expr << "\"" << std::endl; \
+           std::abort();                                                                               \
+       }
+# else
+#   define R5_ASSERT(expr)                                                                              \
+        if ((expr) == false) {                                                                          \
+            throw std::runtime_error("ASSERT in " __FILE__ ":" R5_VALUE(__LINE__) ": " R5_VALUE(expr)); \
+        }
+#   define ASSERT_THROW2(expr) ASSERT_THROW(expr, std::runtime_error)
+#endif
 
 #ifdef DEBUG
     #define R5_STATIC_DEBUG_ASSERT(expr) R5_STATIC_ASSERT(expr)

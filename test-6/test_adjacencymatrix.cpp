@@ -1,7 +1,5 @@
 #include "prereqs.hpp"
 
-#include <gtest/gtest.h>
-
 #include "adjacencymatrix.hpp"
 
 using std::cerr;
@@ -309,7 +307,7 @@ TEST(AdjacencyMatrix, copyconstruct) {
         ASSERT_EQ(nct_from_rt.edge(2, 0), true);
         ASSERT_EQ(nct_from_rt.edge(1, 3), true);
     // constexpr AdjacencyMatrix<5> ct_from_rt(rt);   // Compilation error: Cannot create constexpr from runtime
-    //           AdjacencyMatrix<4> nct2_from_rt(rt); // Runtime error: Wrong node count
+    ASSERT_THROW2(AdjacencyMatrix<4> nct2_from_rt(rt)); // Wrong node count
 
     // from runtime non-triangular (rn)
     AdjacencyMatrix<-1, false> rn_from_rn(rn);
@@ -320,7 +318,8 @@ TEST(AdjacencyMatrix, copyconstruct) {
         ASSERT_EQ(ncn_from_rn.edge(2, 0), true);
         ASSERT_EQ(ncn_from_rn.edge(1, 3), true);
     // constexpr AdjacencyMatrix<5, false> ct_from_rt(rt);   // Compilation error: Cannot create constexpr from runtime
-    //           AdjacencyMatrix<4, false> ncn2_from_rt(rn); // Runtime error: Wrong node count
+    using AdjacencyMatrix4false = AdjacencyMatrix<4, false>;
+    ASSERT_THROW2(AdjacencyMatrix4false ncn2_from_rt(rn)); // Wrong node count
 }
 
 TEST(AdjacencyMatrix, assign) {
@@ -395,16 +394,16 @@ TEST(AdjacencyMatrix, assign) {
         ASSERT_EQ(rt_from_rt.edge(1, 3), true);
     nct_from_rt = rt;
         ASSERT_EQ(nct_from_rt.edge(1, 3), true);
-    // AdjacencyMatrix<4> nct2_from_rt; // Runtime error: Wrong node count
-    // nct2_from_rt = rt;
+    AdjacencyMatrix<4> nct2_from_rt;
+    ASSERT_THROW2(nct2_from_rt = rt); // Wrong node count
 
     // from runtime non-triangular (rn)
     rn_from_rn = rn;
         ASSERT_EQ(rn_from_rn.edge(1, 3), true);
     ncn_from_rn = rn;
         ASSERT_EQ(ncn_from_rn.edge(1, 3), true);
-    // AdjacencyMatrix<4, false> ncn2_from_rt; // Runtime error: Wrong node count
-    // ncn2_from_rt = rn;
+    AdjacencyMatrix<4, false> ncn2_from_rt;
+    ASSERT_THROW2(ncn2_from_rt = rn); // Wrong node count
 }
 
 int main(int argc, char** args) {

@@ -10,6 +10,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 add_executable(test-6 main.cpp)
 
+set_source_files_properties(test_adjacencymatrix.cpp        PROPERTIES COMPILE_FLAGS "-DR5_GTEST")
+set_source_files_properties(test_adjacencymatrixindexer.cpp PROPERTIES COMPILE_FLAGS "-DR5_GTEST")
+
 add_executable(test_adjacencymatrix test_adjacencymatrix.cpp)
 target_link_libraries (test_adjacencymatrix ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 

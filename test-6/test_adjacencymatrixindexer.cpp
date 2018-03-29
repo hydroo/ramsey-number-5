@@ -1,7 +1,5 @@
 #include "prereqs.hpp"
 
-#include <gtest/gtest.h>
-
 #include "adjacencymatrixindexer.hpp"
 
 using std::cerr;
