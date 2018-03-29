@@ -147,6 +147,78 @@ TEST(AdjacencyMatrix, setedge_nonconstexpr_nontriangular) {
     }
 }
 
+TEST(AdjacencyMatrix, setAllEdges) {
+
+    constexpr s64 n = 12;
+
+    constexpr auto uct = []() -> auto {
+        AdjacencyMatrix<3> m;
+        m.unsetAllEdges();
+        return m;
+    }();
+
+    constexpr auto sct = []() -> auto {
+        AdjacencyMatrix<3> m;
+        m.setAllEdges();
+        return m;
+    }();
+
+    constexpr auto ucn = []() -> auto {
+        AdjacencyMatrix<3, false> m;
+        m.unsetAllEdges();
+        return m;
+    }();
+
+    constexpr auto scn = []() -> auto {
+        AdjacencyMatrix<3, false> m;
+        m.setAllEdges();
+        return m;
+    }();
+
+    R5_STATIC_ASSERT(uct.edge(1, 0) == false);
+    R5_STATIC_ASSERT(uct.edge(2, 0) == false);
+    R5_STATIC_ASSERT(uct.edge(2, 1) == false);
+
+    R5_STATIC_ASSERT(sct.edge(1, 0) == true);
+    R5_STATIC_ASSERT(sct.edge(2, 0) == true);
+    R5_STATIC_ASSERT(sct.edge(2, 1) == true);
+
+    R5_STATIC_ASSERT(ucn.edge(1, 0) == false);
+    R5_STATIC_ASSERT(ucn.edge(2, 0) == false);
+    R5_STATIC_ASSERT(ucn.edge(2, 1) == false);
+
+    R5_STATIC_ASSERT(scn.edge(1, 0) == true);
+    R5_STATIC_ASSERT(scn.edge(2, 0) == true);
+    R5_STATIC_ASSERT(scn.edge(2, 1) == true);
+
+    AdjacencyMatrix<n>         unct;   unct.unsetAllEdges();
+    AdjacencyMatrix<n>         snct;   snct.setAllEdges();
+    AdjacencyMatrix<n, false>  uncn;   uncn.unsetAllEdges();
+    AdjacencyMatrix<n, false>  sncn;   sncn.setAllEdges();
+    AdjacencyMatrix<-1>        urt(n); urt.unsetAllEdges();
+    AdjacencyMatrix<-1>        srt(n); srt.setAllEdges();
+    AdjacencyMatrix<-1, false> urn(n); urn.unsetAllEdges();
+    AdjacencyMatrix<-1, false> srn(n); srn.setAllEdges();
+
+    auto testAllEdges = [n](auto m, bool test) {
+        for (s64 c = 0; c < n; c += 1) {
+            for (s64 r = 0; r < n; r += 1) {
+                if (c == r) { continue; }
+                ASSERT_EQ(m.edge(c, r), test);
+            }
+        }
+    };
+
+    testAllEdges(unct, false);
+    testAllEdges(snct, true );
+    testAllEdges(uncn, false);
+    testAllEdges(sncn, true );
+    testAllEdges(urt , false);
+    testAllEdges(srt , true );
+    testAllEdges(urn , false);
+    testAllEdges(srn , true );
+}
+
 // // print() can't be constexpr because std::ostringstream and std::string
 // TEST(AdjacencyMatrix, print_constexpr) {
 //     constexpr AdjacencyMatrix<3> m1;

@@ -18,6 +18,14 @@ constexpr void copy(const T* from, s64 count, T* to) {
     }
 }
 
+// std::fill_n is not constexpr until c++20, remove this when it's available
+template<typename T>
+constexpr void fill_n(T* to, s64 count, const T& value) {
+    for (s64 i = 0; i < count; i += 1) {
+        to[i] = value;
+    }
+}
+
 }
 
 #define R5_STATIC_ASSERT(expr) static_assert(expr)

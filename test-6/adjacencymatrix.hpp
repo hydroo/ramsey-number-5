@@ -68,6 +68,10 @@ protected:
         unsetEdge(column, row, nodes, v);
     }
 
+    static constexpr void unsetAllEdges(s64 nodes, u64* v) {
+        r5::fill_n(v, elements(nodes), (u64) 0x0000000000000000);
+    }
+
     static constexpr void setEdge(s64 column, s64 row, s64 nodes, u64* v) {
         auto f = [nodes, v](s64 column, s64 row) {
             s64 i = Indexer::index(column, row, nodes);
@@ -86,6 +90,10 @@ protected:
         R5_ASSERT(row    >= 0);
         R5_ASSERT(row    <= nodes-1);
         setEdge(column, row, nodes, v);
+    }
+
+    static constexpr void setAllEdges(s64 nodes, u64* v) {
+        r5::fill_n(v, elements(nodes), (u64) 0xffffffffffffffff);
     }
 
     static std::string print(bool multiline, std::string indent, s64 nodes, const u64* v) {
@@ -190,12 +198,20 @@ public:
         Base::unsetEdgeChecked(column, row, Nodes, _v);
     }
 
+    constexpr void unsetAllEdges() {
+        Base::unsetAllEdges(Nodes, _v);
+    }
+
     constexpr void setEdge(s64 column, s64 row) {
         Base::setEdge(column, row, Nodes, _v);
     }
 
     constexpr void setEdgeChecked(s64 column, s64 row) {
         Base::setEdgesChecked(column, row, Nodes, _v);
+    }
+
+    constexpr void setAllEdges() {
+        Base::setAllEdges(Nodes, _v);
     }
 
     std::string print(bool multiline = false, std::string indent = "") const {
@@ -272,12 +288,20 @@ public:
         Base::unsetEdgeChecked(column, row, _nodes, _v);
     }
 
+    void unsetAllEdges() {
+        Base::unsetAllEdges(_nodes, _v);
+    }
+
     void setEdge(s64 column, s64 row) {
         Base::setEdge(column, row, _nodes, _v);
     }
 
     void setEdgeChecked(s64 column, s64 row) {
         Base::setEdgeChecked(column, row, _nodes, _v);
+    }
+
+    void setAllEdges() {
+        Base::setAllEdges(_nodes, _v);
     }
 
     std::string print(bool multiline = false, std::string indent = "") const {
