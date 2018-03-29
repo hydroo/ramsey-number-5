@@ -406,6 +406,180 @@ TEST(AdjacencyMatrix, assign) {
     ASSERT_THROW2(ncn2_from_rt = rn); // Wrong node count
 }
 
+TEST(AdjacencyMatrix, bitwiseOr) {
+    constexpr auto ct1 = []() -> auto {
+        AdjacencyMatrix<6> m;
+        m.unsetAllEdges();
+        m.setEdge(1, 0);
+        return m;
+    }();
+    constexpr auto ct2 = []() -> auto {
+        AdjacencyMatrix<6> m;
+        m.unsetAllEdges();
+        m.setEdge(3, 5);
+        return m;
+    }();
+
+    constexpr auto cn1 = []() -> auto {
+        AdjacencyMatrix<6, false> m;
+        m.unsetAllEdges();
+        m.setEdge(1, 0);
+        return m;
+    }();
+
+    constexpr auto cn2 = []() -> auto {
+        AdjacencyMatrix<6, false> m;
+        m.unsetAllEdges();
+        m.setEdge(3, 5);
+        return m;
+    }();
+
+    AdjacencyMatrix<6>         nct1;   nct1.unsetAllEdges(); nct1.setEdge(1, 0);
+    AdjacencyMatrix<6>         nct2;   nct2.unsetAllEdges(); nct2.setEdge(3, 5);
+
+    AdjacencyMatrix<6, false>  ncn1;   ncn1.unsetAllEdges(); ncn1.setEdge(1, 0);
+    AdjacencyMatrix<6, false>  ncn2;   ncn2.unsetAllEdges(); ncn2.setEdge(3, 5);
+
+    AdjacencyMatrix<-1>        rt1(6); rt1.unsetAllEdges(); rt1.setEdge(1, 0);
+    AdjacencyMatrix<-1>        rt2(6); rt2.unsetAllEdges(); rt2.setEdge(3, 5);
+
+    AdjacencyMatrix<-1, false> rn1(6); rn1.unsetAllEdges(); rn1.setEdge(1, 0);
+    AdjacencyMatrix<-1, false> rn2(6); rn2.unsetAllEdges(); rn2.setEdge(3, 5);
+
+    // ct | ct, ct | nct, ct | rt
+    constexpr auto ct_or_ct = ct1 | ct2;
+        R5_STATIC_ASSERT(ct_or_ct.edge(1, 0) == true);
+        R5_STATIC_ASSERT(ct_or_ct.edge(5, 3) == true);
+    // constexpr auto ct_or_nct2 = ct1 | nct2; // Compilation error
+    auto ct_or_nct = ct1 | nct2;
+        ASSERT_EQ(ct_or_nct.edge(1, 0), true);
+        ASSERT_EQ(ct_or_nct.edge(5, 3), true);
+    // constexpr auto ct_or_rt3 = ct1 | rt2; // Compilation error
+    AdjacencyMatrix<6> ct_or_rt = ct1 | rt2;
+        ASSERT_EQ(ct_or_rt.edge(1, 0), true);
+        ASSERT_EQ(ct_or_rt.edge(5, 3), true);
+    AdjacencyMatrix<-1> ct_or_rt2 = ct1 | rt2;
+        ASSERT_EQ(ct_or_rt2.edge(1, 0), true);
+        ASSERT_EQ(ct_or_rt2.edge(5, 3), true);
+
+    // cn | cn, cn | ncn, cn | rn
+    constexpr auto cn_or_cn = cn1 | cn2;
+        R5_STATIC_ASSERT(cn_or_cn.edge(1, 0) == true);
+        R5_STATIC_ASSERT(cn_or_cn.edge(5, 3) == true);
+    // constexpr auto cn_or_ncn2 = cn1 | ncn2; // Compilation error
+    auto cn_or_ncn = cn1 | ncn2;
+        ASSERT_EQ(cn_or_ncn.edge(1, 0), true);
+        ASSERT_EQ(cn_or_ncn.edge(5, 3), true);
+    // constexpr auto cn_or_rn3 = cn1 | rn2; // Compilation error
+    AdjacencyMatrix<6, false> cn_or_rn = cn1 | rn2;
+        ASSERT_EQ(cn_or_rn.edge(1, 0), true);
+        ASSERT_EQ(cn_or_rn.edge(5, 3), true);
+    AdjacencyMatrix<-1, false> cn_or_rn2 = cn1 | rn2;
+        ASSERT_EQ(cn_or_rn2.edge(1, 0), true);
+        ASSERT_EQ(cn_or_rn2.edge(5, 3), true);
+
+    // nct | ct, nct | nct, nct | rt
+    // constexpr auto nct_or_ct   = nct1 | ct2;  // Compilation error
+    // constexpr auto nct_or_nct2 = nct1 | nct2; // Compilation error
+    auto nct_or_nct = nct1 | nct2;
+        ASSERT_EQ(nct_or_nct.edge(1, 0), true);
+        ASSERT_EQ(nct_or_nct.edge(5, 3), true);
+    // constexpr auto nct_or_rt3 = nct1 | rt2; // Compilation error
+    AdjacencyMatrix<6> nct_or_rt = nct1 | rt2;
+        ASSERT_EQ(nct_or_rt.edge(1, 0), true);
+        ASSERT_EQ(nct_or_rt.edge(5, 3), true);
+    AdjacencyMatrix<-1> nct_or_rt2 = nct1 | rt2;
+        ASSERT_EQ(nct_or_rt2.edge(1, 0), true);
+        ASSERT_EQ(nct_or_rt2.edge(5, 3), true);
+
+    // ncn | ct, ncn | ncn, ncn | rn
+    // constexpr auto ncn_or_cn   = ncn1 | cn2;  // Compilation error
+    // constexpr auto ncn_or_ncn2 = ncn1 | ncn2; // Compilation error
+    auto ncn_or_ncn = ncn1 | ncn2;
+        ASSERT_EQ(ncn_or_ncn.edge(1, 0), true);
+        ASSERT_EQ(ncn_or_ncn.edge(5, 3), true);
+    // constexpr auto ncn_or_rn3 = ncn1 | rn2; // Compilation error
+    AdjacencyMatrix<6, false> ncn_or_rn = ncn1 | rn2;
+        ASSERT_EQ(ncn_or_rn.edge(1, 0), true);
+        ASSERT_EQ(ncn_or_rn.edge(5, 3), true);
+    AdjacencyMatrix<-1, false> ncn_or_rn2 = ncn1 | rn2;
+        ASSERT_EQ(ncn_or_rn2.edge(1, 0), true);
+        ASSERT_EQ(ncn_or_rn2.edge(5, 3), true);
+
+    // rt | ct, rt | nct, rt | rt
+    // constexpr auto rt_or_ct   = rt1 | ct2;  // Compilation error
+    // constexpr auto rt_or_nct3 = rt1 | nct2; // Compilation error
+    AdjacencyMatrix<6> rt_or_nct = rt1 | nct2;
+        ASSERT_EQ(rt_or_nct.edge(1, 0), true);
+        ASSERT_EQ(rt_or_nct.edge(5, 3), true);
+    AdjacencyMatrix<-1> rt_or_nct2 = rt1 | nct2;
+        ASSERT_EQ(rt_or_nct2.edge(1, 0), true);
+        ASSERT_EQ(rt_or_nct2.edge(5, 3), true);
+    // constexpr auto rt_or_rt3 = rt1 | rt2; // Compilation error
+    AdjacencyMatrix<6> rt_or_rt = rt1 | rt2;
+        ASSERT_EQ(rt_or_rt.edge(1, 0), true);
+        ASSERT_EQ(rt_or_rt.edge(5, 3), true);
+    AdjacencyMatrix<-1> rt_or_rt2 = rt1 | rt2;
+        ASSERT_EQ(rt_or_rt2.edge(1, 0), true);
+        ASSERT_EQ(rt_or_rt2.edge(5, 3), true);
+
+    // rn | cn, rn | ncn, rn | rn
+    // constexpr auto rn_or_cn   = rn1 | cn2;  // Compilation error
+    // constexpr auto rn_or_ncn3 = rn1 | ncn2; // Compilation error
+    AdjacencyMatrix<6, false> rn_or_ncn = rn1 | ncn2;
+        ASSERT_EQ(rn_or_ncn.edge(1, 0), true);
+        ASSERT_EQ(rn_or_ncn.edge(5, 3), true);
+    AdjacencyMatrix<-1, false> rn_or_ncn2 = rn1 | ncn2;
+        ASSERT_EQ(rn_or_ncn2.edge(1, 0), true);
+        ASSERT_EQ(rn_or_ncn2.edge(5, 3), true);
+    // constexpr auto rn_or_rn3 = rn1 | rn2; // Compilation error
+    AdjacencyMatrix<6, false> rn_or_rn = rn1 | rn2;
+        ASSERT_EQ(rn_or_rn.edge(1, 0), true);
+        ASSERT_EQ(rn_or_rn.edge(5, 3), true);
+    AdjacencyMatrix<-1, false> rn_or_rn2 = rn1 | rn2;
+        ASSERT_EQ(rn_or_rn2.edge(1, 0), true);
+        ASSERT_EQ(rn_or_rn2.edge(5, 3), true);
+
+    // *** make sure matrices of wrong node counts can't interact ***
+
+    constexpr AdjacencyMatrix<1>        wct1;
+    constexpr AdjacencyMatrix<2>        wct2;
+    constexpr AdjacencyMatrix<1, false> wcn1;
+    constexpr AdjacencyMatrix<2, false> wcn2;
+    AdjacencyMatrix<1>                  wnct1;
+    AdjacencyMatrix<2>                  wnct2;
+    AdjacencyMatrix<1, false>           wncn1;
+    AdjacencyMatrix<2, false>           wncn2;
+    AdjacencyMatrix<-1>                 wrt1(1);
+    AdjacencyMatrix<-1>                 wrt2(2);
+    AdjacencyMatrix<-1, false>          wrn1(1);
+    AdjacencyMatrix<-1, false>          wrn2(2);
+
+    // auto wct_or_wct  = wct1 | wct2;  // Compilation error
+    // auto wct_or_wnct = wct1 | wnct2; // Compilation error
+    ASSERT_THROW2(wct1 | wrt2);
+
+    // auto wcn_or_wcn  = wcn1 | wcn2;  // Compilation error
+    // auto wcn_or_wncn = wcn1 | wncn2; // Compilation error
+    ASSERT_THROW2(wcn1 | wrn2);
+
+    // auto wnct_or_wct  = wnct1 | wct2;  // Compilation error
+    // auto wnct_or_wnct = wnct1 | wnct2; // Compilation error
+    ASSERT_THROW2(wnct1 | wrt2);
+
+    // auto wncn_or_wcn  = wncn1 | wcn2;  // Compilation error
+    // auto wncn_or_wncn = wncn1 | wncn2; // Compilation error
+    ASSERT_THROW2(wncn1 | wrn2);
+
+    ASSERT_THROW2(wrt1 | wct2);
+    ASSERT_THROW2(wrt1 | wnct2);
+    ASSERT_THROW2(wrt1 | wrt2);
+
+    ASSERT_THROW2(wrn1 | wcn2);
+    ASSERT_THROW2(wrn1 | wncn2);
+    ASSERT_THROW2(wrn1 | wrn2);
+}
+
 int main(int argc, char** args) {
     ::testing::InitGoogleTest(&argc, args);
     return RUN_ALL_TESTS();

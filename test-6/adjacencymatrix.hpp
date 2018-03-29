@@ -34,6 +34,12 @@ protected:
         r5::copy(m, elements(nodes), v);
     }
 
+    static constexpr void bitwiseOr(const u64* v1, const u64* v2, s64 nodes, u64* v) {
+        for (s64 i = 0; i < elements(nodes); i += 1) {
+            v[i] = v1[i] | v2[i];
+        }
+    }
+
     static constexpr bool edge(s64 column, s64 row, s64 nodes, const u64* v) {
         s64 i = Indexer::index(column, row, nodes);
         return (bool) ((v[i/bitsPerElement]>>(i%bitsPerElement))&0x1);
@@ -221,6 +227,12 @@ public:
     template<s64 Nodes2, bool Triangular2, typename Enable2>
     friend class BaseAdjacencyMatrix2;
 
+protected:
+    template<s64 Nodes2>
+    constexpr void bitwiseOr(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m, BaseAdjacencyMatrix2* ret) const {
+        Base::bitwiseOr(_v, m._v, Nodes, ret->_v);
+    }
+
 private:
     u64 _v[Base::elements(Nodes)]{};
 };
@@ -315,6 +327,12 @@ public:
     template<s64 Nodes2, bool Triangular2, typename Enable2>
     friend class BaseAdjacencyMatrix2;
 
+protected:
+    template<s64 Nodes2>
+    void bitwiseOr(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m, BaseAdjacencyMatrix2* ret) const {
+        Base::bitwiseOr(_v, m._v, _nodes, ret->_v);
+    }
+
 private:
     void allocate() {
         _v = (u64*) malloc(sizeof(u64) * elements());
@@ -357,6 +375,23 @@ public:
     AdjacencyMatrix& operator=(const AdjacencyMatrix<Nodes2, Triangular>& m) {
         Base::operator=(m);
         return *this;
+    }
+
+    // bitwise or operators
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes >= 0 && (Nodes2 == Nodes || Nodes2 == -1)>>
+    constexpr AdjacencyMatrix operator|(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
+        R5_ASSERT(m.nodes() == Base::nodes());
+        AdjacencyMatrix ret;
+        Base::bitwiseOr(m, &ret);
+        return ret;
+    }
+
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes == -1>, int dummy = 0>
+    AdjacencyMatrix operator|(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
+        R5_ASSERT(m.nodes() == Base::nodes());
+        AdjacencyMatrix ret(m.nodes());
+        Base::bitwiseOr(m, &ret);
+        return ret;
     }
 };
 
