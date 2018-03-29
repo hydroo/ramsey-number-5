@@ -52,6 +52,14 @@ protected:
         }
     }
 
+    static constexpr bool compareEqual(const u64* v1, const u64* v2, s64 nodes) {
+        bool equal = true;
+        for (s64 i = 0; i < elements(nodes); i += 1) {
+            equal &= v1[i] == v2[i];
+        }
+        return equal;
+    }
+
     static constexpr bool edge(s64 column, s64 row, s64 nodes, const u64* v) {
         s64 i = Indexer::index(column, row, nodes);
         return (bool) ((v[i/bitsPerElement]>>(i%bitsPerElement))&0x1);
@@ -254,6 +262,11 @@ protected:
         Base::bitwiseComplement(_v, Nodes, ret->_v);
     }
 
+    template<s64 Nodes2>
+    constexpr bool operator==(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) const {
+        return Base::compareEqual(_v, m._v, Nodes);
+    }
+
 private:
     u64 _v[Base::elements(Nodes)]{};
 };
@@ -363,6 +376,11 @@ protected:
         Base::bitwiseComplement(_v, _nodes, ret->_v);
     }
 
+    template<s64 Nodes2>
+    bool operator==(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) const {
+        return Base::compareEqual(_v, m._v, _nodes);
+    }
+
 private:
     void allocate() {
         _v = (u64*) malloc(sizeof(u64) * elements());
@@ -459,6 +477,19 @@ public:
         AdjacencyMatrix ret(Base::nodes());
         Base::bitwiseComplement(&ret);
         return ret;
+    }
+
+    // compare equal operator
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 == Nodes || Nodes == -1 || Nodes2 == -1>>
+    constexpr bool operator==(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
+        R5_ASSERT(m.nodes() == Base::nodes());
+        return Base::operator==(m);
+    }
+
+    // compare not-equal operator
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 == Nodes || Nodes == -1 || Nodes2 == -1>>
+    constexpr bool operator!=(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
+        return !operator==(m);
     }
 };
 

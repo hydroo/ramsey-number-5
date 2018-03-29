@@ -803,6 +803,141 @@ TEST(AdjacencyMatrix, bitwiseComplement) {
     testAllEdges(~rn);
 }
 
+TEST(AdjacencyMatrix, compareEqual) {
+    constexpr auto ct1 = []() -> auto {
+        AdjacencyMatrix<7> m;
+        m.unsetAllEdges();
+        m.setEdge(4, 6);
+        return m;
+    }();
+    constexpr auto ct2 = []() -> auto {
+        AdjacencyMatrix<7> m;
+        m.unsetAllEdges();
+        return m;
+    }();
+
+    constexpr auto cn1 = []() -> auto {
+        AdjacencyMatrix<7, false> m;
+        m.unsetAllEdges();
+        m.setEdge(4, 6);
+        return m;
+    }();
+
+    constexpr auto cn2 = []() -> auto {
+        AdjacencyMatrix<7, false> m;
+        m.unsetAllEdges();
+        return m;
+    }();
+
+    AdjacencyMatrix<7>         nct1;   nct1.unsetAllEdges(); nct1.setEdge(4, 6);
+    AdjacencyMatrix<7>         nct2;   nct2.unsetAllEdges();
+
+    AdjacencyMatrix<7, false>  ncn1;   ncn1.unsetAllEdges(); ncn1.setEdge(4, 6);
+    AdjacencyMatrix<7, false>  ncn2;   ncn2.unsetAllEdges();
+
+    AdjacencyMatrix<-1>        rt1(7); rt1.unsetAllEdges();  rt1.setEdge(4, 6);
+    AdjacencyMatrix<-1>        rt2(7); rt2.unsetAllEdges();
+
+    AdjacencyMatrix<-1, false> rn1(7); rn1.unsetAllEdges();  rn1.setEdge(4, 6);
+    AdjacencyMatrix<-1, false> rn2(7); rn2.unsetAllEdges();
+
+    // ct
+    R5_STATIC_ASSERT(ct1 == ct1);
+    ASSERT_EQ(ct1, nct1);
+    ASSERT_EQ(ct1, rt1);
+
+    R5_STATIC_ASSERT(ct1 != ct2);
+    ASSERT_NE(ct1, nct2);
+    ASSERT_NE(ct1, rt2);
+
+    // cn
+    R5_STATIC_ASSERT(cn1 == cn1);
+    ASSERT_EQ(cn1, ncn1);
+    ASSERT_EQ(cn1, rn1);
+
+    R5_STATIC_ASSERT(cn1 != cn2);
+    ASSERT_NE(cn1, ncn2);
+    ASSERT_NE(cn1, rn2);
+
+    // nct
+    ASSERT_EQ(nct1, ct1);
+    ASSERT_EQ(nct1, nct1);
+    ASSERT_EQ(nct1, rt1);
+
+    ASSERT_NE(nct1, ct2);
+    ASSERT_NE(nct1, nct2);
+    ASSERT_NE(nct1, rt2);
+
+    // ncn
+    ASSERT_EQ(ncn1, cn1);
+    ASSERT_EQ(ncn1, ncn1);
+    ASSERT_EQ(ncn1, rn1);
+
+    ASSERT_NE(ncn1, cn2);
+    ASSERT_NE(ncn1, ncn2);
+    ASSERT_NE(ncn1, rn2);
+
+
+    // rt
+    ASSERT_EQ(rt1, ct1);
+    ASSERT_EQ(rt1, nct1);
+    ASSERT_EQ(rt1, rt1);
+
+    ASSERT_NE(rt1, ct2);
+    ASSERT_NE(rt1, nct2);
+    ASSERT_NE(rt1, rt2);
+
+
+    // rn
+    ASSERT_EQ(rn1, cn1);
+    ASSERT_EQ(rn1, ncn1);
+    ASSERT_EQ(rn1, rn1);
+
+    ASSERT_NE(rn1, cn2);
+    ASSERT_NE(rn1, ncn2);
+    ASSERT_NE(rn1, rn2);
+
+    // *** make sure matrices of wrong node counts can't interact ***
+    // a copy of bitwiseAnd's test
+
+    constexpr AdjacencyMatrix<1>        wct1;
+    constexpr AdjacencyMatrix<2>        wct2;
+    constexpr AdjacencyMatrix<1, false> wcn1;
+    constexpr AdjacencyMatrix<2, false> wcn2;
+    AdjacencyMatrix<1>                  wnct1;
+    AdjacencyMatrix<2>                  wnct2;
+    AdjacencyMatrix<1, false>           wncn1;
+    AdjacencyMatrix<2, false>           wncn2;
+    AdjacencyMatrix<-1>                 wrt1(1);
+    AdjacencyMatrix<-1>                 wrt2(2);
+    AdjacencyMatrix<-1, false>          wrn1(1);
+    AdjacencyMatrix<-1, false>          wrn2(2);
+
+    // auto wct_and_wct  = wct1 == wct2;  // Compilation error
+    // auto wct_and_wnct = wct1 == wnct2; // Compilation error
+    ASSERT_THROW2(wct1 == wrt2);
+
+    // auto wcn_and_wcn  = wcn1 == wcn2;  // Compilation error
+    // auto wcn_and_wncn = wcn1 == wncn2; // Compilation error
+    ASSERT_THROW2(wcn1 == wrn2);
+
+    // auto wnct_and_wct  = wnct1 == wct2;  // Compilation error
+    // auto wnct_and_wnct = wnct1 == wnct2; // Compilation error
+    ASSERT_THROW2(wnct1 == wrt2);
+
+    // auto wncn_and_wcn  = wncn1 == wcn2;  // Compilation error
+    // auto wncn_and_wncn = wncn1 == wncn2; // Compilation error
+    ASSERT_THROW2(wncn1 == wrn2);
+
+    ASSERT_THROW2(wrt1 == wct2);
+    ASSERT_THROW2(wrt1 == wnct2);
+    ASSERT_THROW2(wrt1 == wrt2);
+
+    ASSERT_THROW2(wrn1 == wcn2);
+    ASSERT_THROW2(wrn1 == wncn2);
+    ASSERT_THROW2(wrn1 == wrn2);
+}
+
 int main(int argc, char** args) {
     ::testing::InitGoogleTest(&argc, args);
     return RUN_ALL_TESTS();
