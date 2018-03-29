@@ -346,7 +346,7 @@ public:
     // copy constructors
     constexpr AdjacencyMatrix(const AdjacencyMatrix& m)                     : Base(m) {}
     template<s64 Nodes2>
-    constexpr AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {}
+    AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {}
 
     // assignment operators
     constexpr AdjacencyMatrix& operator=(const AdjacencyMatrix& m) {
@@ -354,7 +354,7 @@ public:
         return *this;
     }
     template<s64 Nodes2>
-    constexpr AdjacencyMatrix& operator=(const AdjacencyMatrix<Nodes2, Triangular>& m) {
+    AdjacencyMatrix& operator=(const AdjacencyMatrix<Nodes2, Triangular>& m) {
         Base::operator=(m);
         return *this;
     }
