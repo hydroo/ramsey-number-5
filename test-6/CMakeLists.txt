@@ -12,14 +12,13 @@ add_executable(test-5-new test-5-new.cpp test-5-check.cpp)
 
 configure_file(test-5-build.sh test-5-build.sh COPYONLY)
 
-set_source_files_properties(test_adjacencymatrix.cpp        PROPERTIES COMPILE_FLAGS "-DR5_GTEST")
-set_source_files_properties(test_adjacencymatrixindexer.cpp PROPERTIES COMPILE_FLAGS "-DR5_GTEST")
+set_source_files_properties(test_adjacencymatrix.cpp test_adjacencymatrixindexer.cpp PROPERTIES COMPILE_FLAGS "-DR5_GTEST")
 
 add_executable(test_adjacencymatrix test_adjacencymatrix.cpp)
-target_link_libraries (test_adjacencymatrix ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(test_adjacencymatrix ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(test_adjacencymatrixindexer test_adjacencymatrixindexer.cpp)
-target_link_libraries (test_adjacencymatrixindexer ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(test_adjacencymatrixindexer ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 find_program(VALGRIND valgrind)
 set(VALGRIND_OPTIONS --leak-check=full --error-exitcode=1000)
