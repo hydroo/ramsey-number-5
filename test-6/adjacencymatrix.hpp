@@ -402,11 +402,11 @@ public:
     using Base = BaseAdjacencyMatrix2<Nodes, Triangular>;
 
     // default constructor only for compile-time
-    template<typename = std::enable_if_t<Nodes >= 0>>
+    template<s64 Nodes_ = Nodes, typename = std::enable_if_t<Nodes_ >= 0>, int dummy = 0>
     constexpr AdjacencyMatrix() : Base() {}
 
     // nodes constructor only for runtime
-    template<typename = std::enable_if_t<Nodes == -1>>
+    template<s64 Nodes_ = Nodes, typename = std::enable_if_t<Nodes_ == -1>>
     AdjacencyMatrix(s64 nodes) : Base(nodes) {}
 
     // copy constructors
@@ -429,7 +429,7 @@ public:
 
     // bitwise or operators
     // Note: There are two different operators because the AdjacencyMatrix constructors are different for the two cases
-    template<s64 Nodes2, typename = std::enable_if_t<Nodes >= 0 && (Nodes2 == Nodes || Nodes2 == -1)>>
+    template<s64 Nodes2, s64 Nodes_ = Nodes, typename = std::enable_if_t<Nodes_ >= 0 && (Nodes2 == Nodes || Nodes2 == -1)>>
     constexpr AdjacencyMatrix operator|(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
         R5_ASSERT(m.nodes() == Base::nodes());
         AdjacencyMatrix ret;
@@ -437,7 +437,7 @@ public:
         return ret;
     }
 
-    template<s64 Nodes2, typename = std::enable_if_t<Nodes == -1>, int dummy = 0>
+    template<s64 Nodes2, s64 Nodes_ = Nodes, typename = std::enable_if_t<Nodes_ == -1>, int dummy = 0>
     AdjacencyMatrix operator|(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
         R5_ASSERT(m.nodes() == Base::nodes());
         AdjacencyMatrix ret(m.nodes());
@@ -447,7 +447,7 @@ public:
 
     // bitwise and operators
     // Note: There are two different operators because the AdjacencyMatrix constructors are different for the two cases
-    template<s64 Nodes2, typename = std::enable_if_t<Nodes >= 0 && (Nodes2 == Nodes || Nodes2 == -1)>>
+    template<s64 Nodes2, s64 Nodes_ = Nodes, typename = std::enable_if_t<Nodes_ >= 0 && (Nodes2 == Nodes_ || Nodes2 == -1)>>
     constexpr AdjacencyMatrix operator&(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
         R5_ASSERT(m.nodes() == Base::nodes());
         AdjacencyMatrix ret;
@@ -455,7 +455,7 @@ public:
         return ret;
     }
 
-    template<s64 Nodes2, typename = std::enable_if_t<Nodes == -1>, int dummy = 0>
+    template<s64 Nodes2, s64 Nodes_ = Nodes, typename = std::enable_if_t<Nodes_ == -1>, int dummy = 0>
     AdjacencyMatrix operator&(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
         R5_ASSERT(m.nodes() == Base::nodes());
         AdjacencyMatrix ret(m.nodes());
@@ -465,14 +465,14 @@ public:
 
     // bitwise complement operators
     // Note: There are two different operators because the AdjacencyMatrix constructors are different for the two cases
-    template<typename = std::enable_if_t<Nodes >= 0>>
+    template<s64 Nodes_ = Nodes, typename = std::enable_if_t<Nodes_ >= 0>>
     constexpr AdjacencyMatrix operator~() const {
         AdjacencyMatrix ret;
         Base::bitwiseComplement(&ret);
         return ret;
     }
 
-    template<typename = std::enable_if_t<Nodes == -1>, int dummy = 0>
+    template<s64 Nodes_ = Nodes, typename = std::enable_if_t<Nodes_ == -1>, int dummy = 0>
     AdjacencyMatrix operator~() const {
         AdjacencyMatrix ret(Base::nodes());
         Base::bitwiseComplement(&ret);
@@ -480,14 +480,14 @@ public:
     }
 
     // compare equal operator
-    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 == Nodes || Nodes == -1 || Nodes2 == -1>>
+    template<s64 Nodes2, s64 Nodes_ = Nodes, typename = std::enable_if_t<Nodes2 == Nodes_ || Nodes_ == -1 || Nodes2 == -1>>
     constexpr bool operator==(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
         R5_ASSERT(m.nodes() == Base::nodes());
         return Base::operator==(m);
     }
 
     // compare not-equal operator
-    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 == Nodes || Nodes == -1 || Nodes2 == -1>>
+    template<s64 Nodes2, s64 Nodes_ = Nodes, typename = std::enable_if_t<Nodes2 == Nodes_ || Nodes_ == -1 || Nodes2 == -1>>
     constexpr bool operator!=(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
         return !operator==(m);
     }
