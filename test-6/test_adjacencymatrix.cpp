@@ -6,6 +6,7 @@ using std::cerr;
 using std::endl;
 
 using r5::AdjacencyMatrix;
+using r5::AdjacencyMatrixIndexer;
 
 TEST(AdjacencyMatrix, create_constexpr_triangular) {
     constexpr AdjacencyMatrix<  0> m0;
@@ -143,6 +144,54 @@ TEST(AdjacencyMatrix, setedge_nonconstexpr_nontriangular) {
             // cerr << " c " << c << ", r " << r << ", " << m.print() << endl << m.print(true, "  ") << endl;
         }
     }
+}
+
+TEST(AdjacencyMatrix, setEdgeByEdgeIndex) {
+    constexpr s64 n = 25;
+
+    constexpr auto ct = []() -> auto {
+        AdjacencyMatrix<n> m;
+        m.setEdge(127);
+        return m;
+    }();
+
+    constexpr auto cn = []() -> auto {
+        AdjacencyMatrix<n, false> m;
+        m.setEdge(127);
+        return m;
+    }();
+
+    AdjacencyMatrix<n> nct;
+    nct.setEdge(127);
+
+    AdjacencyMatrix<n, false> ncn;
+    ncn.setEdge(127);
+
+    AdjacencyMatrix<-1> rt(n);
+    rt.unsetAllEdges();
+    rt.setEdge(127);
+
+    AdjacencyMatrix<-1, false> rn(n);
+    rn.unsetAllEdges();
+    rn.setEdge(127);
+
+    R5_STATIC_ASSERT(ct.edge(127) == true);
+    R5_STATIC_ASSERT(cn.edge(127) == true);
+    constexpr auto cnp = decltype(cn)::Indexer::reverse(127);
+    R5_STATIC_ASSERT(decltype(cn)::Indexer::index(cnp.second, cnp.first) != 127);
+    R5_STATIC_ASSERT(cn.edge(cnp.second, cnp.first) == true);
+
+    ASSERT_EQ(nct.edge(127), true);
+    ASSERT_EQ(ncn.edge(127), true);
+    auto ncnp = decltype(ncn)::Indexer::reverse(127);
+    ASSERT_NE(decltype(ncn)::Indexer::index(ncnp.second, ncnp.first), 127);
+    ASSERT_EQ(ncn.edge(ncnp.second, ncnp.first), true);
+
+    ASSERT_EQ(rt.edge(127), true);
+    ASSERT_EQ(rn.edge(127), true);
+    auto rnp = decltype(rn)::Indexer::reverse(127, n);
+    ASSERT_NE(decltype(rn)::Indexer::index(rnp.second, rnp.first, n), 127);
+    ASSERT_EQ(rn.edge(rnp.second, rnp.first), true);
 }
 
 TEST(AdjacencyMatrix, setAllEdges) {

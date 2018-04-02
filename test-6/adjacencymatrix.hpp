@@ -61,8 +61,12 @@ protected:
     }
 
     static constexpr bool edge(s64 column, s64 row, s64 nodes, const u64* v) {
-        s64 i = Indexer::index(column, row, nodes);
-        return (bool) ((v[i/bitsPerElement]>>(i%bitsPerElement))&0x1);
+        s64 e = Indexer::index(column, row, nodes);
+        return (bool) ((v[e/bitsPerElement]>>(e%bitsPerElement))&0x1);
+    }
+
+    static constexpr bool edge(s64 edge_, const u64* v) {
+        return (bool) ((v[edge_/bitsPerElement]>>(edge_%bitsPerElement))&0x1);
     }
 
     static constexpr bool edgeChecked(s64 column, s64 row, s64 nodes, const u64* v) {
@@ -74,15 +78,30 @@ protected:
         return edge(column, row, nodes, v);
     }
 
+    static constexpr bool edgeChecked(s64 edge_, s64 nodes, const u64* v) {
+        R5_ASSERT(edge_ >= 0);
+        R5_ASSERT(edge_ <= edges(nodes)-1);
+        return edge(edge_, v);
+    }
+
     static constexpr void unsetEdge(s64 column, s64 row, s64 nodes, u64* v) {
         auto f = [nodes, v](s64 column, s64 row) {
             s64 i = Indexer::index(column, row, nodes);
-            s64 element = i / bitsPerElement;
-            s64 indexInElement = i % bitsPerElement;
-            v[element] &= ~(((u64)1)<<indexInElement);
+            v[i / bitsPerElement] &= ~(((u64)1)<<(i % bitsPerElement));
         };
         f(column, row);
         if (Triangular == false) { f(row, column); }
+    }
+
+    static constexpr void unsetEdge(s64 edge, s64 nodes, u64* v) {
+        auto f = [v](s64 edge) {
+            v[edge / bitsPerElement] &= ~(((u64)1)<<(edge % bitsPerElement));
+        };
+        f(edge);
+        if (Triangular == false) {
+            auto p = Indexer::reverse(edge, nodes);
+            f(Indexer::index(p.second, p.first));
+        }
     }
 
     static constexpr void unsetEdgeChecked(s64 column, s64 row, s64 nodes, u64* v) {
@@ -94,6 +113,12 @@ protected:
         unsetEdge(column, row, nodes, v);
     }
 
+    static constexpr void unsetEdgeChecked(s64 edge, s64 nodes, u64* v) {
+        R5_ASSERT(edge >= 0);
+        R5_ASSERT(edge <= edges(nodes)-1);
+        unsetEdge(edge, nodes, v);
+    }
+
     static constexpr void unsetAllEdges(s64 nodes, u64* v) {
         r5::fill_n(v, elements(nodes), (u64) 0x0000000000000000);
     }
@@ -101,12 +126,21 @@ protected:
     static constexpr void setEdge(s64 column, s64 row, s64 nodes, u64* v) {
         auto f = [nodes, v](s64 column, s64 row) {
             s64 i = Indexer::index(column, row, nodes);
-            s64 element = i / bitsPerElement;
-            s64 indexInElement = i % bitsPerElement;
-            v[element] |= ((u64)1)<<(indexInElement);
+            v[i / bitsPerElement] |= ((u64)1)<<(i % bitsPerElement);
         };
         f(column, row);
         if (Triangular == false) { f(row, column); }
+    }
+
+    static constexpr void setEdge(s64 edge, s64 nodes, u64* v) {
+        auto f = [v](s64 edge) {
+            v[edge / bitsPerElement] |= ((u64)1)<<(edge % bitsPerElement);
+        };
+        f(edge);
+        if (Triangular == false) {
+            auto p = Indexer::reverse(edge, nodes);
+            f(Indexer::index(p.second, p.first, nodes));
+        }
     }
 
     static constexpr void setEdgeChecked(s64 column, s64 row, s64 nodes, u64* v) {
@@ -118,6 +152,12 @@ protected:
         setEdge(column, row, nodes, v);
     }
 
+    static constexpr void setEdgeChecked(s64 edge, s64 nodes, u64* v) {
+        R5_ASSERT(edge >= 0);
+        R5_ASSERT(edge <= edges(nodes)-1);
+        setEdge(edge, nodes, v);
+    }
+
     static constexpr void setAllEdges(s64 nodes, u64* v) {
         r5::fill_n(v, elements(nodes), (u64) 0xffffffffffffffff);
     }
@@ -126,7 +166,6 @@ protected:
         std::ostringstream o;
 
         if(Triangular == true) {
-
             if (multiline == false) {
                 for (s64 c = 1; c < nodes; c += 1) {
                     for (s64 r = 0; r < c; r += 1) {
@@ -212,16 +251,32 @@ public:
         return Base::edge(column, row, Nodes, _v);
     }
 
+    constexpr bool edge(s64 edge_) const {
+        return Base::edge(edge_, _v);
+    }
+
     constexpr bool edgeChecked(s64 column, s64 row) const {
         return Base::edgeChecked(column, row, Nodes, _v);
+    }
+
+    constexpr bool edgeChecked(s64 edge) const {
+        return Base::edgeChecked(edge, Nodes, _v);
     }
 
     constexpr void unsetEdge(s64 column, s64 row) {
         Base::unsetEdge(column, row, Nodes, _v);
     }
 
+    constexpr void unsetEdge(s64 edge) {
+        Base::unsetEdge(edge, Nodes, _v);
+    }
+
     constexpr void unsetEdgeChecked(s64 column, s64 row) {
         Base::unsetEdgeChecked(column, row, Nodes, _v);
+    }
+
+    constexpr void unsetEdgeChecked(s64 edge) {
+        Base::unsetEdgeChecked(edge, Nodes, _v);
     }
 
     constexpr void unsetAllEdges() {
@@ -232,8 +287,16 @@ public:
         Base::setEdge(column, row, Nodes, _v);
     }
 
+    constexpr void setEdge(s64 edge) {
+        Base::setEdge(edge, Nodes, _v);
+    }
+
     constexpr void setEdgeChecked(s64 column, s64 row) {
         Base::setEdgesChecked(column, row, Nodes, _v);
+    }
+
+    constexpr void setEdgeChecked(s64 edge) {
+        Base::setEdgesChecked(edge, Nodes, _v);
     }
 
     constexpr void setAllEdges() {
@@ -322,16 +385,32 @@ public:
         return Base::edge(column, row, _nodes, _v);
     }
 
+    bool edge(s64 edge_) const {
+        return Base::edge(edge_, _v);
+    }
+
     bool edgeChecked(s64 column, s64 row) const {
         return Base::edgeChecked(column, row, _nodes, _v);
+    }
+
+    bool edgeChecked(s64 edge) const {
+        return Base::edgeChecked(edge, _nodes, _v);
     }
 
     void unsetEdge(s64 column, s64 row) {
         Base::unsetEdge(column, row, _nodes, _v);
     }
 
+    void unsetEdge(s64 edge) {
+        Base::unsetEdge(edge, _nodes, _v);
+    }
+
     void unsetEdgeChecked(s64 column, s64 row) {
         Base::unsetEdgeChecked(column, row, _nodes, _v);
+    }
+
+    void unsetEdgeChecked(s64 edge) {
+        Base::unsetEdgeChecked(edge, _nodes, _v);
     }
 
     void unsetAllEdges() {
@@ -342,8 +421,16 @@ public:
         Base::setEdge(column, row, _nodes, _v);
     }
 
+    void setEdge(s64 edge) {
+        Base::setEdge(edge, _nodes, _v);
+    }
+
     void setEdgeChecked(s64 column, s64 row) {
         Base::setEdgeChecked(column, row, _nodes, _v);
+    }
+
+    void setEdgeChecked(s64 edge) {
+        Base::setEdgeChecked(edge, _nodes, _v);
     }
 
     void setAllEdges() {
