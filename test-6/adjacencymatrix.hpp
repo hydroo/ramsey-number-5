@@ -495,4 +495,10 @@ public:
 
 } // namespace r5
 
+template<s64 Nodes, bool Triangular = true>
+std::ostream& operator<< (std::ostream& o, const r5::AdjacencyMatrix<Nodes, Triangular>& m) {
+    o << m.print();
+    return o;
+}
+
 #endif
