@@ -1,9 +1,10 @@
 CXX = g++
 INCLUDE =
-CXXFLAGS = -std=c++17 -O2 -Wall -Wextra -g $(INCLUDE)
-#CXXFLAGS = -std=c++17 -mtune=native -mcpu=native -O2 -Wall -Wextra -g -fno-omit-frame-pointer $(INCLUDE)
-CXXFLAGS += -fno-omit-frame-pointer
-CXXFLAGS += -DDEBUG
+#CXXFLAGS = -std=c++17 -O2 -Wall -Wextra -g $(INCLUDE)
+#CXXFLAGS = -std=c++17 -mtune=native -O2 -Wall -Wextra -g $(INCLUDE)
+CXXFLAGS = -std=c++17 -mtune=native -O2 -Wall -Wextra $(INCLUDE)
+#CXXFLAGS += -fno-omit-frame-pointer
+#CXXFLAGS += -DDEBUG
 #CXXFLAGS += -DVERBOSE
 #CXXFLAGS += -pg
 
