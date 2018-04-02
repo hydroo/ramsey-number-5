@@ -8,7 +8,7 @@ if [ $# -lt 3 ]; then
     exit 0
 fi
 
-source_dir="../"
+source_dir=".."
 config_inc=$source_dir/config.inc
 tmp_file=$config_inc.new
 
