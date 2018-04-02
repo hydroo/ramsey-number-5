@@ -132,7 +132,7 @@ protected:
                     for (s64 r = 0; r < c; r += 1) {
                         o << edge(c, r, nodes, v);
                     }
-                    o << ' ';
+                    if (c < nodes-1) { o << ' '; }
                 }
             } else {
                 for (s64 r = 0; r < nodes-1; r += 1) {
