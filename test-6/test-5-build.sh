@@ -14,9 +14,9 @@ tmp_file=$config_inc.new
 
 cat << EOF >> $tmp_file
 namespace config_inc {
-   constexpr int r = $1;
-   constexpr int s = $2;
-   constexpr int n = $3;
+   constexpr s64 r = $1;
+   constexpr s64 s = $2;
+   constexpr s64 n = $3;
 }
 EOF
 
