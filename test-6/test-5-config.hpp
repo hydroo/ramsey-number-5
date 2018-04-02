@@ -3,6 +3,8 @@
 
 #include "test-5-prereqs.hpp"
 
+#include <cmath>
+
 #include "config.inc"
 
 static_assert(config_inc::r >= 1);
