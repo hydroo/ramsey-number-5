@@ -4,6 +4,6 @@
 #include "prereqs.hpp"
 #include "test-5-prereqs.hpp"
 
-int expectedResult(int r, int s);
+s64 expectedResult(s64 r, s64 s);
 
 #endif // TEST_5_CHECK_HPP
