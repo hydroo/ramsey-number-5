@@ -70,7 +70,6 @@ Perf stat confirms the improved efficiency:
 
              264,246273495 seconds time elapsed
 
-
 # Possible Next Steps (Copied from Test 5)
 - Output counterexamples / graphs with wildcards/do-not-care terms (because most counter examples are overspecified, and this is also helpful for reducing memory requirements when storing counterexamples in future versions)
 - GPU
@@ -90,3 +89,35 @@ Perf stat confirms the improved efficiency:
   I.e. more pruning, and
   avoiding to check graphs that are isomorphic to something I checked or will definitely check later.
   Or perhaps replace the whole bitmask-based subgraph search which this test-5 is based on.
+
+# Iterative DFS + Halve Edge Mask Checks (4th April 2018)
+
+Replace recursive enumeration of graphs by a manually kept stack + loop.
+It is a tiny bit more efficient, and will be needed for parallelization later on.
+
+Check only the edgeMasks of the kind of which the recently toggled edge is.
+If we just set an edge to 0, there is no use in checking for a new complete subgraph.
+Similarly, if we just set an edge to 1, there can't be a new empty subgraph.
+This shaves off half the edge mask checks!
+Good performance improvement.
+
+R(4,4) >  13 takes   0.08 s (Solaire)
+R(4,4) >  14 takes 130    s (Solaire)
+R(3,5) >  13 takes   1.61 s (Solaire)
+
+R(4,4) > 14 Output Excerpt and Perf Stat:
+    Number of complete subgraphs:                                      1,001   # n choose r
+    Number of empty subgraphs:                                         1,001   # n choose s
+    Edges:                                                                91   # n*(n-1)/2
+    Edge colorings:                    2,475,880,078,570,760,549,798,248,448   # 2^e
+
+    Timing: Number of recursion steps:     6,276,522,241
+    Timing: Number of colorings checked:   6,276,522,242
+    Timing: Number of edge mask checks:  111,828,185,109
+
+       354.038.887.341      cycles                    #    2,725 GHz
+     1.422.337.256.688      instructions              #    4,02  insn per cycle
+       267.490.892.742      branches                  # 2058,970 M/sec
+         1.472.728.994      branch-misses             #    0,55% of all branches
+
+         129,991521717 seconds time elapsed
