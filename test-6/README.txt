@@ -55,10 +55,6 @@ Example output:
 Perf stat confirms the improved efficiency:
 
     Test 5:
-             328362,461041      task-clock (msec)         #    1,000 CPUs utilized
-                     2.718      context-switches          #    0,008 K/sec
-                        25      cpu-migrations            #    0,000 K/sec
-                       159      page-faults               #    0,000 K/sec
            901.076.395.711      cycles                    #    2,744 GHz
          3.328.606.805.191      instructions              #    3,69  insn per cycle
            559.155.836.338      branches                  # 1702,862 M/sec
@@ -67,10 +63,6 @@ Perf stat confirms the improved efficiency:
              328,476394587 seconds time elapsed
 
     Test 5 New:
-             264160,205289      task-clock (msec)         #    1,000 CPUs utilized
-                     1.371      context-switches          #    0,005 K/sec
-                        13      cpu-migrations            #    0,000 K/sec
-                       156      page-faults               #    0,001 K/sec
            719.334.209.744      cycles                    #    2,723 GHz
          2.913.518.584.309      instructions              #    4,05  insn per cycle
            569.996.449.712      branches                  # 2157,768 M/sec
