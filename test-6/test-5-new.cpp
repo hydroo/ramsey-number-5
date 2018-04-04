@@ -100,6 +100,8 @@ std::array<std::vector<AdjacencyMatrix<nodes>>, edges + 1> subGraphEdgeMasksByLa
 
 // Enumerates all graphs iteratively (iterative DFS).
 // I.e. for each edge, set it to 0, iterate, set it to 1, iterate.
+//
+// Note: Assumes config::e >= 1, and therefore config::n >= 2
 bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<AdjacencyMatrix<config::n>>, config::e + 1>& edgeMasksCompleteByLastOne, const std::array<std::vector<AdjacencyMatrix<config::n>>, config::e + 1>& edgeMasksEmptyByLastZero, AdjacencyMatrix<config::n>* counterExample, s64* recursionSteps, s64* coloringsChecked, s64* edgeMaskChecks) {
     *recursionSteps   = 0;
     *coloringsChecked = 0;
@@ -110,13 +112,10 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
 
     bool ret = true;
 
-    std::array<s64, config::e> stack;
-    s64 stackTop = -1;
-
-    if (coloring.edges() >= 1) { // necessary for the r = 1, or s = 1, or n = 1 case
-        stack[0] = -1;
-        stackTop = 0;
-    }
+    std::array<s64, config::e + 1> stack;
+    s64 stackTop = 1;
+    stack[0] = 0;
+    stack[1] = 0;
 
     while (stackTop >= 0) {
 
@@ -223,13 +222,23 @@ int main(int argc, char** args) {
     // cerr << "Empty edge masks by last 0    (last:vectorsize): " << printMatrixCountPerLastDigit(edgeMasksEmptyByLastZero) << endl;
 
     AdjacencyMatrix<config::n> counterExample;
-    s64 recursionSteps;
-    s64 coloringsChecked;
-    s64 edgeMaskChecks;
+    s64 recursionSteps   = 0;
+    s64 coloringsChecked = 0;
+    s64 edgeMaskChecks   = 0;
 
     auto t3 = std::chrono::steady_clock::now();
-    // enumerate all graphs of size `n` and find out whether all have a complete subgraph of size `r` or an empty subgraph of size `s`
-    bool allColoringsHaveCompleteOrEmptySubgraph_ = allColoringsHaveCompleteOrEmptySubgraph(edgeMasksCompleteByLastOne, edgeMasksEmptyByLastZero, &counterExample, &recursionSteps, &coloringsChecked, &edgeMaskChecks);
+
+    bool allColoringsHaveCompleteOrEmptySubgraph_;
+    if (config::r == 1 || config::s == 1) {
+        allColoringsHaveCompleteOrEmptySubgraph_ = true;
+    } else if (config::n == 1) {
+        allColoringsHaveCompleteOrEmptySubgraph_ = false;
+    } else {
+        // Now we can assume n >= 2 and therefore e >= 1
+
+        // enumerate all graphs of size `n` and find out whether all have a complete subgraph of size `r` or an empty subgraph of size `s`
+        allColoringsHaveCompleteOrEmptySubgraph_ = allColoringsHaveCompleteOrEmptySubgraph(edgeMasksCompleteByLastOne, edgeMasksEmptyByLastZero, &counterExample, &recursionSteps, &coloringsChecked, &edgeMaskChecks);
+    }
 
     auto t4 = std::chrono::steady_clock::now();
     cerr << "Timing: Check all colorings:         " << std::setw(15 + 4) << std::fixed << std::chrono::duration<double>(t4 - t3).count() << " seconds" << endl;
