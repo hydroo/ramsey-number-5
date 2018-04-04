@@ -110,7 +110,7 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
 
     bool ret = true;
 
-    std::array<s64, config::e*2> stack;
+    std::array<s64, config::e> stack;
     s64 stackTop = -1;
 
     if (coloring.edges() >= 1) { // necessary for the r = 1, or s = 1, or n = 1 case
