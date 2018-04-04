@@ -15,6 +15,14 @@
 #   define R5_BENCH(x)
 #endif
 
+#ifdef __GNUC__
+#    define R5_LIKELY(x)       __builtin_expect(!!(x), 1)
+#    define R5_UNLIKELY(x)     __builtin_expect(!!(x), 0)
+#else
+#    define R5_LIKELY(x)       (x)
+#    define R5_UNLIKELY(x)     (x)
+#endif
+
 template<typename T, typename = std::enable_if_t<std::is_integral<T>::value>>
 constexpr T nChooseK(T n, T k) {
     if (n < k) {

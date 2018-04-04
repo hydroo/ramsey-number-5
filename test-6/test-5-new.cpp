@@ -98,6 +98,101 @@ std::array<std::vector<AdjacencyMatrix<nodes>>, edges + 1> subGraphEdgeMasksByLa
     return ret;
 }
 
+// Enumerates all graphs iteratively (iterative DFS).
+// I.e. for each edge, set it to 0, iterate, set it to 1, iterate.
+bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<AdjacencyMatrix<config::n>>, config::e + 1>& edgeMasksCompleteByLastOne, const std::array<std::vector<AdjacencyMatrix<config::n>>, config::e + 1>& edgeMasksEmptyByLastZero, AdjacencyMatrix<config::n>* counterExample, s64* recursionSteps, s64* coloringsChecked, s64* edgeMaskChecks) {
+    *recursionSteps   = 0;
+    *coloringsChecked = 0;
+    *edgeMaskChecks   = 0;
+
+    AdjacencyMatrix<config::n> coloring;
+    coloring.unsetAllEdges();
+
+    bool ret = true;
+
+    std::array<std::pair<s64, bool>, config::e*2> stack;
+    s64 stackTop = -1;
+
+    if (coloring.edges() >= 1) { // necessary for the r = 1, or s = 1, or n = 1 case
+        stack[0] = std::make_pair(-1, false);
+        stackTop = 0;
+    }
+
+    while (R5_LIKELY(stackTop >= 0)) {
+
+        R5_DEBUG_ASSERT(stackTop < stack.size());
+
+        // cerr << stackTop << stack << endl;
+
+        R5_BENCH(*recursionSteps += 1);
+
+        s64 edge = stack[stackTop].first;
+        bool enable  = stack[stackTop].second;
+        stackTop -= 1;
+
+        if (R5_LIKELY(edge >= 0)) { // necessary for the r = 1, or s = 1, or n = 1 case
+            if (enable == true) {
+                R5_DEBUG_ASSERT(coloring.edge(edge) == false);
+                coloring.setEdge(edge);
+            } else {
+                R5_DEBUG_ASSERT(coloring.edge(edge) == true);
+                coloring.unsetEdge(edge);
+            }
+        }
+
+        // cerr << "  " << coloring << " edge " << edge << (enable ? " true" : " false") << endl;
+
+        // Compare this graph against all appropriate complete subgraphs.
+        // Appropriate means every graph whos complete subgraph's laste edge is exactly the lastly enumerated edge
+        bool foundCompleteSubgraph = false;
+        const auto& currentEdgeMasksComplete = edgeMasksCompleteByLastOne[edge + 1];
+        R5_BENCH(*edgeMaskChecks += currentEdgeMasksComplete.size());
+        for (std::size_t i = 0; i < currentEdgeMasksComplete.size(); i += 1) {
+            if (R5_UNLIKELY((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i])) {
+                if (config::n >= config::r) {  // avoids matching subgraphs larger than the to-be-checked graph
+                    // cerr << "    " << currentEdgeMasksComplete[i] << " is complete subgraph" << endl;
+                    R5_BENCH(*coloringsChecked += 1);
+                    foundCompleteSubgraph = true;
+                    break;
+                }
+            }
+        }
+        if (R5_UNLIKELY(foundCompleteSubgraph)) { continue; }
+
+        // Do the same for empty subgraphs
+        bool foundEmptySubgraph = false;
+        const auto& currentEdgeMasksEmpty = edgeMasksEmptyByLastZero[edge + 1];
+        R5_BENCH(*edgeMaskChecks += currentEdgeMasksEmpty.size());
+        for (std::size_t i = 0; i < currentEdgeMasksEmpty.size(); i += 1) {
+            if (R5_UNLIKELY((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i])) {
+                if (config::n >= config::s) {  // avoids matching subgraphs larger than the to-be-checked graph
+                    // cerr << "    " << currentEdgeMasksEmpty << " is empty subgraph" << endl;
+                    R5_BENCH(*coloringsChecked += 1);
+                    foundEmptySubgraph = true;
+                    break;
+                }
+            }
+        }
+        if (R5_UNLIKELY(foundEmptySubgraph)) { continue; }
+
+        if (R5_LIKELY(edge < config::e - 1)) {
+            stack[stackTop+1] = std::make_pair(edge + 1, false);
+            stack[stackTop+2] = std::make_pair(edge + 1, true);
+            stackTop += 2;
+        } else {
+            // If this graph is completely enumerated and no complete or empty subgraph has been found,
+            // return false and provide this graph as a counter example.
+            R5_BENCH(*coloringsChecked += 1);
+            *counterExample = coloring;
+
+            // cerr << "    " << coloring << " has no complete or empty subgraphs" << endl;
+            ret = false;
+            break;
+        }
+    }
+
+    return ret;
+}
 
 int main(int argc, char** args) {
     (void) argc;
@@ -134,75 +229,15 @@ int main(int argc, char** args) {
     // cerr << "Complete edge masks by last 1 (last:vectorsize): " << printMatrixCountPerLastDigit(edgeMasksCompleteByLastOne) << endl;
     // cerr << "Empty edge masks by last 0    (last:vectorsize): " << printMatrixCountPerLastDigit(edgeMasksEmptyByLastZero) << endl;
 
-    AdjacencyMatrix<config::n> coloring;
     AdjacencyMatrix<config::n> counterExample;
-    s64 recursionSteps = 0;
-    s64 coloringsChecked = 0;
-    s64 edgeMaskChecks = 0;
-
-    // Enumerates all graphs recursively.
-    // I.e. for each edge, set it to 0, recurse, set it to 1, recurse.
-    std::function<bool(s64)> foreachColoringHasCompleteOrEmptySubgraph = [&coloring, &edgeMasksCompleteByLastOne,
-            &edgeMasksEmptyByLastZero, &counterExample, &recursionSteps, &coloringsChecked, &edgeMaskChecks,
-            &foreachColoringHasCompleteOrEmptySubgraph](s64 nextEdge) -> bool {
-
-        R5_BENCH(recursionSteps += 1);
-
-        // cerr << "  " << coloring << " nextEdge " << nextEdge << endl;
-
-        // Compare this graph against all appropriate complete subgraphs.
-        // Appropriate means every graph whos complete subgraph's laste edge is exactly the lastly enumerated edge
-        const auto& currentEdgeMasksComplete = edgeMasksCompleteByLastOne[nextEdge - 1 + 1];
-        R5_BENCH(edgeMaskChecks += currentEdgeMasksComplete.size());
-        for (std::size_t i = 0; i < currentEdgeMasksComplete.size(); i += 1) {
-            if ((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i]) {
-                if (config::n >= config::r) {  // avoids matching subgraphs larger than the to-be-checked graph
-                    // cerr << "      Mask " << currentEdgeMasksComplete[i] << " is a subgraph" << endl;
-                    R5_BENCH(coloringsChecked += 1);
-                    return true;
-                }
-            }
-        }
-
-        // Do the same for empty subgraphs
-        const auto& currentEdgeMasksEmpty = edgeMasksEmptyByLastZero[nextEdge - 1 + 1];
-        R5_BENCH(edgeMaskChecks += currentEdgeMasksEmpty.size());
-        for (std::size_t i = 0; i < currentEdgeMasksEmpty.size(); i += 1) {
-            if ((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i]) {
-                if (config::n >= config::s) {  // avoids matching subgraphs larger than the to-be-checked graph
-                    // cerr << "      Mask " << mask << " is a subgraph" << endl;
-                    R5_BENCH(coloringsChecked += 1);
-                    return true;
-                }
-            }
-        }
-
-        // If this graph is completely enumerated and no complete or empty subgraph has been found,
-        // return false and provide this graph as a counter example.
-        if (nextEdge == config::e) {
-            R5_BENCH(coloringsChecked += 1);
-            counterExample = coloring;
-            return false;
-        }
-
-        bool ret;
-
-        coloring.setEdge(nextEdge);
-        ret = foreachColoringHasCompleteOrEmptySubgraph(nextEdge + 1);
-
-        if (ret == false) {
-            return false;
-        }
-
-        coloring.unsetEdge(nextEdge);
-        ret = foreachColoringHasCompleteOrEmptySubgraph(nextEdge + 1);
-
-        return ret;
-    };
+    s64 recursionSteps;
+    s64 coloringsChecked;
+    s64 edgeMaskChecks;
 
     auto t3 = std::chrono::steady_clock::now();
     // enumerate all graphs of size `n` and find out whether all have a complete subgraph of size `r` or an empty subgraph of size `s`
-    bool allColoringsHaveCompleteOrEmptySubgraph = foreachColoringHasCompleteOrEmptySubgraph(0);
+    bool allColoringsHaveCompleteOrEmptySubgraph_ = allColoringsHaveCompleteOrEmptySubgraph(edgeMasksCompleteByLastOne, edgeMasksEmptyByLastZero, &counterExample, &recursionSteps, &coloringsChecked, &edgeMaskChecks);
+
     auto t4 = std::chrono::steady_clock::now();
     cerr << "Timing: Check all colorings:         " << std::setw(15 + 4) << std::fixed << std::chrono::duration<double>(t4 - t3).count() << " seconds" << endl;
     cerr.precision(defaultPrecision);
@@ -212,22 +247,22 @@ int main(int argc, char** args) {
     cerr << "Timing: Number of edge mask checks:  " << std::setw(15) << edgeMaskChecks << endl;
 
     // Check against expected result
-    if (allColoringsHaveCompleteOrEmptySubgraph == true) {
+    if (allColoringsHaveCompleteOrEmptySubgraph_ == true) {
         if (config::n < expectedResult(config::r, config::s)) {
             cerr << "Error: Check Result for R(" << config::r << "," << config::s << ") <= " << config::n
-                      << " disagrees with our result (" << allColoringsHaveCompleteOrEmptySubgraph << ")" << endl;
+                      << " disagrees with our result (" << allColoringsHaveCompleteOrEmptySubgraph_ << ")" << endl;
             std::abort();
         }
     } else {
         if (config::n >= expectedResult(config::r, config::s)) {
             cerr << "Error: Check Result for R(" << config::r << "," << config::s << ") <= " << config::n
-                      << " disagrees with our result (" << allColoringsHaveCompleteOrEmptySubgraph << ")" << endl;
+                      << " disagrees with our result (" << allColoringsHaveCompleteOrEmptySubgraph_ << ")" << endl;
             std::abort();
         }
     }
 
     // Final output
-    if (allColoringsHaveCompleteOrEmptySubgraph == true) {
+    if (allColoringsHaveCompleteOrEmptySubgraph_ == true) {
         cout << "R(" << config::r << "," << config::s << ") <= " << config::n << " (TRUE)" << endl;
     } else {
         cout << "R(" << config::r << "," << config::s << ")  > " << config::n << " (FALSE)" << endl;
