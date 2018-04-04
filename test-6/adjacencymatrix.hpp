@@ -100,7 +100,7 @@ protected:
         f(edge);
         if (Triangular == false) {
             auto p = Indexer::reverse(edge, nodes);
-            f(Indexer::index(p.second, p.first));
+            f(Indexer::index(p.second, p.first, nodes));
         }
     }
 
