@@ -128,44 +128,48 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
         s64 edge = stack[stackTop];
         stackTop -= 1;
 
-        if (edge >= 0) { // necessary for the r = 1, or s = 1, or n = 1 case
-            coloring.toggleEdge(edge);
-        }
+        coloring.toggleEdge(edge);
 
         // cerr << "  " << coloring << " edge " << edge << endl;
 
-        // Compare this graph against all appropriate complete subgraphs.
-        // Appropriate means every graph whos complete subgraph's laste edge is exactly the lastly enumerated edge
-        bool foundCompleteSubgraph = false;
-        const auto& currentEdgeMasksComplete = edgeMasksCompleteByLastOne[edge + 1];
-        R5_BENCH(*edgeMaskChecks += currentEdgeMasksComplete.size());
-        for (std::size_t i = 0; i < currentEdgeMasksComplete.size(); i += 1) {
-            if ((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i]) {
-                if (config::n >= config::r) {  // avoids matching subgraphs larger than the to-be-checked graph
-                    // cerr << "    " << currentEdgeMasksComplete[i] << " is complete subgraph" << endl;
-                    R5_BENCH(*coloringsChecked += 1);
-                    foundCompleteSubgraph = true;
-                    break;
-                }
-            }
-        }
-        if (foundCompleteSubgraph) { continue; }
+        if (coloring.edge(edge) == true) {
 
-        // Do the same for empty subgraphs
-        bool foundEmptySubgraph = false;
-        const auto& currentEdgeMasksEmpty = edgeMasksEmptyByLastZero[edge + 1];
-        R5_BENCH(*edgeMaskChecks += currentEdgeMasksEmpty.size());
-        for (std::size_t i = 0; i < currentEdgeMasksEmpty.size(); i += 1) {
-            if ((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i]) {
-                if (config::n >= config::s) {  // avoids matching subgraphs larger than the to-be-checked graph
-                    // cerr << "    " << currentEdgeMasksEmpty << " is empty subgraph" << endl;
-                    R5_BENCH(*coloringsChecked += 1);
-                    foundEmptySubgraph = true;
-                    break;
+            // Compare this graph against all appropriate complete subgraphs.
+            // Appropriate means every graph whos complete subgraph's laste edge is exactly the lastly enumerated edge
+            bool foundCompleteSubgraph = false;
+            const auto& currentEdgeMasksComplete = edgeMasksCompleteByLastOne[edge + 1];
+            R5_BENCH(*edgeMaskChecks += currentEdgeMasksComplete.size());
+            for (std::size_t i = 0; i < currentEdgeMasksComplete.size(); i += 1) {
+                if ((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i]) {
+                    if (config::n >= config::r) {  // avoids matching subgraphs larger than the to-be-checked graph
+                        // cerr << "    " << currentEdgeMasksComplete[i] << " is complete subgraph" << endl;
+                        R5_BENCH(*coloringsChecked += 1);
+                        foundCompleteSubgraph = true;
+                        break;
+                    }
                 }
             }
+            if (foundCompleteSubgraph) { continue; }
+
+        } else {
+
+            // Do the same for empty subgraphs
+            bool foundEmptySubgraph = false;
+            const auto& currentEdgeMasksEmpty = edgeMasksEmptyByLastZero[edge + 1];
+            R5_BENCH(*edgeMaskChecks += currentEdgeMasksEmpty.size());
+            for (std::size_t i = 0; i < currentEdgeMasksEmpty.size(); i += 1) {
+                if ((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i]) {
+                    if (config::n >= config::s) {  // avoids matching subgraphs larger than the to-be-checked graph
+                        // cerr << "    " << currentEdgeMasksEmpty << " is empty subgraph" << endl;
+                        R5_BENCH(*coloringsChecked += 1);
+                        foundEmptySubgraph = true;
+                        break;
+                    }
+                }
+            }
+
+            if (foundEmptySubgraph) { continue; }
         }
-        if (foundEmptySubgraph) { continue; }
 
         if (edge < config::e - 1) {
             stack[stackTop+1] = edge + 1;
