@@ -162,6 +162,41 @@ protected:
         r5::fill_n(v, elements(nodes), (u64) 0xffffffffffffffff);
     }
 
+    static constexpr void toggleEdge(s64 column, s64 row, s64 nodes, u64* v) {
+        auto f = [nodes, v](s64 column, s64 row) {
+            s64 i = Indexer::index(column, row, nodes);
+            v[i / bitsPerElement] ^= ((u64)1)<<(i % bitsPerElement);
+        };
+        f(column, row);
+        if (Triangular == false) { f(row, column); }
+    }
+
+    static constexpr void toggleEdge(s64 edge, s64 nodes, u64* v) {
+        auto f = [v](s64 edge) {
+            v[edge / bitsPerElement] ^= ((u64)1)<<(edge % bitsPerElement);
+        };
+        f(edge);
+        if (Triangular == false) {
+            auto p = Indexer::reverse(edge, nodes);
+            f(Indexer::index(p.second, p.first, nodes));
+        }
+    }
+
+    static constexpr void toggleEdgeChecked(s64 column, s64 row, s64 nodes, u64* v) {
+        R5_ASSERT(row    != column);
+        R5_ASSERT(column >= 0);
+        R5_ASSERT(column <= nodes-1);
+        R5_ASSERT(row    >= 0);
+        R5_ASSERT(row    <= nodes-1);
+        toggleEdge(column, row, nodes, v);
+    }
+
+    static constexpr void toggleEdgeChecked(s64 edge, s64 nodes, u64* v) {
+        R5_ASSERT(edge >= 0);
+        R5_ASSERT(edge <= edges(nodes)-1);
+        toggleEdge(edge, nodes, v);
+    }
+
     static std::string print(bool multiline, std::string indent, s64 nodes, const u64* v) {
         std::ostringstream o;
 
@@ -303,6 +338,22 @@ public:
         Base::setAllEdges(Nodes, _v);
     }
 
+    constexpr void toggleEdge(s64 column, s64 row) {
+        Base::toggleEdge(column, row, Nodes, _v);
+    }
+
+    constexpr void toggleEdge(s64 edge) {
+        Base::toggleEdge(edge, Nodes, _v);
+    }
+
+    constexpr void toggleEdgeChecked(s64 column, s64 row) {
+        Base::toggleEdgesChecked(column, row, Nodes, _v);
+    }
+
+    constexpr void toggleEdgeChecked(s64 edge) {
+        Base::toggleEdgesChecked(edge, Nodes, _v);
+    }
+
     std::string print(bool multiline = false, std::string indent = "") const {
         return Base::print(multiline, indent, Nodes, _v);
     }
@@ -435,6 +486,22 @@ public:
 
     void setAllEdges() {
         Base::setAllEdges(_nodes, _v);
+    }
+
+    void toggleEdge(s64 column, s64 row) {
+        Base::toggleEdge(column, row, _nodes, _v);
+    }
+
+    void toggleEdge(s64 edge) {
+        Base::toggleEdge(edge, _nodes, _v);
+    }
+
+    void toggleEdgeChecked(s64 column, s64 row) {
+        Base::toggleEdgeChecked(column, row, _nodes, _v);
+    }
+
+    void toggleEdgeChecked(s64 edge) {
+        Base::toggleEdgeChecked(edge, _nodes, _v);
     }
 
     std::string print(bool multiline = false, std::string indent = "") const {

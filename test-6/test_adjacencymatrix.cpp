@@ -266,6 +266,48 @@ TEST(AdjacencyMatrix, setAllEdges) {
     testAllEdges(srn , true );
 }
 
+TEST(AdjacencyMatrix, toggleEdge) {
+    constexpr s64 n = 17;
+
+    AdjacencyMatrix<n> ct;
+    ct.unsetAllEdges();
+    for (s64 e = 0; e < ct.edges(); e += 1) {
+        ct.toggleEdge(e);
+    }
+    for (s64 e = 0; e < ct.edges(); e += 1) {
+        ASSERT_EQ(ct.edge(e), true);
+    }
+    for (s64 e = 0; e < ct.edges(); e += 1) {
+        ct.toggleEdge(e);
+    }
+    for (s64 e = 0; e < ct.edges(); e += 1) {
+        ASSERT_EQ(ct.edge(e), false);
+    }
+
+    AdjacencyMatrix<n, false> cn;
+    cn.unsetAllEdges();
+    for (s64 i = 1; i < cn.nodes(); i += 1) {
+        for (s64 j = 0; j < i; j += 1) {
+            cn.toggleEdge(i, j);
+        }
+    }
+    for (s64 i = 1; i < cn.nodes(); i += 1) {
+        for (s64 j = 0; j < i; j += 1) {
+            ASSERT_EQ(cn.edge(i, j), true);
+        }
+    }
+    for (s64 i = 1; i < cn.nodes(); i += 1) {
+        for (s64 j = 0; j < i; j += 1) {
+            cn.toggleEdge(j, i);
+        }
+    }
+    for (s64 i = 1; i < cn.nodes(); i += 1) {
+        for (s64 j = 0; j < i; j += 1) {
+            ASSERT_EQ(cn.edge(j, i), false);
+        }
+    }
+}
+
 // // print() can't be constexpr because std::ostringstream and std::string
 // TEST(AdjacencyMatrix, print_constexpr) {
 //     constexpr AdjacencyMatrix<3> m1;

@@ -110,15 +110,15 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
 
     bool ret = true;
 
-    std::array<std::pair<s64, bool>, config::e*2> stack;
+    std::array<s64, config::e*2> stack;
     s64 stackTop = -1;
 
     if (coloring.edges() >= 1) { // necessary for the r = 1, or s = 1, or n = 1 case
-        stack[0] = std::make_pair(-1, false);
+        stack[0] = -1;
         stackTop = 0;
     }
 
-    while (R5_LIKELY(stackTop >= 0)) {
+    while (stackTop >= 0) {
 
         R5_DEBUG_ASSERT(stackTop < stack.size());
 
@@ -126,21 +126,14 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
 
         R5_BENCH(*recursionSteps += 1);
 
-        s64 edge = stack[stackTop].first;
-        bool enable  = stack[stackTop].second;
+        s64 edge = stack[stackTop];
         stackTop -= 1;
 
-        if (R5_LIKELY(edge >= 0)) { // necessary for the r = 1, or s = 1, or n = 1 case
-            if (enable == true) {
-                R5_DEBUG_ASSERT(coloring.edge(edge) == false);
-                coloring.setEdge(edge);
-            } else {
-                R5_DEBUG_ASSERT(coloring.edge(edge) == true);
-                coloring.unsetEdge(edge);
-            }
+        if (edge >= 0) { // necessary for the r = 1, or s = 1, or n = 1 case
+            coloring.toggleEdge(edge);
         }
 
-        // cerr << "  " << coloring << " edge " << edge << (enable ? " true" : " false") << endl;
+        // cerr << "  " << coloring << " edge " << edge << endl;
 
         // Compare this graph against all appropriate complete subgraphs.
         // Appropriate means every graph whos complete subgraph's laste edge is exactly the lastly enumerated edge
@@ -148,7 +141,7 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
         const auto& currentEdgeMasksComplete = edgeMasksCompleteByLastOne[edge + 1];
         R5_BENCH(*edgeMaskChecks += currentEdgeMasksComplete.size());
         for (std::size_t i = 0; i < currentEdgeMasksComplete.size(); i += 1) {
-            if (R5_UNLIKELY((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i])) {
+            if ((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i]) {
                 if (config::n >= config::r) {  // avoids matching subgraphs larger than the to-be-checked graph
                     // cerr << "    " << currentEdgeMasksComplete[i] << " is complete subgraph" << endl;
                     R5_BENCH(*coloringsChecked += 1);
@@ -157,14 +150,14 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
                 }
             }
         }
-        if (R5_UNLIKELY(foundCompleteSubgraph)) { continue; }
+        if (foundCompleteSubgraph) { continue; }
 
         // Do the same for empty subgraphs
         bool foundEmptySubgraph = false;
         const auto& currentEdgeMasksEmpty = edgeMasksEmptyByLastZero[edge + 1];
         R5_BENCH(*edgeMaskChecks += currentEdgeMasksEmpty.size());
         for (std::size_t i = 0; i < currentEdgeMasksEmpty.size(); i += 1) {
-            if (R5_UNLIKELY((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i])) {
+            if ((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i]) {
                 if (config::n >= config::s) {  // avoids matching subgraphs larger than the to-be-checked graph
                     // cerr << "    " << currentEdgeMasksEmpty << " is empty subgraph" << endl;
                     R5_BENCH(*coloringsChecked += 1);
@@ -173,11 +166,11 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
                 }
             }
         }
-        if (R5_UNLIKELY(foundEmptySubgraph)) { continue; }
+        if (foundEmptySubgraph) { continue; }
 
-        if (R5_LIKELY(edge < config::e - 1)) {
-            stack[stackTop+1] = std::make_pair(edge + 1, false);
-            stack[stackTop+2] = std::make_pair(edge + 1, true);
+        if (edge < config::e - 1) {
+            stack[stackTop+1] = edge + 1;
+            stack[stackTop+2] = edge + 1;
             stackTop += 2;
         } else {
             // If this graph is completely enumerated and no complete or empty subgraph has been found,
