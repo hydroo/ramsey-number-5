@@ -139,18 +139,16 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
                 // Appropriate means every graph whos complete subgraph's laste edge is exactly the lastly enumerated edge
                 bool foundCompleteSubgraph = false;
                 const auto& currentEdgeMasksComplete = edgeMasksCompleteByLastOne[edge + 1];
-                R5_BENCH(*edgeMaskChecks += currentEdgeMasksComplete.size());
+                R5_BENCH(if (edgeMasksCompleteByLastOne.size() > 0) { *coloringsChecked += 1; });
                 for (std::size_t i = 0; i < currentEdgeMasksComplete.size(); i += 1) {
+                    R5_BENCH(*edgeMaskChecks += 1);
                     if ((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i]) {
                         // cerr << "    " << currentEdgeMasksComplete[i] << " is complete subgraph" << endl;
                         foundCompleteSubgraph = true;
                         break;
                     }
                 }
-                if (foundCompleteSubgraph) {
-                    R5_BENCH(*coloringsChecked += 1);
-                    continue;
-                }
+                if (foundCompleteSubgraph) { continue; }
             }
 
         } else {
@@ -159,18 +157,16 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
                 // Do the same for empty subgraphs
                 bool foundEmptySubgraph = false;
                 const auto& currentEdgeMasksEmpty = edgeMasksEmptyByLastZero[edge + 1];
-                R5_BENCH(*edgeMaskChecks += currentEdgeMasksEmpty.size());
+                R5_BENCH(if (edgeMasksEmptyByLastZero.size() > 0) { *coloringsChecked += 1; });
                 for (std::size_t i = 0; i < currentEdgeMasksEmpty.size(); i += 1) {
+                    R5_BENCH(*edgeMaskChecks += 1);
                     if ((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i]) {
                         // cerr << "    " << currentEdgeMasksEmpty << " is empty subgraph" << endl;
                         foundEmptySubgraph = true;
                         break;
                     }
                 }
-                if (foundEmptySubgraph) {
-                    R5_BENCH(*coloringsChecked += 1);
-                    continue;
-                }
+                if (foundEmptySubgraph) { continue; }
             }
 
         }
