@@ -234,6 +234,9 @@ int main(int argc, char** args) {
         cout << "R(" << config::r << "," << config::s << ")  > " << config::n << " (FALSE)" << endl;
         cerr << "Counter example: " << endl;
         cerr << counterExample.print(true, "    ") << endl;
+
+        // verify the counter example again
+        R5_ASSERT(hasCompleteOrEmptySubgraph(counterExample, config::r, config::s) == false);
     }
 
     return 0;
