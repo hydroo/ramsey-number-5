@@ -114,8 +114,8 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
 
     std::array<s64, config::e + 1> stack;
     s64 stackTop = 1;
-    stack[0] = 0;
-    stack[1] = 0;
+    stack[0] = 0; // set   edge 0
+    stack[1] = 0; // unset edge 0
 
     while (stackTop >= 0) {
 
@@ -172,8 +172,8 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
         }
 
         if (edge < config::e - 1) {
-            stack[stackTop+1] = edge + 1;
-            stack[stackTop+2] = edge + 1;
+            stack[stackTop+1] = edge + 1; // set   edge + 1
+            stack[stackTop+2] = edge + 1; // unset edge + 1
             stackTop += 2;
         } else {
             // If this graph is completely enumerated and no complete or empty subgraph has been found,
