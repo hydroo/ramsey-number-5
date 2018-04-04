@@ -143,12 +143,14 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
                 for (std::size_t i = 0; i < currentEdgeMasksComplete.size(); i += 1) {
                     if ((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i]) {
                         // cerr << "    " << currentEdgeMasksComplete[i] << " is complete subgraph" << endl;
-                        R5_BENCH(*coloringsChecked += 1);
                         foundCompleteSubgraph = true;
                         break;
                     }
                 }
-                if (foundCompleteSubgraph) { continue; }
+                if (foundCompleteSubgraph) {
+                    R5_BENCH(*coloringsChecked += 1);
+                    continue;
+                }
             }
 
         } else {
@@ -161,12 +163,14 @@ bool allColoringsHaveCompleteOrEmptySubgraph(const std::array<std::vector<Adjace
                 for (std::size_t i = 0; i < currentEdgeMasksEmpty.size(); i += 1) {
                     if ((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i]) {
                         // cerr << "    " << currentEdgeMasksEmpty << " is empty subgraph" << endl;
-                        R5_BENCH(*coloringsChecked += 1);
                         foundEmptySubgraph = true;
                         break;
                     }
                 }
-                if (foundEmptySubgraph) { continue; }
+                if (foundEmptySubgraph) {
+                    R5_BENCH(*coloringsChecked += 1);
+                    continue;
+                }
             }
 
         }
