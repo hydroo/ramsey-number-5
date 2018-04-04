@@ -123,8 +123,8 @@ int main(int argc, char** args) {
 
     auto t2 = std::chrono::steady_clock::now();
 
-    cerr << "Timing: Create subgraph edge masks:  " << std::fixed
-              << std::chrono::duration<double>(t2 - t1).count() << " seconds" << endl;
+    auto defaultPrecision = cerr.precision();
+    cerr << "Timing: Create subgraph edge masks:  " << std::setw(15 + 4) << std::fixed << std::setprecision(3) << std::chrono::duration<double>(t2 - t1).count() << " seconds" << endl;
 
     // cerr << "Complete edge masks:                             " << edgeMasksComplete << endl;
     // cerr << "Complete edge masks by last 1(last+1):           " << edgeMasksCompleteByLastOne << endl;
@@ -201,12 +201,11 @@ int main(int argc, char** args) {
     };
 
     auto t3 = std::chrono::steady_clock::now();
-    // enumerate all graphs of size `n` and find out whether all have a complete subgraph of size `r`
-    // or an empty subgraph of size `s`
+    // enumerate all graphs of size `n` and find out whether all have a complete subgraph of size `r` or an empty subgraph of size `s`
     bool allColoringsHaveCompleteOrEmptySubgraph = foreachColoringHasCompleteOrEmptySubgraph(0);
     auto t4 = std::chrono::steady_clock::now();
-    cerr << "Timing: Check all colorings:         " << std::fixed
-              << std::chrono::duration<double>(t4 - t3).count() << " seconds" << endl;
+    cerr << "Timing: Check all colorings:         " << std::setw(15 + 4) << std::fixed << std::chrono::duration<double>(t4 - t3).count() << " seconds" << endl;
+    cerr.precision(defaultPrecision);
     cerr.imbue(std::locale("en_US.UTF-8"));
     cerr << "Timing: Number of recursion steps:   " << std::setw(15) << recursionSteps << endl;
     cerr << "Timing: Number of colorings checked: " << std::setw(15) << coloringsChecked << endl;
