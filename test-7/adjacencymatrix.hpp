@@ -60,6 +60,15 @@ protected:
         return equal;
     }
 
+    static constexpr bool compareLessThan(const u64* v1, const u64* v2, s64 nodes) {
+        for (s64 i = elements(nodes)-1; i >= 0; i -= 1) {
+            if (v1[i] < v2[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     static constexpr bool edge(s64 column, s64 row, s64 nodes, const u64* v) {
         s64 e = Indexer::index(column, row, nodes);
         return (bool) ((v[e/bitsPerElement]>>(e%bitsPerElement))&0x1);
@@ -381,6 +390,11 @@ protected:
         return Base::compareEqual(_v, m._v, Nodes);
     }
 
+    template<s64 Nodes2>
+    constexpr bool operator<(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) const {
+        return Base::compareLessThan(_v, m._v, Nodes);
+    }
+
 private:
     u64 _v[Base::elements(Nodes)]{};
 };
@@ -535,6 +549,11 @@ protected:
         return Base::compareEqual(_v, m._v, _nodes);
     }
 
+    template<s64 Nodes2>
+    bool operator<(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) const {
+        return Base::compareLessThan(_v, m._v, _nodes);
+    }
+
 private:
     void allocate() {
         _v = (u64*) malloc(sizeof(u64) * elements());
@@ -644,6 +663,14 @@ public:
     template<s64 Nodes2, s64 Nodes_ = Nodes, typename = std::enable_if_t<Nodes2 == Nodes_ || Nodes_ == -1 || Nodes2 == -1>>
     constexpr bool operator!=(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
         return !operator==(m);
+    }
+
+    // compare less than operator
+    // Note: The least significant bit is on the left (in print())
+    template<s64 Nodes2, s64 Nodes_ = Nodes, typename = std::enable_if_t<Nodes2 == Nodes_ || Nodes_ == -1 || Nodes2 == -1>>
+    constexpr bool operator<(const AdjacencyMatrix<Nodes2, Triangular>& m) const {
+        R5_ASSERT(m.nodes() == Base::nodes());
+        return Base::operator<(m);
     }
 };
 

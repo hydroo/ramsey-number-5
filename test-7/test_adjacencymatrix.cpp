@@ -1029,6 +1029,56 @@ TEST(AdjacencyMatrix, compareEqual) {
     ASSERT_THROW2(wrn1 == wrn2);
 }
 
+TEST(AdjacencyMatrix, compareLessThan) {
+    AdjacencyMatrix<13> m1;
+    AdjacencyMatrix<13> m2;
+
+    m1.setEdge(2);
+    ASSERT_FALSE(m1 < m2);
+
+    m2.setEdge(2);
+    ASSERT_FALSE(m1 < m2);
+
+    m2.setEdge(3);
+    ASSERT_TRUE(m1 < m2);
+
+    m1.setEdge(4);
+    ASSERT_FALSE(m1 < m2);
+
+    m2.setEdge(70);
+    ASSERT_TRUE(m1 < m2);
+
+    m1.setEdge(69);
+    ASSERT_TRUE(m1 < m2);
+
+    m1.setEdge(71);
+    ASSERT_FALSE(m1 < m2);
+
+    AdjacencyMatrix<10, false> m3;
+    AdjacencyMatrix<10, false> m4;
+
+    m3.setEdge(2);
+    ASSERT_FALSE(m3 < m4);
+
+    m4.setEdge(2);
+    ASSERT_FALSE(m3 < m4);
+
+    m4.setEdge(3);
+    ASSERT_TRUE(m3 < m4);
+
+    m3.setEdge(4);
+    ASSERT_FALSE(m3 < m4);
+
+    m4.setEdge(70);
+    ASSERT_TRUE(m3 < m4);
+
+    m3.setEdge(69);
+    ASSERT_FALSE(m3 < m4);
+
+    m3.setEdge(71);
+    ASSERT_FALSE(m3 < m4);
+}
+
 int main(int argc, char** args) {
     ::testing::InitGoogleTest(&argc, args);
     return RUN_ALL_TESTS();
