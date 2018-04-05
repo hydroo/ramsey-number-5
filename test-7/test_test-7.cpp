@@ -1,6 +1,7 @@
 #include "prereqs.hpp"
 
 #include "check.hpp"
+#include "unique.hpp"
 
 using std::cerr;
 using std::endl;
@@ -44,6 +45,32 @@ TEST(Test7, hasCompleteOrEmptySubgraph) {
             }
         }
     }
+}
+
+TEST(Test7, uniqueAdjacencyMatrices) {
+
+    auto v1 = uniqueAdjacencyMatrices<1>();
+    ASSERT_EQ(v1.size(), 1);
+    ASSERT_EQ(v1[0].nodes(), 1);
+    ASSERT_EQ(v1[0].edges(), 0);
+
+
+    AdjacencyMatrix<2> m0; m0.unsetEdge(0);
+    AdjacencyMatrix<2> m1; m1.setEdge(0);
+
+    auto v2 = uniqueAdjacencyMatrices<2>();
+    ASSERT_EQ(v2.size(), 2);
+    ASSERT_EQ(v2[0], m0);
+    ASSERT_EQ(v2[1], m1);
+
+    auto v3 = uniqueAdjacencyMatrices<3>();
+    ASSERT_EQ(v3.size(), 4);
+
+    auto v4 = uniqueAdjacencyMatrices<4>();
+    ASSERT_EQ(v4.size(), 11);
+
+    auto v5 = uniqueAdjacencyMatrices<5>();
+    ASSERT_EQ(v5.size(), 34);
 }
 
 int main(int argc, char** args) {

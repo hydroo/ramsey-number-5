@@ -1,15 +1,19 @@
-# Plan (5th April)
+# Unique Base Graphs and Edge Mask Filtering (5th April)
 
-1)
-Generate a list of graphs that are unique up to isomorphism first.
-For each of these graphs start the usual DFS and complete the graph up until the edge count.
+Generate a list of graphs that are unique up to isomorphism.
+Each of these unique base graphs serves a start for the usual DFS.
+This introduces a new parameter `u` (aside from `n`, `r`, `s`) which specifies the node count of these base graphs.
 
-Since this is expensive we will limit this to very small graphs, say 6 nodes or we'll see how large.
+    u = 6 takes     0.2 seconds at the moment (156 unique graphs)
+    u = 7 takes   ~13   seconds at the moment (1044 unique graphs)
+    u = 8 takes ~1760   seconds at the moment (12346 unique graphs)
 
-The cool thing is that we can use this list as a basis for parallelization.
-I.e. for each base graph, in parallel, independently (1) filter edge masks (2) execute the DFS.
+With that we now filter the edge masks per unique base graph before we start the DFS.
+For each unique base graph retain only the complete and empty edge masks that can result in positive hits.
+I.e. if the base graph already contains bits that cause `(uniqueBase & mask) != mask` (or uniqueBase | mask) != mask), filter them out.
 
-2)
-Filter the list of edge masks to check.
-Remove all items that will never result in a hit because in the lower bits there are already mismatches.
-I probably want to do this for each unique (up to isomorphism) base graph before kicking of the DFS.
+Going forward the unique base graphs are a natural starting point for parallelization, since the DFS of each is independent of the others.
+
+    R(4,4) >  14 takes   <1 s (Solaire) (Down from 130s, u = 6)
+    R(4,4) >  15 takes  14  s (Solaire) (Formerly impossible, u = 7)
+    R(3,5) <= 14 takes  22  s (Solaire) (Formerly impossible, u = 7)

@@ -113,17 +113,27 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
 }
 
 template <s64 Nodes, bool Triangular, std::size_t length>
-std::string printMatrixCountPerLastDigit(const std::array<std::vector<r5::AdjacencyMatrix<Nodes, Triangular>>, length>& a) {
+std::string printMatrixCountPerLastDigit(const std::vector<std::array<std::vector<r5::AdjacencyMatrix<Nodes, Triangular>>, length>>& a) {
     std::ostringstream o;
 
-    o << '{';
-    for (s64 i = 0; i < ((s64)a.size() - 1); i += 1) {
-        o << i - 1 << ":" << a[i].size() << ", ";
+    o << "[";
+    for (s64 i = 0; i < (s64) a.size(); i += 1) {
+
+        const auto & a_ = a[i];
+
+        o << i << " : [";
+        for (s64 j = 0; j < ((s64)a_.size() - 1); j += 1) {
+            o << j - 1 << ":" << a_[j].size() << ", ";
+        }
+        if (a_.size() > 0) {
+            o << a_.size() - 1 << ":" << a_.back().size();
+        }
+        o << ']';
+        if (i < (s64) a_.size()-1) {
+            o << ", ";
+        }
     }
-    if (a.size() > 0) {
-        o << a.size() - 1 << ":" << a.back().size();
-    }
-    o << '}';
+    o << "]";
 
     return o.str();
 }
