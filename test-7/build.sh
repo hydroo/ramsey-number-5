@@ -6,9 +6,9 @@ if [ $# -lt 3 ]; then
     echo "Usage: $1 <r> <s> <n> [<u>]"
     echo "  where R(r, s) <= n will be answered"
     echo ""
-    echo "  Optionally specify a node count 'u'."
-    echo "  Pre-generate all unique (up to isomorphism) graphs of size 'u'"
-    echo "  as a base for the DFS."
+    echo "  Options:"
+    echo "    u       Node count of the pre-generated unique (up to isomorphism)"
+    echo "            graphs that form the basis of the DFS. The default is 5."
     exit 0
 fi
 

@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
-set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -DR5_VERBOSE -g")
+set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -mtune=native")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O2 -mtune=native -fno-omit-frame-pointer -g")
 
@@ -25,7 +25,9 @@ configure_file(test-7.sh test-7.sh COPYONLY)
 
 set_source_files_properties(test_adjacencymatrix.cpp test_adjacencymatrixindexer.cpp test_test-7.cpp PROPERTIES COMPILE_FLAGS "-DR5_GTEST")
 
-#set_source_files_properties(test-7.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE")
+#set_source_files_properties(test-7.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=1")
+#set_source_files_properties(test-7.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=2")
+#set_source_files_properties(test-7.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=3")
 
 add_executable(test_adjacencymatrix test_adjacencymatrix.cpp)
 target_link_libraries(test_adjacencymatrix ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})

@@ -7,13 +7,17 @@
 #include <sstream>
 #include <vector>
 
-#include "adjacencymatrix.hpp"
-
-#ifdef R5_VERBOSE
-#   define R5_BENCH(x) x
-#else
-#   define R5_BENCH(x)
+#ifndef R5_VERBOSE
+#   define R5_VERBOSE 0
 #endif
+
+#if R5_VERBOSE >= 1
+#   define R5_VERBOSE_1(x) x
+#else
+#   define R5_VERBOSE_1(x)
+#endif
+
+#include "adjacencymatrix.hpp"
 
 template<typename T, typename = std::enable_if_t<std::is_integral<T>::value>>
 constexpr T nChooseK(T n, T k) {
@@ -110,32 +114,6 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
     }
     o << ']';
     return o;
-}
-
-template <s64 Nodes, bool Triangular, std::size_t length>
-std::string printMatrixCountPerLastDigit(const std::vector<std::array<std::vector<r5::AdjacencyMatrix<Nodes, Triangular>>, length>>& a) {
-    std::ostringstream o;
-
-    o << "[";
-    for (s64 i = 0; i < (s64) a.size(); i += 1) {
-
-        const auto & a_ = a[i];
-
-        o << i << " : [";
-        for (s64 j = 0; j < ((s64)a_.size() - 1); j += 1) {
-            o << j - 1 << ":" << a_[j].size() << ", ";
-        }
-        if (a_.size() > 0) {
-            o << a_.size() - 1 << ":" << a_.back().size();
-        }
-        o << ']';
-        if (i < (s64) a_.size()-1) {
-            o << ", ";
-        }
-    }
-    o << "]";
-
-    return o.str();
 }
 
 #endif // PREREQS_HPP
