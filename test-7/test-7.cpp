@@ -80,12 +80,13 @@ std::vector<std::vector<AdjacencyMatrix<nodes>>> filterSubGraphEdgeMasks(const s
 
     R5_STATIC_ASSERT(nodes >= uniqueNodeCount);
 
-    AdjacencyMatrix<uniqueNodeCount> x;
+    constexpr AdjacencyMatrix<uniqueNodeCount> x;
+    constexpr s64 uniqueBaseEdges = x.edges();
 
     // shorten the mask to the unique bases' sizes
     std::array<AdjacencyMatrix<uniqueNodeCount>, nChooseK(nodes, subGraphSize)> shortMasks;
     for (std::size_t i = 0; i < masks.size(); i += 1) {
-        for (s64 e = 0; e < x.edges(); e += 1) {
+        for (s64 e = 0; e < uniqueBaseEdges; e += 1) {
             if (masks[i].edge(e) == true) {
                 shortMasks[i].setEdge(e);
             } else {
