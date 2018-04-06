@@ -25,6 +25,8 @@ std::vector<r5::AdjacencyMatrix<1>> uniqueAdjacencyMatrices() {
 
 template<s64 nodes>
 std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
+
+    // create all node permutations
     auto nodePermutations = []() -> std::array<std::array<s64, nodes>, factorial(nodes)> {
 
         std::array<std::array<s64, nodes>, factorial(nodes)> ret;
@@ -43,78 +45,80 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
         return ret;
     }();
 
-    auto previous = uniqueAdjacencyMatrices<nodes-1>();
+    // Cache column, row to edge indexing
+    // Without this edge(c, r) and setEdge(c, r) would be substantially slower
+    constexpr auto indexer = []() -> std::array<std::array<s64, nodes>, nodes> {
+        std::array<std::array<s64, nodes>, nodes> ret{};
+        using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
+        for (s64 c = 0; c < nodes; c += 1) {
+            for (s64 r = 0; r < nodes; r += 1) {
+                ret[c][r] = AmIndexer::index(c, r);
+            }
+        }
+        return ret;
+    }();
 
     std::set<r5::AdjacencyMatrix<nodes>> uniqueGraphs;
 
-    // s64 compares = 0;
-    // s64 edgeSets = 0;
+    constexpr s64 column = nodes-1;
 
+    // Take the unique adjacency matrices of size nodes-1
+    auto previous = uniqueAdjacencyMatrices<nodes-1>();
+
+    std::array<r5::AdjacencyMatrix<nodes>, nodePermutations.size()> mp; // permuted matrices, one per nodePermutation
+
+    // For each unique adjacency matrix of size nodes-1
     for (const auto& p : previous) {
 
-        r5::AdjacencyMatrix<nodes> m;
-        m.unsetAllEdges();
-
-        for (s64 e = 0; e < p.edges(); e += 1) {
-            if (p.edge(e) == true) {
-                m.setEdge(e);
-            } else {
-                m.unsetEdge(e);
+        // apply the node permutations for the previous unique graphs (size nodes-1)
+        for (std::size_t i = 0; i < nodePermutations.size(); i += 1) {
+            const auto& np = nodePermutations[i];
+            mp[i].unsetAllEdges();
+            for (s64 c = 1; c < p.nodes(); c += 1) {
+                for (s64 r = 0; r < c; r += 1) {
+                    if (p.edge(c*(c-1)/2 + r) == true) {
+                        mp[i].setEdge(np[c], np[r]);
+                    }
+                }
             }
         }
 
-        std::array<s64, m.edges() + 1> stack;
+        // Start the DFS to enumerate all the remaining edges.
+        // The remaining edges are in the last column 'column' and in rows 0 to column-1
+        std::array<s64, column + 1> stack;
         s64 stackTop = 1;
-        stack[0] = p.edges();
-        stack[1] = p.edges();
+        stack[0] = 0; //   set first edge
+        stack[1] = 0; // unset first edge
 
         while (stackTop >= 0) {
 
             R5_DEBUG_ASSERT(stackTop < (s64) stack.size());
 
-            s64 edge = stack[stackTop];
+            s64 row = stack[stackTop];
             stackTop -= 1;
 
-            m.toggleEdge(edge);
-
-            r5::AdjacencyMatrix<nodes> smallest = m;
-
-            // std::cerr << m << std::endl;
-
-            for (const auto& np : nodePermutations) {
-
-                r5::AdjacencyMatrix<nodes> mp;
-
-                for (s64 c = 1; c < m.nodes(); c += 1) {
-                    for (s64 r = 0; r < c; r += 1) {
-                        // edgeSets += 1;
-
-                        if (m.edge(c, r) == true) {
-                            mp.setEdge(np[c], np[r]);
-                        } else {
-                            mp.unsetEdge(np[c], np[r]);
-                        }
-                    }
-                }
-
-                // std::cerr << "  " << mp << std::endl;
-
-                // compares += 1;
-
-                smallest = std::min(smallest, mp);
+            for (std::size_t i = 0; i < nodePermutations.size(); i += 1) {
+                const auto& np = nodePermutations[i];
+                mp[i].toggleEdge(indexer[np[column]][np[row]]);
             }
 
-            uniqueGraphs.insert(smallest); // deduplicates
+            if (row < column - 1) { // still enumerating
 
-            if (edge < m.edges() - 1) {
-                stack[stackTop+1] = edge + 1; // set   edge + 1
-                stack[stackTop+2] = edge + 1; // unset edge + 1
+                stack[stackTop+1] = row + 1;
+                stack[stackTop+2] = row + 1;
                 stackTop += 2;
+
+            } else { // DFS leaf
+
+                r5::AdjacencyMatrix<nodes> smallest = mp[0];
+                for (std::size_t i = 1; i < nodePermutations.size(); i += 1) {
+                    smallest = std::min(smallest, mp[i]);
+                }
+
+                uniqueGraphs.insert(smallest); // deduplicates
             }
         }
     }
-
-    // std::cerr << __func__ << " n: " << nodes << ", compares: " << std::setw(15) << compares << ", edge sets: " << std::setw(15) << edgeSets << std::endl;
 
     std::vector<r5::AdjacencyMatrix<nodes>> ret;
     for (const auto& g : uniqueGraphs) {
