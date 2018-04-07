@@ -308,15 +308,6 @@ TEST(AdjacencyMatrix, toggleEdge) {
     }
 }
 
-// // print() can't be constexpr because std::ostringstream and std::string
-// TEST(AdjacencyMatrix, print_constexpr) {
-//     constexpr AdjacencyMatrix<3> m1;
-//     constexpr auto s1 = m1.print();
-// 
-//     constexpr AdjacencyMatrix<3, false> m2;
-//     constexpr auto s2 = m2.print();
-// }
-
 TEST(AdjacencyMatrix, copyconstruct) {
     constexpr auto ct = []() -> auto {
         AdjacencyMatrix<5> m;
