@@ -26,10 +26,12 @@ std::vector<r5::AdjacencyMatrix<1>> uniqueAdjacencyMatrices() {
 template<s64 nodes>
 std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
 
-    // create all node permutations
-    auto nodePermutations = []() -> std::array<std::array<s64, nodes>, factorial(nodes)> {
+    constexpr s64 nodePermutationCount = factorial(nodes);
 
-        std::array<std::array<s64, nodes>, factorial(nodes)> ret;
+    // create all node permutations
+    auto nodePermutations = []() -> std::vector<std::array<s64, nodes>> {
+
+        std::vector<std::array<s64, nodes>> ret(nodePermutationCount);
 
         std::array<s64, nodes> nodeList;
         for (std::size_t n = 0; n < nodeList.size(); n += 1) {
@@ -65,13 +67,13 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
     // Take the unique adjacency matrices of size nodes-1
     auto previous = uniqueAdjacencyMatrices<nodes-1>();
 
-    std::array<r5::AdjacencyMatrix<nodes>, nodePermutations.size()> mp; // permuted matrices, one per nodePermutation
+    std::vector<r5::AdjacencyMatrix<nodes>> mp(nodePermutationCount); // permuted matrices, one per nodePermutation
 
     // For each unique adjacency matrix of size nodes-1
     for (const auto& p : previous) {
 
         // apply the node permutations for the previous unique graphs (size nodes-1)
-        for (std::size_t i = 0; i < nodePermutations.size(); i += 1) {
+        for (std::size_t i = 0; i < nodePermutationCount; i += 1) {
             const auto& np = nodePermutations[i];
             mp[i].unsetAllEdges();
             for (s64 c = 1; c < p.nodes(); c += 1) {
@@ -97,7 +99,7 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
             s64 row = stack[stackTop];
             stackTop -= 1;
 
-            for (std::size_t i = 0; i < nodePermutations.size(); i += 1) {
+            for (std::size_t i = 0; i < nodePermutationCount; i += 1) {
                 const auto& np = nodePermutations[i];
                 mp[i].toggleEdge(indexer[np[column]][np[row]]);
             }
@@ -111,7 +113,7 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
             } else { // DFS leaf
 
                 r5::AdjacencyMatrix<nodes> smallest = mp[0];
-                for (std::size_t i = 1; i < nodePermutations.size(); i += 1) {
+                for (std::size_t i = 1; i < nodePermutationCount; i += 1) {
                     smallest = std::min(smallest, mp[i]);
                 }
 
