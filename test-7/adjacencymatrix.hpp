@@ -586,7 +586,7 @@ public:
     // Note: The bottom template would not be used as a copy constructor
     constexpr AdjacencyMatrix(const AdjacencyMatrix& m)           : Base(m) {}
     template<s64 Nodes2>
-    AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {}
+    constexpr AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {}
 
     // assignment operators
     // Note: The bottom template would not be used as an assignment operator
