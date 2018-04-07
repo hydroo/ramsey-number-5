@@ -36,6 +36,8 @@ std::array<AdjacencyMatrix<nodes>, nChooseK(nodes, subGraphSize)> subGraphEdgeMa
     s64 p = 0;
 
     do {
+        masks[p].unsetAllEdges();
+
         for (s64 e = 0; e < edges; e += 1) {
             auto pair = AdjacencyMatrixIndexer<nodes>::reverse(e);
             s64 c = pair.first;
@@ -45,8 +47,6 @@ std::array<AdjacencyMatrix<nodes>, nChooseK(nodes, subGraphSize)> subGraphEdgeMa
 
             if (nodeMask[c] == true && nodeMask[r] == true) {
                 masks[p].setEdge(c, r);
-            } else {
-                masks[p].unsetEdge(c, r);
             }
         }
 
@@ -80,11 +80,10 @@ std::vector<AdjacencyMatrix<nodes>> filterSubGraphEdgeMasks(const std::array<Adj
     // shorten the mask to the unique bases' sizes
     std::array<AdjacencyMatrix<uniqueNodeCount>, nChooseK(nodes, subGraphSize)> shortMasks;
     for (std::size_t i = 0; i < masks.size(); i += 1) {
+        shortMasks[i].unsetAllEdges();
         for (s64 e = 0; e < config::ue; e += 1) {
             if (masks[i].edge(e) == true) {
                 shortMasks[i].setEdge(e);
-            } else {
-                shortMasks[i].unsetEdge(e);
             }
         }
     }
@@ -154,7 +153,7 @@ bool allColoringsHaveCompleteOrEmptySubgraph(
 
     // before starting the DFS we need to check the edge masks in <= uniqueBase.edges(), because we wouldn't check them in the DFS
     // because there we only look at the edge masks that have the last bit (0/1) where the last toggled edge is
-    for (std::size_t j = 0; j < uniqueBase.edges() + 1 /*+1 because of the +1 for byLastOne arrays*/; j += 1) {
+    for (std::size_t j = 0; j < (std::size_t) (uniqueBase.edges() + 1) /*+1 because of the +1 for byLastOne arrays*/; j += 1) {
 
         if (config::n >= config::r) {
             const auto& currentEdgeMasksComplete = edgeMasksCompleteByLastOne[j];
@@ -348,7 +347,7 @@ int main(int argc, char** args) {
         auto t4 = std::chrono::steady_clock::now();
 
 #if R5_VERBOSE >= 2
-        cerr << "Unique base graph " << uniqueBase << " [" << endl;
+        cerr << "Unique base graph (" << u << "/" << uniqueBaseMasks.size() << ") " << uniqueBase << " [" << endl;
 #endif
         std::vector<AdjacencyMatrix<config::n>> filteredEdgeMasksComplete
                 = filterSubGraphEdgeMasks<config::e, config::n, config::r, true , config::u>(edgeMasksComplete, uniqueBase);
