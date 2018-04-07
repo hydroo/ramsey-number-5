@@ -146,17 +146,7 @@ bool allColoringsHaveCompleteOrEmptySubgraph(
     R5_ASSERT(*coloringsChecked == 0);
     R5_ASSERT(*edgeMaskChecks   == 0);
 
-    // assign base graph to coloring
-    AdjacencyMatrix<config::n> coloring;
-    coloring.unsetAllEdges();
-
-    for (s64 e = 0; e < uniqueBase.edges(); e += 1) {
-        if (uniqueBase.edge(e) == true) {
-            coloring.setEdge(e);
-        } else {
-            coloring.unsetEdge(e);
-        }
-    }
+    AdjacencyMatrix<config::n> coloring(uniqueBase);
 
     R5_VERBOSE_1(*coloringsChecked += 1;);
 

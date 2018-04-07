@@ -34,6 +34,23 @@ protected:
         r5::copy(m, elements(nodes), v);
     }
 
+    template<s64 NodesM>
+    static constexpr void assign(const u64* m, s64 nodesM, s64 nodesV, u64* v) {
+        if (Triangular == true) {
+            r5::copy(m, elements(nodesM), v);
+        } else {
+            for (s64 c = 1; c < nodesM; c += 1) {
+                for (s64 r = 0; r < c; r += 1) {
+                    if (edge(AdjacencyMatrixIndexer<NodesM, Triangular>::index(c, r, nodesM), m) == true) {
+                        setEdge(c, r, nodesV, v);
+                    } else {
+                        unsetEdge(c, r, nodesV, v);
+                    }
+                }
+            }
+        }
+    }
+
     static constexpr void bitwiseOr(const u64* v1, const u64* v2, s64 nodes, u64* v) {
         for (s64 i = 0; i < elements(nodes); i += 1) {
             v[i] = v1[i] | v2[i];
@@ -272,10 +289,21 @@ public:
         Base::assign(m._v, Nodes, _v);
     }
 
-    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 == -1>>
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 != -1 && Nodes2 < Nodes>>
+    constexpr BaseAdjacencyMatrix2(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) {
+        if (m.elements() < elements()) {
+            Base::unsetAllEdges(Nodes, _v);
+        }
+        Base::template assign<Nodes2>(m._v, Nodes2, Nodes, _v);
+    }
+
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 == -1>, int dummy = 0>
     BaseAdjacencyMatrix2(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) {
-        R5_ASSERT(m.nodes() == Nodes);
-        Base::assign(m._v, Nodes, _v);
+        R5_ASSERT(m.nodes() <= Nodes);
+        if (m.elements() < elements()) {
+            Base::unsetAllEdges(Nodes, _v);
+        }
+        Base::template assign<Nodes2>(m._v, m.nodes(), Nodes, _v);
     }
 
     // assignment operators
@@ -284,10 +312,22 @@ public:
         return *this;
     }
 
-    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 == -1>>
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 != -1 && Nodes2 < Nodes>>
+    constexpr BaseAdjacencyMatrix2& operator=(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) {
+        if (m.elements() < elements()) {
+            Base::unsetAllEdges(Nodes, _v);
+        }
+        Base::template assign<Nodes2>(m._v, Nodes2, Nodes, _v);
+        return *this;
+    }
+
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes2 == -1>, int dummy = 0>
     BaseAdjacencyMatrix2& operator=(const BaseAdjacencyMatrix2<Nodes2, Triangular>& m) {
-        R5_ASSERT(m.nodes() == Nodes);
-        Base::assign(m._v, Nodes, _v);
+        R5_ASSERT(m.nodes() <= Nodes);
+        if (m.elements() < elements()) {
+            Base::unsetAllEdges(Nodes, _v);
+        }
+        Base::template assign<Nodes2>(m._v, m.nodes(), Nodes, _v);
         return *this;
     }
 
@@ -585,7 +625,7 @@ public:
     // copy constructors
     // Note: The bottom template would not be used as a copy constructor
     constexpr AdjacencyMatrix(const AdjacencyMatrix& m)           : Base(m) {}
-    template<s64 Nodes2>
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes == -1 || Nodes2 <= Nodes>>
     constexpr AdjacencyMatrix(const AdjacencyMatrix<Nodes2, Triangular>& m) : Base(m) {}
 
     // assignment operators
@@ -594,7 +634,7 @@ public:
         Base::operator=(m);
         return *this;
     }
-    template<s64 Nodes2>
+    template<s64 Nodes2, typename = std::enable_if_t<Nodes == -1 || Nodes2 <= Nodes>>
     AdjacencyMatrix& operator=(const AdjacencyMatrix<Nodes2, Triangular>& m) {
         Base::operator=(m);
         return *this;

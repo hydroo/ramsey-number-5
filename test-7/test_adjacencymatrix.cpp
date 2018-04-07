@@ -497,6 +497,98 @@ TEST(AdjacencyMatrix, assign) {
     ASSERT_THROW2(ncn2_from_rt = rn); // Wrong node count
 }
 
+TEST(AdjacencyMatrix, copyconstruct_and_assign_from_smaller_matrices) {
+    constexpr auto ct = []() -> auto {
+        AdjacencyMatrix<5> m;
+        m.setEdge(1, 0);
+        return m;
+    }();
+
+    constexpr auto cn = []() -> auto {
+        AdjacencyMatrix<5, false> m;
+        m.setEdge(1, 0);
+        return m;
+    }();
+
+    AdjacencyMatrix<5> nct;
+    nct.setEdge(1, 0);
+
+    AdjacencyMatrix<5, false> ncn;
+    ncn.setEdge(1, 0);
+
+    AdjacencyMatrix<-1> rt(5);
+    rt.unsetAllEdges();
+    rt.setEdge(1, 0);
+
+    AdjacencyMatrix<-1, false> rn(5);
+    rn.unsetAllEdges();
+    rn.setEdge(1, 0);
+
+    constexpr s64 n = 13;
+
+    constexpr AdjacencyMatrix<n>        ct_from_ct(ct);
+    constexpr AdjacencyMatrix<n, false> cn_from_cn(cn);
+    AdjacencyMatrix<n>                  nct_from_ct (ct);
+    AdjacencyMatrix<n>                  nct_from_nct(nct);
+    AdjacencyMatrix<n>                  nct_from_rt (rt);
+    AdjacencyMatrix<n, false>           ncn_from_cn (cn);
+    AdjacencyMatrix<n, false>           ncn_from_ncn(ncn);
+    AdjacencyMatrix<n, false>           ncn_from_rn (rn);
+
+    auto check = [n](const auto& m) {
+        for (s64 c = 1; c < n; c += 1) {
+            for (s64 r = 0; r < c; r += 1) {
+                if (c == 1 && r == 0) {
+                    ASSERT_EQ(m.edge(c, r), true);
+                } else {
+                    ASSERT_EQ(m.edge(c, r), false);
+                }
+            }
+        }
+    };
+
+    check(ct_from_ct);
+    check(cn_from_cn);
+    check(nct_from_ct);
+    check(nct_from_nct);
+    check(nct_from_rt);
+    check(ncn_from_cn);
+    check(ncn_from_ncn);
+    check(ncn_from_rn);
+
+    AdjacencyMatrix<n>        a_nct_from_ct;  a_nct_from_ct  = ct;
+    AdjacencyMatrix<n>        a_nct_from_nct; a_nct_from_nct = nct;
+    AdjacencyMatrix<n>        a_nct_from_rt;  a_nct_from_rt  = rt;
+    AdjacencyMatrix<n, false> a_ncn_from_cn;  a_ncn_from_cn  = cn;
+    AdjacencyMatrix<n, false> a_ncn_from_ncn; a_ncn_from_ncn = ncn;
+    AdjacencyMatrix<n, false> a_ncn_from_rn;  a_ncn_from_rn  = rn;
+
+    check(a_nct_from_ct);
+    check(a_nct_from_nct);
+    check(a_nct_from_rt);
+    check(a_ncn_from_cn);
+    check(a_ncn_from_ncn);
+    check(a_ncn_from_rn);
+
+    // copy construction and assignment from larger source matrices
+
+    // constexpr AdjacencyMatrix<4>        b_ct_from_ct(ct);    // doesn't compile
+    // constexpr AdjacencyMatrix<4, false> b_cn_from_cn(cn);    // doesn't compile
+    // AdjacencyMatrix<4>                  b_nct_from_ct (ct);  // doesn't compile
+    // AdjacencyMatrix<4>                  b_nct_from_nct(nct); // doesn't compile
+    // AdjacencyMatrix<4>                  b_nct_from_rt (rt);  // can't ASSERT_THROW here
+    // AdjacencyMatrix<4, false>           b_ncn_from_cn (cn);  // doesn't compile
+    // AdjacencyMatrix<4, false>           b_ncn_from_ncn(ncn); // doesn't compile
+    // AdjacencyMatrix<4, false>           b_ncn_from_rn (rn);  // can't ASSERT_THROW here
+
+    // AdjacencyMatrix<4>        c_nct_from_ct;  c_nct_from_ct  = ct;  // doesn't compile
+    // AdjacencyMatrix<4>        c_nct_from_nct; c_nct_from_nct = nct; // doesn't compile
+    AdjacencyMatrix<4>        c_nct_from_rt;  ASSERT_THROW2(c_nct_from_rt  = rt);
+    // AdjacencyMatrix<4, false> c_ncn_from_cn;  c_ncn_from_cn  = cn;  // doesn't compile
+    // AdjacencyMatrix<4, false> c_ncn_from_ncn; c_ncn_from_ncn = ncn; // doesn't compile
+    AdjacencyMatrix<4, false> c_ncn_from_rn;  ASSERT_THROW2(c_ncn_from_rn  = rn);
+}
+
 TEST(AdjacencyMatrix, bitwiseOr) {
     constexpr auto ct1 = []() -> auto {
         AdjacencyMatrix<6> m;
