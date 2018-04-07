@@ -65,14 +65,14 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
     constexpr s64 column = nodes-1;
 
     // Take the unique adjacency matrices of size nodes-1
-    auto previous = uniqueAdjacencyMatrices<nodes-1>();
+    auto smallerUniqueMatrices = uniqueAdjacencyMatrices<nodes-1>();
 
     std::vector<r5::AdjacencyMatrix<nodes>> mp(nodePermutationCount); // permuted matrices, one per nodePermutation
 
     // For each unique adjacency matrix of size nodes-1
-    for (const auto& p : previous) {
+    for (const auto& p : smallerUniqueMatrices) {
 
-        // apply the node permutations for the previous unique graphs (size nodes-1)
+        // apply the node permutations for the smaller unique graphs (size nodes-1)
         for (std::size_t i = 0; i < nodePermutationCount; i += 1) {
             const auto& np = nodePermutations[i];
             mp[i].unsetAllEdges();
