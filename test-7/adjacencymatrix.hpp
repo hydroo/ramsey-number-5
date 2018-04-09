@@ -376,11 +376,11 @@ public:
     }
 
     constexpr void setEdgeChecked(s64 column, s64 row) {
-        Base::setEdgesChecked(column, row, Nodes, _v);
+        Base::setEdgeChecked(column, row, Nodes, _v);
     }
 
     constexpr void setEdgeChecked(s64 edge) {
-        Base::setEdgesChecked(edge, Nodes, _v);
+        Base::setEdgeChecked(edge, Nodes, _v);
     }
 
     constexpr void setAllEdges() {
