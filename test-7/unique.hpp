@@ -72,6 +72,8 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
     // For each unique adjacency matrix of size nodes-1
     for (const auto& p : smallerUniqueMatrices) {
 
+        r5::AdjacencyMatrix<nodes> m(p);
+
         // apply the node permutations for the smaller unique graphs (size nodes-1)
         for (std::size_t i = 0; i < nodePermutationCount; i += 1) {
             const auto& np = nodePermutations[i];
@@ -99,6 +101,7 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
             s64 row = stack[stackTop];
             stackTop -= 1;
 
+            m.toggleEdge(indexer[column][row]);
             for (std::size_t i = 0; i < nodePermutationCount; i += 1) {
                 const auto& np = nodePermutations[i];
                 mp[i].toggleEdge(indexer[np[column]][np[row]]);
@@ -112,19 +115,27 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
 
             } else { // DFS leaf
 
-                r5::AdjacencyMatrix<nodes> smallest = mp[0];
-                for (std::size_t i = 1; i < nodePermutationCount; i += 1) {
-                    smallest = std::min(smallest, mp[i]);
+                bool isCanonical = true;
+                for (s64 i = 0; i < nodePermutationCount; i += 1) {
+                    if (mp[i] < m) {
+                        isCanonical = false;
+                        break;
+                    }
                 }
 
-                uniqueGraphs.insert(smallest); // deduplicates
+                if (isCanonical) {
+                    uniqueGraphs.insert(m);
+                }
             }
         }
     }
 
-    std::vector<r5::AdjacencyMatrix<nodes>> ret;
+    std::vector<r5::AdjacencyMatrix<nodes>> ret(uniqueGraphs.size());
+    // reverse order, because it is sorted like 111 11 1 in the set
+    auto i = ret.size()-1;
     for (const auto& g : uniqueGraphs) {
-        ret.push_back(g);
+        ret[i] = g;
+        i -= 1;
     }
 
     return ret;

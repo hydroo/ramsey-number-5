@@ -78,9 +78,21 @@ protected:
     }
 
     static constexpr bool compareLessThan(const u64* v1, const u64* v2, s64 nodes) {
-        for (s64 i = elements(nodes)-1; i >= 0; i -= 1) {
-            if (v1[i] < v2[i]) {
-                return true;
+        // Returns true if v1 has earlier 1 bits on the left than v2
+        // This behavior is desirable for uniqueAdjacencyMatrices, because then
+        // extensions of previous/smaller unique graphs will never change the shape
+        // of the earlier graph.
+        // E.g. we want 1 00 001 to be smaller than 0 01 100, because otherwise
+        // extending 1 00 to 1 00 001 will result in prefering 0 01 100 as the new
+        // 'smallest' representation of 1 00 001
+        // This in turn means we would always have to churn through all representations
+        // of each extended graph. Instead we can now stop searching for the smallest
+        // representations and only have to check whether the current one is the
+        // smallest, which is false as soon as we find a smaller representation.
+        for (s64 i = 0; i < elements(nodes); i += 1) {
+            if (v1[i] != v2[i]) {
+
+                return (bool) ((v1[i]>>(__builtin_ffsll(v1[i] ^ v2[i]) - 1))&0x1);
             }
         }
         return false;

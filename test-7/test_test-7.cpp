@@ -60,8 +60,7 @@ TEST(Test7, uniqueAdjacencyMatrices) {
 
     auto v2 = uniqueAdjacencyMatrices<2>();
     ASSERT_EQ(v2.size(), 2);
-    ASSERT_EQ(v2[0], m0);
-    ASSERT_EQ(v2[1], m1);
+    ASSERT_TRUE((v2[0] == m0 && v2[1] == m1) || (v2[0] == m1 && v2[1] == m0));
 
     auto v3 = uniqueAdjacencyMatrices<3>();
     ASSERT_EQ(v3.size(), 4);
