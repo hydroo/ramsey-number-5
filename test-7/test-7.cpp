@@ -19,8 +19,8 @@ using r5::AdjacencyMatrixIndexer;
 // Returns an array of adjacency matrices.
 // Returns the set of all possible graphs that have exactly one complete subgraph of size `subGraphSize`.
 template <s64 edges, s64 nodes, s64 subGraphSize>
-std::array<AdjacencyMatrix<nodes>, nChooseK(nodes, subGraphSize)> subGraphEdgeMasks() {
-    std::array<AdjacencyMatrix<nodes>, nChooseK(nodes, subGraphSize)> masks;
+std::vector<AdjacencyMatrix<nodes>> subGraphEdgeMasks() {
+    std::vector<AdjacencyMatrix<nodes>> masks(nChooseK(nodes, subGraphSize));
 
     std::array<bool, nodes> nodeMask{};
 
@@ -61,8 +61,9 @@ std::array<AdjacencyMatrix<nodes>, nChooseK(nodes, subGraphSize)> subGraphEdgeMa
 
 // flips all edges
 template <s64 edges, s64 nodes, s64 subGraphSize>
-constexpr std::array<AdjacencyMatrix<nodes>, nChooseK(nodes, subGraphSize)> invertSubgraphEdgeMasks(const std::array<AdjacencyMatrix<nodes>, nChooseK(nodes, subGraphSize)>& edgeMasks) {
-    std::array<AdjacencyMatrix<nodes>, nChooseK(nodes, subGraphSize)> ret{};
+std::vector<AdjacencyMatrix<nodes>> invertSubgraphEdgeMasks(const std::vector<AdjacencyMatrix<nodes>>& edgeMasks) {
+    R5_ASSERT(edgeMasks.size() == nChooseK(nodes, subGraphSize));
+    std::vector<AdjacencyMatrix<nodes>> ret(nChooseK(nodes, subGraphSize));
     for (std::size_t i = 0; i < edgeMasks.size(); i += 1) {
         ret[i] = ~edgeMasks[i];
     }
@@ -71,14 +72,16 @@ constexpr std::array<AdjacencyMatrix<nodes>, nChooseK(nodes, subGraphSize)> inve
 
 // Filter out edge masks that have bits in the lower bits/edges that would cause a comparison to always fail
 template <s64 edges, s64 nodes, s64 subGraphSize, bool complete, s64 uniqueNodeCount>
-std::vector<AdjacencyMatrix<nodes>> filterSubGraphEdgeMasks(const std::array<AdjacencyMatrix<nodes>, nChooseK(nodes, subGraphSize)>& masks, const AdjacencyMatrix<uniqueNodeCount>& uniqueBase) {
+std::vector<AdjacencyMatrix<nodes>> filterSubGraphEdgeMasks(const std::vector<AdjacencyMatrix<nodes>>& masks, const AdjacencyMatrix<uniqueNodeCount>& uniqueBase) {
+
+    R5_ASSERT(masks.size() == nChooseK(nodes, subGraphSize));
 
     R5_STATIC_ASSERT(nodes >= uniqueNodeCount);
 
     std::vector<AdjacencyMatrix<nodes>> ret;
 
     // shorten the mask to the unique bases' sizes
-    std::array<AdjacencyMatrix<uniqueNodeCount>, nChooseK(nodes, subGraphSize)> shortMasks;
+    std::vector<AdjacencyMatrix<uniqueNodeCount>> shortMasks(nChooseK(nodes, subGraphSize));
     for (std::size_t i = 0; i < masks.size(); i += 1) {
         shortMasks[i].unsetAllEdges();
         for (s64 e = 0; e < config::ue; e += 1) {
@@ -307,10 +310,9 @@ int main(int argc, char** args) {
     cerr << "Unique base graphs                            " << std::setw(15) << uniqueBaseMasks << endl;
 #endif
 
-    std::array<AdjacencyMatrix<config::n>, nChooseK(config::n, config::r)> edgeMasksComplete
-            = subGraphEdgeMasks<config::e, config::n, config::r>();
-    std::array<AdjacencyMatrix<config::n>, nChooseK(config::n, config::s)> edgeMasksEmpty
-            = invertSubgraphEdgeMasks<config::e, config::n, config::s>(subGraphEdgeMasks<config::e, config::n, config::s>());
+    std::vector<AdjacencyMatrix<config::n>> edgeMasksComplete = subGraphEdgeMasks<config::e, config::n, config::r>();
+    std::vector<AdjacencyMatrix<config::n>> edgeMasksEmpty    = invertSubgraphEdgeMasks<config::e, config::n, config::s>(
+            subGraphEdgeMasks<config::e, config::n, config::s>());
 
     auto t3 = std::chrono::steady_clock::now();
 
