@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <array>
 #include <iomanip>
+#include <set>
 #include <sstream>
 #include <vector>
 
@@ -113,6 +114,21 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
         o << v.back();
     }
     o << ']';
+    return o;
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& o, const std::set<T>& s) {
+    o << '{';
+    std::size_t i = 0;
+    for (const auto& e : s) {
+        o << e;
+        if (i < s.size()-1) {
+            o << ", ";
+        }
+        i += 1;
+    }
+    o << '}';
     return o;
 }
 
