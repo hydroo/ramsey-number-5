@@ -13,18 +13,22 @@ constexpr s64 factorial(s64 n) {
 }
 
 // Generates all unique (up to isomorphism) adjacency matrices of size `nodes`
-template<s64 nodes>
-std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices();
+template<s64 nodes, s64 nodes2 = 0, typename = std::enable_if_t<nodes == 1>>
+std::vector<r5::AdjacencyMatrix<1>> uniqueAdjacencyMatrices(
+        const std::vector<r5::AdjacencyMatrix<nodes2>>& edgeMasksComplete = std::vector<r5::AdjacencyMatrix<nodes2>>(),
+        const std::vector<r5::AdjacencyMatrix<nodes2>>& edgeMasksEmpty    = std::vector<r5::AdjacencyMatrix<nodes2>>()) {
 
-template<>
-std::vector<r5::AdjacencyMatrix<1>> uniqueAdjacencyMatrices() {
-    r5::AdjacencyMatrix<1> m;
-    m.unsetAllEdges();
-    return std::vector<r5::AdjacencyMatrix<1>>{m};
+    if ((edgeMasksComplete.size() > 0 || edgeMasksEmpty.size() > 0) && (nodes2 == 0 || nodes2 == 1)) {
+        return std::vector<r5::AdjacencyMatrix<1>>{};
+    } else {
+        return std::vector<r5::AdjacencyMatrix<1>>{r5::AdjacencyMatrix<1>()};
+    }
 }
 
-template<s64 nodes>
-std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
+template<s64 nodes, s64 nodes2 = 0, typename = std::enable_if_t<(nodes > 1)>>
+std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices(
+        const std::vector<r5::AdjacencyMatrix<nodes2>>& edgeMasksComplete = std::vector<r5::AdjacencyMatrix<nodes2>>(),
+        const std::vector<r5::AdjacencyMatrix<nodes2>>& edgeMasksEmpty    = std::vector<r5::AdjacencyMatrix<nodes2>>()) {
 
     constexpr s64 nodePermutationCount = factorial(nodes);
 
@@ -65,7 +69,7 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
     constexpr s64 column = nodes-1;
 
     // Take the unique adjacency matrices of size nodes-1
-    auto smallerUniqueMatrices = uniqueAdjacencyMatrices<nodes-1>();
+    auto smallerUniqueMatrices = uniqueAdjacencyMatrices<nodes-1, nodes2>();
 
     std::vector<r5::AdjacencyMatrix<nodes>> mp(nodePermutationCount); // permuted matrices, one per nodePermutation
 
@@ -77,7 +81,6 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
         // apply the node permutations for the smaller unique graphs (size nodes-1)
         for (std::size_t i = 0; i < nodePermutationCount; i += 1) {
             const auto& np = nodePermutations[i];
-            mp[i].unsetAllEdges();
             for (s64 c = 1; c < p.nodes(); c += 1) {
                 for (s64 r = 0; r < c; r += 1) {
                     if (p.edge(c*(c-1)/2 + r) == true) {
@@ -130,12 +133,53 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
         }
     }
 
-    std::vector<r5::AdjacencyMatrix<nodes>> ret(uniqueGraphs.size());
-    // reverse order, because it is sorted like 111 11 1 in the set
-    auto i = ret.size()-1;
-    for (const auto& g : uniqueGraphs) {
-        ret[i] = g;
-        i -= 1;
+    // std::cerr << uniqueGraphs << " nodes " << nodes << ", nodes2 " << nodes2 << std::endl;
+
+    constexpr s64 nodesMax = std::max(nodes, nodes2);
+
+    std::vector<r5::AdjacencyMatrix<nodesMax>> edgeMasksComplete2(edgeMasksComplete.size());
+    std::vector<r5::AdjacencyMatrix<nodesMax>> edgeMasksEmpty2   (edgeMasksEmpty.size());
+
+    for (std::size_t i = 0; i < edgeMasksComplete.size(); i += 1) {
+        edgeMasksComplete2[i] = edgeMasksComplete[i];
+    }
+    for (std::size_t i = 0; i < edgeMasksEmpty.size(); i += 1) {
+        edgeMasksEmpty2   [i] = edgeMasksEmpty   [i];
+    }
+
+    std::vector<r5::AdjacencyMatrix<nodes>> ret;
+    for (auto i = uniqueGraphs.crbegin(); i != uniqueGraphs.crend(); ++i) {
+
+        r5::AdjacencyMatrix<nodesMax> gc(*i);
+        r5::AdjacencyMatrix<nodesMax> ge(*i);
+
+        for (s64 j = i->edges(); j < ge.edges(); j += 1) {
+            ge.setEdge(j);
+        }
+
+        bool foundEdgeMaskMatch = false;
+
+        for (std::size_t j = 0; j < edgeMasksComplete2.size(); j += 1) {
+            if ((gc & edgeMasksComplete2[j]) == edgeMasksComplete2[j]) {
+                // std::cerr << "  & g " << g << "gc " << gc << ", m "<< e << std::endl;
+                foundEdgeMaskMatch = true;
+                break;
+            }
+        }
+
+        if (foundEdgeMaskMatch == false) {
+            for (std::size_t j = 0; j < edgeMasksEmpty2.size(); j += 1) {
+                if ((ge | edgeMasksEmpty2[j]) == edgeMasksEmpty2[j]) {
+                    // std::cerr << "  | g " << g << ", ge " << ge << ", m "<< e << std::endl;
+                    foundEdgeMaskMatch = true;
+                    break;
+                }
+            }
+        }
+
+        if (foundEdgeMaskMatch == false) {
+            ret.push_back(*i);
+        }
     }
 
     return ret;

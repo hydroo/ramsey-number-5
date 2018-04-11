@@ -72,6 +72,61 @@ TEST(Test7, uniqueAdjacencyMatrices) {
     ASSERT_EQ(v5.size(), 34);
 }
 
+TEST(Test7, uniqueAdjacencyMatrices_filtered) {
+
+    std::vector<AdjacencyMatrix<1>> c0{};
+    std::vector<AdjacencyMatrix<1>> e0{};
+
+    AdjacencyMatrix<1> a1;
+
+    AdjacencyMatrix<2> a2_0;
+    AdjacencyMatrix<2> a2_1;           a2_1.setEdge(0);
+
+    AdjacencyMatrix<3> a3_000;
+    AdjacencyMatrix<3> a3_100;         a3_100.setEdge(0);
+    AdjacencyMatrix<3> a3_110(a3_100); a3_110.setEdge(1);
+    AdjacencyMatrix<3> a3_111(a3_110); a3_111.setEdge(2);
+
+    std::vector<AdjacencyMatrix<1>> c1{a1};
+
+    auto v1 = uniqueAdjacencyMatrices<1>(c1);
+    ASSERT_EQ(v1.size(), 0);
+
+    auto v2 = uniqueAdjacencyMatrices<2>(c1);
+    ASSERT_EQ(v2.size(), 0);
+
+    std::vector<AdjacencyMatrix<2>> c2_0{};
+    std::vector<AdjacencyMatrix<2>> c2_1{a2_1};
+    std::vector<AdjacencyMatrix<2>> e2_1{a2_0};
+
+    v2 = uniqueAdjacencyMatrices<2>(c2_1);
+    ASSERT_EQ(v2.size(), 1);
+    ASSERT_EQ(v2[0], a2_0);
+
+    v2 = uniqueAdjacencyMatrices<2>(c2_0, e2_1);
+    ASSERT_EQ(v2.size(), 1);
+    ASSERT_EQ(v2[0], a2_1);
+
+    v2 = uniqueAdjacencyMatrices<2>(c2_1, e2_1);
+    ASSERT_EQ(v2.size(), 0);
+
+    auto v3 = uniqueAdjacencyMatrices<3>(c1);
+    ASSERT_EQ(v3.size(), 0);
+
+    std::vector<AdjacencyMatrix<3>> c3_0{};
+    std::vector<AdjacencyMatrix<3>> c3_1{a3_100};
+    std::vector<AdjacencyMatrix<3>> e3_1{a3_110};
+
+    v3 = uniqueAdjacencyMatrices<3>(c3_1);
+    ASSERT_EQ(v3.size(), 1);
+
+    v3 = uniqueAdjacencyMatrices<3>(c3_0, e3_1);
+    ASSERT_EQ(v3.size(), 1);
+
+    v3 = uniqueAdjacencyMatrices<3>(c3_1, e3_1);
+    ASSERT_EQ(v3.size(), 0);
+}
+
 int main(int argc, char** args) {
     ::testing::InitGoogleTest(&argc, args);
     return RUN_ALL_TESTS();

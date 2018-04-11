@@ -288,12 +288,26 @@ int main(int argc, char** args) {
 
     auto t1 = std::chrono::steady_clock::now();
 
-    std::vector<AdjacencyMatrix<config::u>> uniqueBaseMasks = uniqueAdjacencyMatrices<config::u>();
+    std::vector<AdjacencyMatrix<config::n>> edgeMasksComplete = subGraphEdgeMasks<config::e, config::n, config::r>();
+    std::vector<AdjacencyMatrix<config::n>> edgeMasksEmpty    = invertSubgraphEdgeMasks<config::e, config::n, config::s>(
+            subGraphEdgeMasks<config::e, config::n, config::s>());
 
     auto t2 = std::chrono::steady_clock::now();
 
-    cerr << "Create unique base graphs:                    " << std::setw(15 + 4) << std::fixed << std::chrono::duration<double>(t2 - t1).count() << " seconds" << endl;
-    cerr << "Number of unique base graphs:                 " << std::setw(15) << uniqueBaseMasks.size() << endl;
+    cerr << "Create subgraph edge masks:                   " << std::setw(15 + 4) << std::fixed << std::chrono::duration<double>(t2 - t1).count() << " seconds" << endl;
+
+#if R5_VERBOSE >= 3
+    cerr << "Complete edge masks:                          " << std::setw(15) << edgeMasksComplete        << endl;
+    cerr << "Empty edge masks:                             " << std::setw(15) << edgeMasksEmpty           << endl;
+#endif
+
+    std::vector<AdjacencyMatrix<config::u>> uniqueBaseMasksNoFilter; // = uniqueAdjacencyMatrices<config::u>();
+    std::vector<AdjacencyMatrix<config::u>> uniqueBaseMasks = uniqueAdjacencyMatrices<config::u>(edgeMasksComplete, edgeMasksEmpty);
+
+    auto t3 = std::chrono::steady_clock::now();
+
+    cerr << "Create unique base graphs:                    " << std::setw(15 + 4) << std::fixed << std::chrono::duration<double>(t3 - t2).count() << " seconds" << endl;
+    cerr << "Number of unique base graphs:                 " << std::setw(15) << uniqueBaseMasks.size() << "/" << uniqueBaseMasksNoFilter.size() << endl;
     cerr << "Max recursion depth                           " << std::setw(15) << config::e - config::ue << endl;
 
     std::ostringstream o1;
@@ -308,19 +322,6 @@ int main(int argc, char** args) {
 
 #if R5_VERBOSE >= 2
     cerr << "Unique base graphs                            " << std::setw(15) << uniqueBaseMasks << endl;
-#endif
-
-    std::vector<AdjacencyMatrix<config::n>> edgeMasksComplete = subGraphEdgeMasks<config::e, config::n, config::r>();
-    std::vector<AdjacencyMatrix<config::n>> edgeMasksEmpty    = invertSubgraphEdgeMasks<config::e, config::n, config::s>(
-            subGraphEdgeMasks<config::e, config::n, config::s>());
-
-    auto t3 = std::chrono::steady_clock::now();
-
-    cerr << "Create subgraph edge masks:                   " << std::setw(15 + 4) << std::fixed << std::chrono::duration<double>(t3 - t2).count() << " seconds" << endl;
-
-#if R5_VERBOSE >= 3
-    cerr << "Complete edge masks:                          " << std::setw(15) << edgeMasksComplete        << endl;
-    cerr << "Empty edge masks:                             " << std::setw(15) << edgeMasksEmpty           << endl;
 #endif
 
     AdjacencyMatrix<config::n> counterExample;
