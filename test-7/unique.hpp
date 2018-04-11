@@ -73,15 +73,15 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
     for (const auto& p : smallerUniqueMatrices) {
 
         r5::AdjacencyMatrix<nodes> m(p);
+        std::fill(std::begin(mp), std::end(mp), r5::AdjacencyMatrix<nodes>());
 
         // apply the node permutations for the smaller unique graphs (size nodes-1)
         for (std::size_t i = 0; i < nodePermutationCount; i += 1) {
             const auto& np = nodePermutations[i];
-            mp[i].unsetAllEdges();
             for (s64 c = 1; c < p.nodes(); c += 1) {
                 for (s64 r = 0; r < c; r += 1) {
                     if (p.edge(c*(c-1)/2 + r) == true) {
-                        mp[i].setEdge(np[c], np[r]);
+                        mp[i].setEdge(indexer[np[c]][np[r]]);
                     }
                 }
             }
