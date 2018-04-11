@@ -91,7 +91,6 @@ protected:
         // smallest, which is false as soon as we find a smaller representation.
         for (s64 i = 0; i < elements(nodes); i += 1) {
             if (v1[i] != v2[i]) {
-
                 return (bool) ((v1[i]>>(__builtin_ffsll(v1[i] ^ v2[i]) - 1))&0x1);
             }
         }
