@@ -69,3 +69,77 @@ Output of R(4,4) > 16:
                     100
                      00
                       1
+
+# Slightly faster generation of unique graphs (11th April)
+
+The normal operator< causes extensions of smaller unique graphs
+to sometimes get new smaller representations.
+E.g. extending 1 00 to 1 00 001, 1 00 001 is larger than 0 01 100.
+Because of this, in order to find the canonical representation of an extension,
+I had to find the smallest representation of it.
+
+With the new operator<
+
+    bool compareLessThan(const u64* v1, const u64* v2, s64 nodes) {
+        for (s64 i = 0; i < elements(nodes); i += 1) {
+            if (v1[i] != v2[i]) {
+                return (bool) ((v1[i]>>(__builtin_ffsll(v1[i] ^ v2[i]) - 1))&0x1);
+            }
+        }
+        return false;
+    }
+
+smallest representations are always extensions of smaller unique graphs.
+Now, instead of finding the smallest representation for each extension,
+I check whether the current representation is the smallest.
+If there is a smaller one, I can abort immediately.
+
+The performance improvement here is sadly just ~10% for u=7 and 8.
+The comparison itself is slightly slower due to the check for equality.
+
+This change alters the choice of unique base graphs, and thus influences when a counter example gets found.
+I.e. some queries (as shown below) got slower.
+
+    u = 6 takes    0.006 seconds
+    u = 7 takes   .4     seconds
+    u = 8 takes 47       seconds
+
+    R(4,4) >  15 takes    8   s (u = 7) ( 0.4 before) (Solaire)
+    R(4,4) >  16 takes 4460   s (u = 8) (74   before) (Solaire)
+    R(3,5) <= 14 takes    8   s (u = 7) ( 8   before) (Solaire)
+
+I also tried filtering unique base graphs according to the complete and empty edge masks.
+The idea is that a unique base graph that contains a complete subgraph of size r or an empty subgraph of size s
+does not need to be considered further since it is already a hit.
+Thus the technique lowers the number of unique base graphs and speeds up generating them, too, or so I thought.
+It does not speed up the main loop and DFS since they would discard these unique base graphs immediately, too.
+
+The code ended up a bit ugly, because filtering got mixed into uniqueAdjacencyMatrices().
+BUT it was not faster at all (or perhaps just a tiny bit for u=9),
+although the number of unique graphs for e.g. 8 nodes went down to ~2000 from 12345.
+After some investigation, I'm still not sure why it is not faster.
+Since there was no improvement and it made the code uglier, I left it on branch filter-unique-base-graphs.
+
+# Possible Next Steps
+
+- (++) Speed up generating unique base graphs:
+       This is clearly possibly as `geng` (part of nauty) demonstrates.
+       I already fiddled with that a bit but didn't make any quick progress.
+       `https://github.com/rmanders/unlabeled-graphical-enumeration/blob/master/graphs/orderly.py`'s functions
+       (especially unlabeled_complement) could serve as a basis.
+       `geng`'s source code is hard to read.
+       Perhaps I could copy and refactor it until I understand what it does.
+
+- (+ ) Filter complete and empty masks in the main DFS as it progresses.
+       The same is already done for each unique base graphs, but is then
+       never repeated.
+       Not sure how much this can speed things up, but having fewer masks to check in the DFS would probably be good.
+
+- (++) (Vague) It would be great if I could put both edge mask checks into one loop with a unified check.
+       Bit twiddling.
+
+- (++) (Vague) It would be great if I could leverage symmetry somehow.
+       The complement of the to-be-checked graph.
+
+- (-) Parallelize generating unique base graphs
+- (-) Parallelize the main loop
