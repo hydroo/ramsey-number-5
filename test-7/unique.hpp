@@ -69,6 +69,18 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
 
     std::vector<r5::AdjacencyMatrix<nodes>> mp(nodePermutationCount); // permuted matrices, one per nodePermutation
 
+#if R5_VERBOSE >= 1
+    std::cerr << "uniqueAdjacencyMatrices<" << nodes << ">:" << std::endl;
+    std::cerr << "  Size of AdjacencyMatrix<nodes>            " << sizeof(mp[0]) << " bytes" << std::endl;
+    std::cerr << "  Node permutations (nodes!)                " << nodePermutationCount << std::endl;
+    std::cerr << "  Size of mp                                " << nodePermutationCount*sizeof(mp[0]) << " bytes"<< std::endl;
+    std::cerr << "  Smaller unique matrices                   " << smallerUniqueMatrices.size() << std::endl;
+    std::cerr << "  Edges per smaller unique matrix           " << (nodes-1)*(nodes-2)/2 << std::endl;
+    std::cerr << "  Total iterations to set all initial edges " << smallerUniqueMatrices.size() * nodePermutationCount * (nodes-1)*(nodes-2)/2 << std::endl;
+    std::cerr << "  Total recursion steps                     " << smallerUniqueMatrices.size() << " * 2^" << column << " = " << smallerUniqueMatrices.size() * (s64) std::pow(2, column) << std::endl;
+    std::cerr << std::endl;
+#endif
+
     // For each unique adjacency matrix of size nodes-1
     for (const auto& p : smallerUniqueMatrices) {
 
