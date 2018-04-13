@@ -138,8 +138,8 @@ Since there was no improvement and it made the code uglier, I left it on branch 
 - (++) (Vague) It would be great if I could put both edge mask checks into one loop with a unified check.
        Bit twiddling.
 
-- (++) (Vague) It would be great if I could leverage symmetry somehow.
-       The complement of the to-be-checked graph.
+- (++) (Vague) It would be great if I could leverage symmetry and/or simple deduplication (isomorphism) somehow.
+       E.g. via complement of the to-be-checked graph.
 
 - (-) Parallelize generating unique base graphs
 - (-) Parallelize the main loop
