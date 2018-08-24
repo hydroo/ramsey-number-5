@@ -122,6 +122,16 @@ Since there was no improvement and it made the code uglier, I left it on branch 
 
 # Possible Next Steps
 
+- (++) Instead of exiting upon the first encountered counter example (Ramsey Graph r, s, n),
+       collect all of them.
+       Count them and verify that count against the known numbers, e.g. here:
+       `https://users.cecs.anu.edu.au/~bdm/data/ramsey.html`
+       Store them and make them readable/available for later algorithms.
+       E.g. to use them as a starting point for extensions to higher node counts.
+       (The performance comparison is also kind of bad right now, since it depends on when the first
+       Ramsey Graph is found. That time changes when I fiddle with the details of the algorithms,
+       order of the graphs etc. making fair comparison impossible)
+
 - (++) Speed up generating unique base graphs:
        This is clearly possibly as `geng` (part of nauty) demonstrates.
        I already fiddled with that a bit but didn't make any quick progress.
