@@ -22,12 +22,7 @@ protected:
     static constexpr s64 elements(s64 n) { return (bits(n)-1) / bitsPerElement + 1; }
 
     static constexpr void initialize(s64 n, u64* v) {
-         // set main diagonal to 0
-         if (Triangular == false) {
-            for (s64 i = 0; i < n; i += 1) {
-                unsetEdge(i, i, n, v);
-            }
-        }
+        unsetAllEdges(n, v);
     }
 
     static constexpr void assign(const u64* m, s64 nodes, u64* v) {
