@@ -78,8 +78,6 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
     std::cerr << "  Size of AdjacencyMatrix<nodes>            " << sizeof(r5::AdjacencyMatrix<nodes>) << " bytes" << std::endl;
     std::cerr << "  Node permutations (nodes!)                " << nodePermutationCount << std::endl;
     std::cerr << "  Smaller unique matrices                   " << smallerUniqueMatrices.size() << std::endl;
-    std::cerr << "  Edges per smaller unique matrix           " << (nodes-1)*(nodes-2)/2 << std::endl;
-    std::cerr << "  Total iterations to set all initial edges " << smallerUniqueMatrices.size() * nodePermutationCount * (nodes-1)*(nodes-2)/2 << std::endl;
     const s64 totalRecursionSteps = smallerUniqueMatrices.size() * (s64) std::pow(2, column);
     std::cerr << "  Total recursion steps                     " << smallerUniqueMatrices.size() << " * 2^" << column << " = " << totalRecursionSteps << std::endl;
     const s64 maximumGraphChecks = totalRecursionSteps * nodePermutationCount;
