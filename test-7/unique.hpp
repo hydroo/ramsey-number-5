@@ -29,8 +29,8 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
     constexpr s64 edges = nodes*(nodes-1)/2;
     constexpr s64 nodePermutationCount = factorial(nodes);
 
-    // create all node permutations
-    auto edgePermutations = []() -> std::vector<std::array<s64, edges>> {
+    // create all permutations and store them as maps from edges to edges
+    auto reverseEdgePermutations = []() -> std::vector<std::array<s64, edges>> {
 
         std::vector<std::array<s64, edges>> ret(nodePermutationCount);
         using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
@@ -44,7 +44,7 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
         do {
             for (s64 e = 0; e < edges; e += 1) {
                 auto cr = AmIndexer::reverse(e);
-                ret[p][e] = AmIndexer::index(permutation[cr.first], permutation[cr.second]);
+                ret[p][AmIndexer::index(permutation[cr.first], permutation[cr.second])] = e;
             }
 
             p += 1;
@@ -119,15 +119,16 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
 
                 bool isCanonical = true;
 
-                for (std::size_t i = 0; i < nodePermutationCount; i += 1) {
-
-                    r5::AdjacencyMatrix<nodes> mp;
-
-                    const auto& ep = edgePermutations[i];
+                for (const auto& permutation : reverseEdgePermutations) {
 
                     for (s64 e = 0; e < edges; e += 1) {
-                        if (m.edge(e) == true) {
-                            mp.setEdge(ep[e]);
+
+                        auto e1 = m.edge(permutation[e]);
+                        auto e2 = m.edge(e);
+
+                        if (e1 != e2) {
+                            isCanonical = e1 < e2;
+                            break;
                         }
                     }
 
@@ -135,13 +136,12 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
                     graphChecks += 1;
 #endif
 
-                    if (mp < m) {
-                        isCanonical = false;
+                    if (isCanonical == false) {
                         break;
                     }
                 }
 
-                if (isCanonical) {
+                if (isCanonical == true) {
                     uniqueGraphs.insert(m);
                 }
             }

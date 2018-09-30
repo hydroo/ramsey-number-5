@@ -137,7 +137,25 @@ This speeds up applying permutations.
     u = 8 takes 24   seconds
 
 u = 9 is still far out of reach.
-30x DFS leaves and 10x the number of permutations -> somewhere around ???x to 300x the work.
+30x DFS leaves and 10x the number of permutations -> somewhere up to 300x the work.
+
+3)
+Switch to an algorithm that allows even earlier termination.
+To determine whether a graph is canonical we test for g < h.
+For this g has to have an earlier edge than h (earlier as in lower index).
+
+For each permutation,
+iterate through all edges e starting at index 0, and see whether the original graph's edge e,
+or the permuted graph's edge e (which is the original graph's edge f, where f = reverse permutation of e)
+are the same.
+If so, continue comparing edges.
+If not, return < or > depending on the edges values.
+  This cuts down the number of permutations to be done for the comparison step.
+  It does not lower the number of permutations tested, but it terminates during many of them earlier,
+  since we only partially apply them.
+
+    u = 7 takes  .06 seconds
+    u = 8 takes 9    seconds
 
 # Possible Next Steps
 
