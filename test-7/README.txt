@@ -120,6 +120,25 @@ although the number of unique graphs for e.g. 8 nodes went down to ~2000 from 12
 After some investigation, I'm still not sure why it is not faster.
 Since there was no improvement and it made the code uglier, I left it on branch filter-unique-base-graphs.
 
+# Faster Generation of Unique Graphs (30th September 2018)
+
+1)
+Do not store all permuted graphs, and don't compute them during the traversal.
+Instead, compute each permutation of the DFS leaf's graph one after another.
+Each time see whether or not the permuted graph is smaller than the original.
+If so the original graph is not canonical.
+This cuts down the number of computed permuted graphs, since it stops as soon as we know the original graph is not canonical.
+
+2)
+Switch from node-based permutation representation to edge-based.
+This speeds up applying permutations.
+
+    u = 7 takes   .2 seconds
+    u = 8 takes 24   seconds
+
+u = 9 is still far out of reach.
+30x DFS leaves and 10x the number of permutations -> somewhere around ???x to 300x the work.
+
 # Possible Next Steps
 
 - (++) Instead of exiting upon the first encountered counter example (Ramsey Graph r, s, n),

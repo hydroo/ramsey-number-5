@@ -26,23 +26,29 @@ std::vector<r5::AdjacencyMatrix<1>> uniqueAdjacencyMatrices() {
 template<s64 nodes>
 std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
 
+    constexpr s64 edges = nodes*(nodes-1)/2;
     constexpr s64 nodePermutationCount = factorial(nodes);
 
     // create all node permutations
-    auto nodePermutations = []() -> std::vector<std::array<s64, nodes>> {
+    auto edgePermutations = []() -> std::vector<std::array<s64, edges>> {
 
-        std::vector<std::array<s64, nodes>> ret(nodePermutationCount);
+        std::vector<std::array<s64, edges>> ret(nodePermutationCount);
+        using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
 
-        std::array<s64, nodes> nodeList;
-        for (std::size_t n = 0; n < nodeList.size(); n += 1) {
-            nodeList[n] = n;
+        std::array<s64, nodes> permutation;
+        for (std::size_t n = 0; n < nodes; n += 1) {
+            permutation[n] = n;
         }
 
         s64 p = 0;
         do {
-            ret[p] = nodeList;
+            for (s64 e = 0; e < edges; e += 1) {
+                auto cr = AmIndexer::reverse(e);
+                ret[p][e] = AmIndexer::index(permutation[cr.first], permutation[cr.second]);
+            }
+
             p += 1;
-        } while (std::next_permutation(std::begin(nodeList), std::end(nodeList)));
+        } while (std::next_permutation(std::begin(permutation), std::end(permutation)));
 
         return ret;
     }();
@@ -67,37 +73,25 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
     // Take the unique adjacency matrices of size nodes-1
     auto smallerUniqueMatrices = uniqueAdjacencyMatrices<nodes-1>();
 
-    std::vector<r5::AdjacencyMatrix<nodes>> mp(nodePermutationCount); // permuted matrices, one per nodePermutation
-
 #if R5_VERBOSE >= 1
     std::cerr << "uniqueAdjacencyMatrices<" << nodes << ">:" << std::endl;
-    std::cerr << "  Size of AdjacencyMatrix<nodes>            " << sizeof(mp[0]) << " bytes" << std::endl;
+    std::cerr << "  Size of AdjacencyMatrix<nodes>            " << sizeof(r5::AdjacencyMatrix<nodes>) << " bytes" << std::endl;
     std::cerr << "  Node permutations (nodes!)                " << nodePermutationCount << std::endl;
-    std::cerr << "  Size of mp                                " << nodePermutationCount*sizeof(mp[0]) << " bytes"<< std::endl;
     std::cerr << "  Smaller unique matrices                   " << smallerUniqueMatrices.size() << std::endl;
     std::cerr << "  Edges per smaller unique matrix           " << (nodes-1)*(nodes-2)/2 << std::endl;
     std::cerr << "  Total iterations to set all initial edges " << smallerUniqueMatrices.size() * nodePermutationCount * (nodes-1)*(nodes-2)/2 << std::endl;
-    std::cerr << "  Total recursion steps                     " << smallerUniqueMatrices.size() << " * 2^" << column << " = " << smallerUniqueMatrices.size() * (s64) std::pow(2, column) << std::endl;
-    std::cerr << std::endl;
+    const s64 totalRecursionSteps = smallerUniqueMatrices.size() * (s64) std::pow(2, column);
+    std::cerr << "  Total recursion steps                     " << smallerUniqueMatrices.size() << " * 2^" << column << " = " << totalRecursionSteps << std::endl;
+    const s64 maximumGraphChecks = totalRecursionSteps * nodePermutationCount;
+    std::cerr << "  Maximum graph checks                      " << smallerUniqueMatrices.size() << " * 2^" << column << " * " << nodePermutationCount << " = " << maximumGraphChecks << std::endl;
+
+    s64 graphChecks = 0;
 #endif
 
     // For each unique adjacency matrix of size nodes-1
     for (const auto& p : smallerUniqueMatrices) {
 
         r5::AdjacencyMatrix<nodes> m(p);
-        std::fill(std::begin(mp), std::end(mp), r5::AdjacencyMatrix<nodes>());
-
-        // apply the node permutations for the smaller unique graphs (size nodes-1)
-        for (std::size_t i = 0; i < nodePermutationCount; i += 1) {
-            const auto& np = nodePermutations[i];
-            for (s64 c = 1; c < p.nodes(); c += 1) {
-                for (s64 r = 0; r < c; r += 1) {
-                    if (p.edge(c*(c-1)/2 + r) == true) {
-                        mp[i].setEdge(indexer[np[c]][np[r]]);
-                    }
-                }
-            }
-        }
 
         // Start the DFS to enumerate all the remaining edges.
         // The remaining edges are in the last column 'column' and in rows 0 to column-1
@@ -114,10 +108,6 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
             stackTop -= 1;
 
             m.toggleEdge(indexer[column][row]);
-            for (std::size_t i = 0; i < nodePermutationCount; i += 1) {
-                const auto& np = nodePermutations[i];
-                mp[i].toggleEdge(indexer[np[column]][np[row]]);
-            }
 
             if (row < column - 1) { // still enumerating
 
@@ -128,8 +118,24 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
             } else { // DFS leaf
 
                 bool isCanonical = true;
-                for (s64 i = 0; i < nodePermutationCount; i += 1) {
-                    if (mp[i] < m) {
+
+                for (std::size_t i = 0; i < nodePermutationCount; i += 1) {
+
+                    r5::AdjacencyMatrix<nodes> mp;
+
+                    const auto& ep = edgePermutations[i];
+
+                    for (s64 e = 0; e < edges; e += 1) {
+                        if (m.edge(e) == true) {
+                            mp.setEdge(ep[e]);
+                        }
+                    }
+
+#if R5_VERBOSE >= 1
+                    graphChecks += 1;
+#endif
+
+                    if (mp < m) {
                         isCanonical = false;
                         break;
                     }
@@ -141,6 +147,13 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
             }
         }
     }
+
+#if R5_VERBOSE >= 1
+    R5_ASSERT(graphChecks >= totalRecursionSteps);
+    R5_ASSERT(graphChecks <= maximumGraphChecks);
+    std::cerr << "  Actual graph checks                       " << graphChecks << std::endl;
+    std::cerr << std::endl;
+#endif
 
     std::vector<r5::AdjacencyMatrix<nodes>> ret(uniqueGraphs.size());
     // reverse order, because it is sorted like 111 11 1 in the set
