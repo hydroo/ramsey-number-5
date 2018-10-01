@@ -136,9 +136,6 @@ This speeds up applying permutations.
     u = 7 takes   .2 seconds
     u = 8 takes 24   seconds
 
-u = 9 is still far out of reach.
-30x DFS leaves and 10x the number of permutations -> somewhere up to 300x the work.
-
 3)
 Switch to an algorithm that allows even earlier termination.
 To determine whether a graph is canonical we test for g < h.
@@ -154,8 +151,31 @@ If not, return < or > depending on the edges values.
   It does not lower the number of permutations tested, but it terminates during many of them earlier,
   since we only partially apply them.
 
-    u = 7 takes  .06 seconds
-    u = 8 takes 9    seconds
+    u = 7 takes     .06 seconds
+    u = 8 takes    9    seconds
+    u = 9 takes 2700    seconds
+
+Output excerpt of u = 8:
+
+    uniqueAdjacencyMatrices<8>:
+      Node permutations (nodes!)                40,320
+      Smaller unique matrices                   1,044
+      Total recursion steps                     1,044 * 2^7 = 133,632
+      Maximum graph checks                      1,044 * 2^7 * 40,320 = 5,388,042,240
+      Actual graph checks                       534,923,102
+
+    Number of unique base graphs:                          12,346
+
+Output excerpt of u = 9:
+
+    uniqueAdjacencyMatrices<9>:
+      Node permutations (nodes!)                362,880
+      Smaller unique matrices                   12,346
+      Total recursion steps                     12,346 * 2^8 = 3,160,576
+      Maximum graph checks                      12,346 * 2^8 * 362,880 = 1,146,909,818,880
+      Actual graph checks                       105,808,539,545
+
+    Number of unique base graphs:                         274,668
 
 # Possible Next Steps
 
