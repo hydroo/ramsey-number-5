@@ -70,6 +70,12 @@ TEST(Test7, uniqueAdjacencyMatrices) {
 
     auto v5 = uniqueAdjacencyMatrices<5>();
     ASSERT_EQ(v5.size(), 34);
+
+    auto v6 = uniqueAdjacencyMatrices<6>();
+    ASSERT_EQ(v6.size(), 156);
+
+    auto v7 = uniqueAdjacencyMatrices<7>();
+    ASSERT_EQ(v7.size(), 1044);
 }
 
 int main(int argc, char** args) {

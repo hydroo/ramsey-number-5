@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
-set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -g")
+set(CMAKE_CXX_FLAGS_DEBUG "-Og -DDEBUG -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -mtune=native")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O2 -mtune=native -fno-omit-frame-pointer -g")
 
