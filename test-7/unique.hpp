@@ -108,8 +108,8 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
 
                     for (s64 e = 0; e < edges; e += 1) {
 
-                        auto e1 = m.edge(permutation[e]);
-                        auto e2 = m.edge(e);
+                        const bool e1 = m.edge(permutation[e]);
+                        const bool e2 = m.edge(e);
 
                         if (e1 != e2) {
                             isCanonical = e1 < e2;
