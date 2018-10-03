@@ -53,19 +53,6 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
         return ret;
     }();
 
-    // Cache column, row to edge indexing
-    // Without this edge(c, r) and setEdge(c, r) would be substantially slower
-    constexpr auto indexer = []() -> std::array<std::array<s64, nodes>, nodes> {
-        std::array<std::array<s64, nodes>, nodes> ret{};
-        using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
-        for (s64 c = 0; c < nodes; c += 1) {
-            for (s64 r = 0; r < nodes; r += 1) {
-                ret[c][r] = AmIndexer::index(c, r);
-            }
-        }
-        return ret;
-    }();
-
     std::set<r5::AdjacencyMatrix<nodes>> uniqueGraphs;
 
     constexpr s64 column = nodes-1;
@@ -93,24 +80,24 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
 
         // Start the DFS to enumerate all the remaining edges.
         // The remaining edges are in the last column 'column' and in rows 0 to column-1
-        std::array<s64, column + 1> stack;
+        std::array<s64, nodes> stack;
         s64 stackTop = 1;
-        stack[0] = 0; //   set first edge
-        stack[1] = 0; // unset first edge
+        stack[0] = r5::AdjacencyMatrixIndexer<nodes>::index(column, 0); //   set first edge
+        stack[1] = r5::AdjacencyMatrixIndexer<nodes>::index(column, 0); // unset first edge
 
         while (stackTop >= 0) {
 
             R5_DEBUG_ASSERT(stackTop < (s64) stack.size());
 
-            s64 row = stack[stackTop];
+            s64 edge = stack[stackTop];
             stackTop -= 1;
 
-            m.toggleEdge(indexer[column][row]);
+            m.toggleEdge(edge);
 
-            if (row < column - 1) { // still enumerating
+            if (edge < edges-1) { // still enumerating
 
-                stack[stackTop+1] = row + 1;
-                stack[stackTop+2] = row + 1;
+                stack[stackTop+1] = edge + 1;
+                stack[stackTop+2] = edge + 1;
                 stackTop += 2;
 
             } else { // DFS leaf
