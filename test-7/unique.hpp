@@ -3,6 +3,8 @@
 
 #include "prereqs.hpp"
 
+#include <algorithm>
+#include <numeric>
 #include <set>
 
 #include "adjacencymatrix.hpp"
@@ -36,9 +38,7 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
         using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
 
         std::array<s64, nodes> permutation;
-        for (std::size_t n = 0; n < nodes; n += 1) {
-            permutation[n] = n;
-        }
+        std::iota(std::begin(permutation), std::end(permutation), 0);
 
         s64 p = 0;
         do {
@@ -141,12 +141,9 @@ std::vector<r5::AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices() {
 #endif
 
     std::vector<r5::AdjacencyMatrix<nodes>> ret(uniqueGraphs.size());
+
     // reverse order, because it is sorted like 111 11 1 in the set
-    auto i = ret.size()-1;
-    for (const auto& g : uniqueGraphs) {
-        ret[i] = g;
-        i -= 1;
-    }
+    std::reverse_copy(std::begin(uniqueGraphs), std::end(uniqueGraphs), std::begin(ret));
 
     return ret;
 }
