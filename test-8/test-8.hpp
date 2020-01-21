@@ -6,6 +6,10 @@
 #include <functional>
 #include <numeric>
 
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/adjacency_matrix.hpp>
+#include <boost/graph/isomorphism.hpp>
+
 #include "adjacencymatrix.hpp"
 
 using std::cerr;
@@ -275,6 +279,68 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices(const std::vector<Ad
 //    return ret;
 //}
 
+template<s64 nodes>
+std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices3(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
+
+    constexpr s64 edges = AdjacencyMatrix<nodes>().edges();
+
+    using BoostGraph = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS>;
+    //using BoostGraph = boost::adjacency_matrix<boost::undirectedS>;
+
+    std::vector<std::tuple<AdjacencyMatrix<nodes>, BoostGraph, std::array<s64, edges>>> uniqueGraphs;
+
+    for (const auto& g : graphs) {
+
+        BoostGraph gBoost(nodes);
+        for (s64 n = 0; n < nodes; n += 1) {
+            for (s64 m = n+1; m < nodes; m += 1) {
+                if (g.edge(n, m)) {
+                    boost::add_edge(n, m, gBoost);
+                }
+            }
+        }
+
+        std::array<s64, nodes>  gDegrees{};
+        std::array<s64, edges>  gDegreeHistogram{};
+        using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
+
+        for (s64 e = 0; e < edges; e += 1) {
+            auto cr = AmIndexer::reverse(e);
+            gDegrees[cr.first]  += g.edge(e);
+            gDegrees[cr.second] += g.edge(e);
+        }
+
+        for (s64 d : gDegrees) {
+            gDegreeHistogram[d] += 1;
+        }
+
+        bool isUnique = true;
+        for (const auto& t : uniqueGraphs) {
+
+            const auto& hBoost           = std::get<1>(t);
+            const auto& hDegreeHistogram = std::get<2>(t);
+
+            if (gDegreeHistogram != hDegreeHistogram) { continue; }
+
+            if (boost::isomorphism(gBoost , hBoost)) {
+                isUnique = false;
+                break;
+            }
+        }
+
+        if (isUnique) {
+            uniqueGraphs.push_back(std::make_tuple(g, gBoost, gDegreeHistogram));
+        }
+    }
+
+    std::vector<AdjacencyMatrix<nodes>> ret;
+    for (const auto& t : uniqueGraphs) {
+        ret.push_back(std::get<0>(t));
+    }
+
+    return ret;
+}
+
 template<s64 r, s64 s, s64 n, typename Enable = void>
 struct RamseyGraphs {
     static std::vector<AdjacencyMatrix<n>> f() {
@@ -448,7 +514,7 @@ struct RamseyGraphs {
 #endif
 
         auto t6 = std::chrono::steady_clock::now();
-        auto ramseyGraphs = uniqueAdjacencyMatrices(nonUniqueRamseyGraphs);
+        auto ramseyGraphs = uniqueAdjacencyMatrices3(nonUniqueRamseyGraphs);
         auto t7 = std::chrono::steady_clock::now();
 
         auto t67 = std::chrono::duration<double>(t7 - t6).count();

@@ -3,6 +3,7 @@ project (test-8 LANGUAGES CXX CUDA)
 
 find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
+find_package(Boost COMPONENTS graph)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 if(NOT CMAKE_BUILD_TYPE)

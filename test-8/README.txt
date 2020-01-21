@@ -58,3 +58,25 @@ I need:
  ++ smart selection/generation of permutations
  o  faster generation of permutations than std::next_permutation
  +  faster application of permutations onto adjaceny matrices
+
+# Boost::graph Isomorphism Test
+
+Since this does not rely on exhaustively checking permutations, but searches for an isomorphism, we can succesfully compute R(3,5) !
+
+              Previously   Boost    Test-7(u=8)
+
+R(3,5) =  14   too long     0.3!    5.7      seconds
+R(3,6) =? 10   long        13       3.8
+R(4,4) =?  8    0.6         1.4     3
+R(4,4) =?  9  120          82       3
+
+According to https://www.boost.org/doc/libs/1_72_0/libs/graph/doc/isomorphism.html
+(notice link https://www.boost.org/doc/libs/1_72_0/libs/graph/doc/isomorphism-impl.pdf)
+the implementation here is slow.
+It also references a better algorithm.
+I need to understand one of these algorithms and adopt it.
+
+I hope my adjacency matrix representation is OK.
+I don't want to implement a second representation - edge lists?
+Full adjaceny matrices (non-triangular) might already work, if needed.
+
