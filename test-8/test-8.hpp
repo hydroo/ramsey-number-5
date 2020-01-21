@@ -103,22 +103,20 @@ std::array<std::vector<AdjacencyMatrix<nodes>>, edges + 1> subGraphEdgeMasksByLa
 template<s64 nodes>
 std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
 
-    // TODO create only permutations that switch the last node
-
     constexpr s64 edges = AdjacencyMatrix<nodes>().edges();
-    constexpr s64 nodePermutationCount = factorial(nodes);
+    constexpr s64 permutationCount = factorial(nodes);
 
 #if R5_VERBOSE >= 1
         cerr << "  Uniquify ramsey graphs" << endl;
-        cerr << "    Number of node permutations            " << std::setw(15) << nodePermutationCount << endl;
+        cerr << "    Number of permutations                 " << std::setw(15) << permutationCount << endl;
 #endif
 
     auto t1 = std::chrono::steady_clock::now();
 
     // create all permutations and store them as maps from edges to edges
-    auto reverseEdgePermutations = []() -> std::vector<std::array<s64, edges>> {
+    auto edgePermutations = []() -> std::vector<std::array<s64, edges>> {
 
-        std::vector<std::array<s64, edges>> ret(nodePermutationCount);
+        std::vector<std::array<s64, edges>> ret(permutationCount);
         using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
 
         std::array<s64, nodes> permutation;
@@ -141,10 +139,15 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices(const std::vector<Ad
     auto t12 = std::chrono::duration<double>(t2 - t1).count();
 #if R5_VERBOSE >= 1
         cerr << "    Create permutations:                   " << std::setw(15 + 4) << std::fixed << t12 << " seconds" << endl;
+#if R5_VERBOSE >= 2
+        if (nodes < 5) {
+            cerr << "    Edge permutations:                     " << std::setw(15) << edgePermutations << endl;
+        }
+#if R5_VERBOSE >= 3
+        cerr << "    Not canonical graphs:" << endl;
 #endif
-
-    // TODO it should be possible to index permutations by which node is swapped with the last node
-    // This way we only use the permutations that potentially change an early node
+#endif
+#endif
 
     std::vector<AdjacencyMatrix<nodes>> ret;
 
@@ -153,7 +156,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices(const std::vector<Ad
 
         bool isCanonical = true;
 
-        for (const auto& permutation : reverseEdgePermutations) {
+        for (const auto& permutation : edgePermutations) {
 
             for (s64 e = 0; e < edges; e += 1) {
 
@@ -162,6 +165,13 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices(const std::vector<Ad
 
                 if (e1 != e2) {
                     isCanonical = e1 < e2;
+
+#if R5_VERBOSE >= 3
+                    if (isCanonical == false) {
+        cerr << "      " << g << " " << " e: " << e << " p[e]: " << permutation[e] << " p: "<< permutation << endl;
+                    }
+#endif
+
                     break;
                 }
             }
@@ -183,6 +193,88 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices(const std::vector<Ad
 
     return ret;
 }
+
+//template<s64 nodes>
+//std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices2(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
+//
+//    constexpr s64 edges = AdjacencyMatrix<nodes>().edges();
+//
+//    std::vector<std::tuple<AdjacencyMatrix<nodes>, std::array<s64, nodes>, std::array<s64, edges>>> uniqueGraphs;
+//
+//    for (const auto& g : graphs) {
+//
+//        std::array<s64, nodes>  gDegrees{};
+//        std::array<s64, edges>  gDegreeHistogram{};
+//        using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
+//
+//        for (s64 e = 0; e < edges; e += 1) {
+//            auto cr = AmIndexer::reverse(e);
+//            gDegrees[cr.first]  += g.edge(e);
+//            gDegrees[cr.second] += g.edge(e);
+//        }
+//
+//        for (s64 d : gDegrees) {
+//            gDegreeHistogram[d] += 1;
+//        }
+//
+//        bool isUnique = true;
+//
+//        for (const auto& t : uniqueGraphs) {
+//
+//            auto h                = std::get<0>(t);
+//            auto hDegrees         = std::get<1>(t);
+//            auto hDegreeHistogram = std::get<2>(t);
+//
+//            if (gDegreeHistogram != hDegreeHistogram) { continue; }
+//
+//            std::array<s64, nodes> permutation;
+//            std::iota(std::begin(permutation), std::end(permutation), 0);
+//
+//            do {
+//
+//                bool sameDegrees = true;
+//                for (s64 n = 0; n < nodes; n += 1) {
+//                    if (gDegrees[permutation[n]] != hDegrees[n]) {
+//                        sameDegrees = false;
+//                        break;
+//                    }
+//                }
+//                if (sameDegrees == false) { continue; }
+//
+//                bool isIsomorph = true;
+//                for (s64 e = 0; e < edges; e += 1) {
+//                    auto cr = AmIndexer::reverse(e);
+//                    if (g.edge(AmIndexer::index(permutation[cr.first], permutation[cr.second])) != h.edge(e)) {
+//                        isIsomorph = false;
+//                        break;
+//                    }
+//                }
+//
+//                if (isIsomorph) {
+//                    isUnique = false;
+//                    break;
+//                }
+//
+//            } while (std::next_permutation(std::begin(permutation), std::end(permutation)));
+//
+//            if (isUnique == false) {
+//                break;
+//            }
+//        }
+//
+//        if (isUnique) {
+//            uniqueGraphs.push_back(std::make_tuple(g, gDegrees, gDegreeHistogram));
+//        }
+//    }
+//
+//    std::vector<AdjacencyMatrix<nodes>> ret;
+//    for (const auto& t : uniqueGraphs) {
+//        ret.push_back(std::get<0>(t));
+//    }
+//
+//    return ret;
+//}
+
 template<s64 r, s64 s, s64 n, typename Enable = void>
 struct RamseyGraphs {
     static std::vector<AdjacencyMatrix<n>> f() {

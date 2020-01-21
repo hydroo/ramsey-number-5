@@ -84,6 +84,10 @@ protected:
         // of each extended graph. Instead we can now stop searching for the smallest
         // representations and only have to check whether the current one is the
         // smallest, which is false as soon as we find a smaller representation.
+        //
+        // TODO the above note seems wrong / misleading.
+        // Extending 0 00 by anything with at least one edge will obviously yield 1 xx xxx.
+        // Maybe the advantage is that we can apply a permutation left to right and exit early?
         for (s64 i = 0; i < elements(nodes); i += 1) {
             if (v1[i] != v2[i]) {
                 return (bool) ((v1[i]>>(__builtin_ffsll(v1[i] ^ v2[i]) - 1))&0x1);
