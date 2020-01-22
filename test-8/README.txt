@@ -1,4 +1,4 @@
-# Overhaul 20th Jan 2020
+# Overhaul - 20th Jan 2020
 
 Create Ramsey graphs directly, instead of the test-7 method.
 
@@ -28,7 +28,7 @@ Expected number of Ramsey graphs is taken from https://users.cecs.anu.edu.au/~bd
  - Speed up uniquification
  - Start porting to CUDA
 
-# Trying to Speed up Uniquification 21st Jan 2020
+# Trying to Speed up Uniquification - 21st Jan 2020
 
 You cannot only permute the last node with another.
 All permutations seem to be needed (empirical).
@@ -59,7 +59,9 @@ I need:
  o  faster generation of permutations than std::next_permutation
  +  faster application of permutations onto adjaceny matrices
 
-# Boost::graph Isomorphism Test
+# Boost::graph Isomorphism Testing - 22nd Jan 2020
+
+uniqueAdjacencyMatrices3()
 
 Since this does not rely on exhaustively checking permutations, but searches for an isomorphism, we can succesfully compute R(3,5) !
 
@@ -80,3 +82,25 @@ I hope my adjacency matrix representation is OK.
 I don't want to implement a second representation - edge lists?
 Full adjaceny matrices (non-triangular) might already work, if needed.
 
+# My Own Isomorphism Testing - 23rd Jan 2020
+
+uniqueAdjacencyMatrices4()
+
+              This    Previously   Boost    Test-7(u=8)
+
+R(3,5) =  14   0.2    too long     0.3     5.7      seconds
+R(3,6) =? 10   7.2    long        13       3.8
+R(4,4) =?  8   0.6     0.6         1.4     3
+R(4,4) =?  9   33    120          82       3
+
+## Possible Optimizations
+
+ - Transform recursion in isIsomorphic() into a stack-based iteration implementation
+   Perf report looks very confusing with all the std counter ?copying?.
+   I tried passing permutation and hAvailableNodes as modifyable and avoid copying,
+   but it somehow made the code slower.
+   So I scrapped it for now.
+   I would think though, that by removing the recursion and never copying the datastructures this should get somewhat faster. 2x?
+ - Algorithmic improvements
+   - Better pruning. Can you add more / use better properties than simple node degree comparisons?
+   - Select higher likelyhood m's to map n to, earlier (But how)
