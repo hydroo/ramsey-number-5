@@ -86,17 +86,43 @@ Full adjaceny matrices (non-triangular) might already work, if needed.
 
 uniqueAdjacencyMatrices4()
 
-              This    Previously   Boost    Test-7(u=8)
+               This    Previously   Boost    Test-7(u=8)
 
-R(3,5) =  14   0.2    too long     0.3     5.7      seconds
-R(3,6) =? 10   7.2    long        13       3.8
-R(4,4) =?  8   0.6     0.6         1.4     3
-R(4,4) =?  9   33    120          82       3
+R(3,5) =  14    0.2    too long     0.3     5.7      seconds
+R(3,6) =? 10    7.2    long        13       3.8
+R(4,4) =?  8    0.6     0.6         1.4     3
+R(4,4) =?  9    33    120          82       3
+R(4,4) =? 10  2300
+
+Log of R(4,4) =? 10
+
+    Ramsey(4,4)-graphs with 10 vertices
+      Smaller Ramsey graphs:                            14,701
+      New edges to fill:                                     9
+      Possible combinations:                         7,526,912 # 14,701 * 2^9
+
+      Check all colorings:                                   0.125 seconds # this can be improved
+      Number of recursion steps:                     7,298,326
+      Number of colorings checked:                   8,443,496
+      Number of edge mask checks:                  107,139,220
+      Non-unique Ramsey graphs:                      1,145,170
+
+      Unique degree histograms:                            520
+      Max graphs per degree histogram:                   4,674
+      Graph combinations checked                 1,078,273,657
+      Recursion steps                           19,272,400,811
+      Permutation checks                        54,545,819,071
+
+      Uniquify Ramsey graphs:                            2,296.312 seconds
+      Ramsey graphs:                                   103,706
+
+    Ramsey(4,4)-graphs with 10 vertices: 103,706
+    Total time: 2,329.797 seconds
 
 ## Possible Optimizations
 
  - Transform recursion in isIsomorphic() into a stack-based iteration implementation
-   Perf report looks very confusing with all the std counter ?copying?.
+   Perf report looks very confusing with all the std container ?copying?.
    I tried passing permutation and hAvailableNodes as modifyable and avoid copying,
    but it somehow made the code slower.
    So I scrapped it for now.
