@@ -150,3 +150,11 @@ R(4,4) =?  8     0.4      0.6           0.6          1.4     3
 R(4,4) =?  9    16.6     33           120           82       3
 R(4,4) =? 10  1143     2300
 
+## Next up
+
+Fix the permutation for n if it has degree 0 or nodes-1, or a unique degree.
+In these three cases, any assignment will yield the same result.
+Our current DFS requires n to be iterated in order, which makes the above optimization weird.
+I hope switching to a flexible set of possible n will make this not too slow.
+I tried incorporating this optimization while keeping the current stack handling, but turned out awful.
+   

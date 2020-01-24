@@ -491,9 +491,12 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices4(const std::vector<A
 template<s64 nodes>
 std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
 
-    s64 graphCombinations = 0; if (graphCombinations) {} // (void) x; didn't work for unknown reasons
-    s64 recursionSteps    = 0; if (recursionSteps)    {}
-    s64 permutationChecks = 0; if (permutationChecks) {}
+#if R5_VERBOSE >= 1
+    s64 graphCombinations = 0;
+    s64 recursionSteps    = 0;
+    s64 permutationChecks = 0;
+    s64 fixableNodesSum   = 0;
+#endif
 
     constexpr s64 edges = AdjacencyMatrix<nodes>().edges();
 
@@ -520,8 +523,17 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         for (s64 n = 0; n < nodes; n += 1) {
             gNodesByDegree[gDegrees[n]].push_back(n);
         }
+#if R5_VERBOSE >= 1
+        s64 fixableNodes = gNodesByDegree[0].size() + gNodesByDegree[nodes-1].size();
+        for (s64 count : gDegreeHistogram) {
+            if (count == 1) {
+                fixableNodes += 1;
+            }
+        }
+        fixableNodesSum += fixableNodes;
 
-        // cerr << "g " << g << " gAvailableNodes " << gNodesByDegree << endl;
+        // cerr << "g " << g << " gAvailableNodes " << gNodesByDegree << " fixable nodes " << fixableNodes << endl;
+#endif
 
         bool isUnique = true;
 
@@ -620,6 +632,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         maxSize = std::max(maxSize, v.second.size());
     }
 
+    cerr << "  Average fixable nodes:                   " << std::setw(15 + 4) << std::fixed << fixableNodesSum / (double) graphs.size() << endl;
     cerr << "  Unique degree histograms:                " << std::setw(15) << uniqueGraphs.size() << endl;
     cerr << "  Max graphs per degree histogram:         " << std::setw(15) << maxSize << endl;
     cerr << "  Graph combinations checked               " << std::setw(15) << graphCombinations << endl;
