@@ -162,6 +162,18 @@ constexpr bool prev_permutation(BidirIt first, BidirIt last)
 
 } // namespace r5
 
+// // for uniqueGraphs with unordered_map
+// template<class s64, size_t N> 
+// struct std::hash<std::array<s64, N>> {
+//     auto operator() (const std::array<s64, N>& key) const {
+//         size_t result = 0;
+//         for(size_t i = 0; i < N; ++i) {
+//             result = result * 31 + key[i];
+//         }
+//         return result;
+//     }
+// };
+
 template <typename T, std::size_t length>
 std::ostream& operator<<(std::ostream& o, const std::array<T, length>& a) {
     o << '[';
@@ -193,6 +205,33 @@ std::ostream& operator<<(std::ostream& o, const std::set<T>& s) {
         i += 1;
     }
     o << '}';
+    return o;
+}
+
+template<class Tuple, std::size_t N>
+struct TuplePrinter {
+    static std::string print(const Tuple& t)
+    {
+        std::ostringstream o;
+        o << TuplePrinter<Tuple, N-1>::print(t) << ", " << std::get<N-1>(t);
+        return o.str();
+    }
+};
+
+template<class Tuple>
+struct TuplePrinter<Tuple, 1> {
+    static std::string print(const Tuple& t)
+    {
+        std::ostringstream o;
+        o << std::get<0>(t);
+        return o.str();
+    }
+};
+
+template<class... Args>
+std::ostream& operator<<(std::ostream& o, const std::tuple<Args...>& t)
+{
+    o << "(" << TuplePrinter<decltype(t), sizeof...(Args)>::print(t) << ")";
     return o;
 }
 

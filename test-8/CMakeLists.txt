@@ -15,9 +15,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
-set(CMAKE_CXX_FLAGS_DEBUG "-Og -DDEBUG -g")
+set(CMAKE_CXX_FLAGS_DEBUG "-Og -DDEBUG -fno-omit-frame-pointer -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -mtune=native")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O2 -mtune=native -fno-omit-frame-pointer -g")
+
+## gprof
+#set(CMAKE_EXE_LINKER_FLAGS "-pg")
+#set(CMAKE_CXX_FLAGS        "-pg ${CMAKE_CXX_FLAGS}")
 
 set(CMAKE_CUDA_FLAGS         "-Xcompiler \"${CMAKE_CXX_FLAGS}\""        )
 set(CMAKE_CUDA_FLAGS_DEBUG   "-Xcompiler \"${CMAKE_CXX_FLAGS_DEBUG}\""  )

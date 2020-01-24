@@ -6,6 +6,7 @@
 #include <functional>
 #include <numeric>
 #include <map>
+#include <unordered_map>
 
 //#include <boost/graph/adjacency_list.hpp>
 //#include <boost/graph/adjacency_matrix.hpp>
@@ -486,6 +487,164 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices4(const std::vector<A
 
     return ret;
 }
+
+template<s64 nodes>
+std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
+
+    s64 graphCombinations = 0; if (graphCombinations) {} // (void) x; didn't work for unknown reasons
+    s64 recursionSteps    = 0; if (recursionSteps)    {}
+    s64 permutationChecks = 0; if (permutationChecks) {}
+
+    constexpr s64 edges = AdjacencyMatrix<nodes>().edges();
+
+    // Note: std::map might not be great long-term. unordered_map?
+    std::map<std::array<s64, nodes>, std::vector<std::tuple<AdjacencyMatrix<nodes>, std::array<std::vector<s64>, nodes>>>> uniqueGraphs;
+
+    for (const auto& g : graphs) {
+
+        std::array<s64, nodes> gDegrees{};
+        std::array<s64, nodes> gDegreeHistogram{};
+        using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
+
+        for (s64 e = 0; e < edges; e += 1) {
+            auto cr = AmIndexer::reverse(e);
+            gDegrees[cr.first]  += g.edge(e);
+            gDegrees[cr.second] += g.edge(e);
+        }
+
+        for (s64 d : gDegrees) {
+            gDegreeHistogram[d] += 1;
+        }
+
+        std::array<std::vector<s64>, nodes> gNodesByDegree{};
+        for (s64 n = 0; n < nodes; n += 1) {
+            gNodesByDegree[gDegrees[n]].push_back(n);
+        }
+
+        // cerr << "g " << g << " gAvailableNodes " << gNodesByDegree << endl;
+
+        bool isUnique = true;
+
+        auto it = uniqueGraphs.find(gDegreeHistogram);
+        if (it == std::end(uniqueGraphs)) {
+            isUnique = true;
+        } else {
+            // for each recorded unique graph with the same degree histogram as g
+            // (g and h cannot be isomorphic if the node degrees differ)
+            for (auto& t : it->second) {
+
+                R5_VERBOSE_1(graphCombinations += 1);
+
+                const auto& h        = std::get<0>(t);
+                auto hAvailableNodes = std::get<1>(t); // copy
+
+                // cerr << "  h " << h << " hAvailableNodes " << hAvailableNodes << endl;
+
+                std::vector<std::tuple<s64 /*n*/, s64 /*m*/, bool /*traverse*/>> stack;
+
+                for (s64 m : hAvailableNodes[gDegrees[0]]) {
+                    stack.push_back(std::make_tuple(0, m, true));
+                }
+
+                std::array<s64, nodes> permutation{};
+
+                while (stack.empty() == false) {
+
+                    // cerr << "    stack " << stack << endl;
+
+                    R5_VERBOSE_1(recursionSteps += 1);
+
+                    s64 n;
+                    s64 m;
+                    bool traverse;
+
+                    std::tie(n, m, traverse) = stack.back();
+
+                    // cerr << "    n " << n << endl;
+
+                    if (traverse == false) {
+                        hAvailableNodes[gDegrees[n]].push_back(m);
+                        stack.pop_back();
+                        continue;
+                    }
+
+                    permutation[n] = m;
+
+                    // cerr << "    permutation " << permutation << endl;
+
+                    R5_VERBOSE_1(permutationChecks += 1);
+
+                    bool match = true;
+                    for (s64 m = 0; m < n; m += 1) {
+                        if (g.edge(n, m) != h.edge(permutation[n], permutation[m])) {
+                            match = false;
+                            break;
+                        }
+                    }
+
+                    if (match == false) {
+                        stack.pop_back();
+                        continue;
+                    } else if (n == nodes-1) {
+                        isUnique = false;
+                        // cerr << "    isomorphic" << endl;
+                        break;
+                    } else {
+
+                        auto& hAvailableNodesDegreeN = hAvailableNodes[gDegrees[n]];
+                        hAvailableNodesDegreeN.erase(std::find(std::begin(hAvailableNodesDegreeN), std::end(hAvailableNodesDegreeN), m));
+
+                        std::get<2>(stack.back()) = false;
+
+                        for (s64 m_ : hAvailableNodes[gDegrees[n+1]]) {
+                            stack.emplace_back(std::make_tuple(n+1, m_, true));
+                        }
+                    }
+                }
+
+                if (isUnique == false) {
+                    break;
+                }
+            }
+        }
+
+        if (isUnique) {
+            // cerr << "  unique g " << g << endl;
+            uniqueGraphs[gDegreeHistogram].emplace_back(std::make_tuple(g, gNodesByDegree));
+        }
+    }
+
+#if R5_VERBOSE >= 1
+    std::size_t maxSize = 0;
+    for (const auto& v : uniqueGraphs) {
+        maxSize = std::max(maxSize, v.second.size());
+    }
+
+    cerr << "  Unique degree histograms:                " << std::setw(15) << uniqueGraphs.size() << endl;
+    cerr << "  Max graphs per degree histogram:         " << std::setw(15) << maxSize << endl;
+    cerr << "  Graph combinations checked               " << std::setw(15) << graphCombinations << endl;
+    cerr << "  Recursion steps                          " << std::setw(15) << recursionSteps << endl;
+    cerr << "  Permutation checks                       " << std::setw(15) << permutationChecks << endl;
+#endif
+
+    std::vector<AdjacencyMatrix<nodes>> ret;
+    for (const auto& v : uniqueGraphs) {
+#if R5_VERBOSE >= 2
+        cerr << "    " << v.first << " : " << v.second.size() << endl;
+#endif
+        for (const auto& t : v.second) {
+            ret.push_back(std::get<0>(t));
+        }
+    }
+
+#if R5_VERBOSE >= 1
+    cerr << endl;
+#endif
+
+    return ret;
+}
+
+
 template<s64 r, s64 s, s64 n, typename Enable = void>
 struct RamseyGraphs {
     static std::vector<AdjacencyMatrix<n>> f() {
@@ -659,7 +818,7 @@ struct RamseyGraphs {
 #endif
 
         auto t6 = std::chrono::steady_clock::now();
-        auto ramseyGraphs = uniqueAdjacencyMatrices4(nonUniqueRamseyGraphs);
+        auto ramseyGraphs = uniqueAdjacencyMatrices5(nonUniqueRamseyGraphs);
         auto t7 = std::chrono::steady_clock::now();
 
         auto t67 = std::chrono::duration<double>(t7 - t6).count();
