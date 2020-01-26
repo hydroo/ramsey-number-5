@@ -175,10 +175,10 @@ Order:
    Small fan-out first, bigger fan-out later.
 
     R(3,5) =  14    0.1  seconds
-    R(3,6) =? 10    1.6
+    R(3,6) =? 10    1.4
     R(4,4) =?  8    0.2
-    R(4,4) =?  9    4.6
-    R(4,4) =? 10  228.7
+    R(4,4) =?  9    4.5
+    R(4,4) =? 10  217.5
 
     Ramsey(4,4)-graphs with 10 vertices
       Smaller Ramsey graphs:                            14,701
@@ -199,9 +199,9 @@ Order:
       Recursion steps                           12,329,634,075 # !! compare to above output
       Permutation checks                        10,083,114,223
     
-      Uniquify Ramsey graphs:                              228.653 seconds
+      Uniquify Ramsey graphs:                              215.938 seconds
       Ramsey graphs:                                   103,706
     
     Ramsey(4,4)-graphs with 10 vertices: 103,706
-    Total time: 275.582 seconds
+    Total time: 220.167 seconds
 
