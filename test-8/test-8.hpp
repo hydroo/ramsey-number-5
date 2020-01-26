@@ -529,7 +529,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         std::array<std::vector<s64>, nodes> gNodesByDegree{};
         for (s64 n = 0; n < nodes; n += 1) {
-            gNodesByDegree[gDegrees[n]].push_back(n);
+            gNodesByDegree[gDegrees[n]].emplace_back(n);
         }
 
 
@@ -636,7 +636,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                 stack.clear();
                 for (s64 m : hAvailableNodes[gDegrees[traversalOrder[firstNotFixedNodeIndex]]]) {
-                    stack.push_back(std::make_tuple(firstNotFixedNodeIndex, m, true));
+                    stack.emplace_back(std::make_tuple(firstNotFixedNodeIndex, m, true));
                 }
 
                 while (stack.empty() == false) {
@@ -655,7 +655,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                     // cerr << "  " << i << " n " << n << endl;
 
                     if (traverse == false) {
-                        hAvailableNodes[gDegrees[n]].push_back(m);
+                        hAvailableNodes[gDegrees[n]].emplace_back(m);
                         stack.pop_back();
                         continue;
                     }
@@ -728,7 +728,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         cerr << "    " << v.first << " : " << v.second.size() << endl;
 #endif
         for (const auto& t : v.second) {
-            ret.push_back(std::get<0>(t));
+            ret.emplace_back(std::get<0>(t));
         }
     }
 
