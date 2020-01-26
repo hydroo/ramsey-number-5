@@ -205,3 +205,33 @@ Order:
     Ramsey(4,4)-graphs with 10 vertices: 103,706
     Total time: 220.167 seconds
 
+# PProf Instead of Perf
+
+Perf's output is not super-helpful right now.
+The samples are scattered throughout the assembly - around 5% or less on a line.
+And it does offer a proper call graph.
+I don't know where some of the calls come from, and it doesn't say which asm lines correspond to which inlined function.
+Pprof seems to do a better job.
+But perhaps perf is that way, because it doesn't know for sure.
+
+    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libprofiler.so.0.4.8 CPUPROFILE=./pprof.out ./test-8
+
+    google-pprof --text ./test-8 pprof.out
+
+    google-pprof --gv ./test-8 pprof.out
+
+    google-pprof --gv --lines ./test-8 pprof.out # very nice!
+
+    google-pprof --callgrind ./test-8 pprof.out > test-8.callgrind
+    kcachegrind test-8.callgrind
+
+35% auto hAvailableNodes = std::get<1>(t) # Jesus!
+    25% of which is std::array:array() -> std::vector::vector() copy constructing
+    # This copying could be moved to after checking the definitely mapped nodes, which could save 10% of these 35%
+    # You could try using a different data type, but I don't see anything too obvious here
+    # Handling this custom could work, but I guess that's not worth just 35% speed, yet.
+27% AdjacencyMatrix<nodes>::edge() of which 21% are in AdjacencyMatrixIndexer<nodes>::edge()
+ 6% erase+find (3.5%+2.0%) of hAvailableNodes
+ 5% edge testing loop header which belongs to the top 27%
+ 4% stack.emplace_back()
+ 3% stack.pop_back()
