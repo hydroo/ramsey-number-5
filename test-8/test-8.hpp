@@ -502,7 +502,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     constexpr s64 edges = AdjacencyMatrix<nodes>().edges();
 
     // Note: std::map might not be great long-term. unordered_map?
-    std::map<std::array<s64, nodes>, std::vector<std::tuple<AdjacencyMatrix<nodes>, std::array<std::vector<s64>, nodes>>>> uniqueGraphs;
+    std::map<std::array<s64, nodes> /*degree histogram*/, std::vector<std::tuple<AdjacencyMatrix<nodes>/*g*/, std::array<std::vector<s64>, nodes>>/*gNodesByDegree*/>> uniqueGraphs;
 
     std::vector<std::tuple<s64 /*i*/, s64 /*m*/, bool /*traverse*/>> stack(nodes*2);
 
