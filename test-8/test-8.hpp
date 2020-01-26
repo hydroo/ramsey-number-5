@@ -492,10 +492,11 @@ template<s64 nodes>
 std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
 
 #if R5_VERBOSE >= 1
-    s64 graphCombinations = 0;
-    s64 recursionSteps    = 0;
-    s64 permutationChecks = 0;
-    s64 fixableNodesSum   = 0;
+    s64 graphCombinations  = 0;
+    s64 graphCombinations2 = 0;
+    s64 recursionSteps     = 0;
+    s64 permutationChecks  = 0;
+    s64 fixedNodesSum      = 0;
 #endif
 
     constexpr s64 edges = AdjacencyMatrix<nodes>().edges();
@@ -503,45 +504,88 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     // Note: std::map might not be great long-term. unordered_map?
     std::map<std::array<s64, nodes>, std::vector<std::tuple<AdjacencyMatrix<nodes>, std::array<std::vector<s64>, nodes>>>> uniqueGraphs;
 
+    std::vector<std::tuple<s64 /*i*/, s64 /*m*/, bool /*traverse*/>> stack(nodes*2);
+
     for (const auto& g : graphs) {
 
-        std::array<s64, nodes> gDegrees{};
-        std::array<s64, nodes> gDegreeHistogram{};
         using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
 
+        std::array<s64, nodes> gDegrees{};
         for (s64 e = 0; e < edges; e += 1) {
             auto cr = AmIndexer::reverse(e);
             gDegrees[cr.first]  += g.edge(e);
             gDegrees[cr.second] += g.edge(e);
         }
 
+        std::array<s64, nodes> gDegreeHistogram{}; // degree -> degree multiplicity
         for (s64 d : gDegrees) {
             gDegreeHistogram[d] += 1;
+        }
+
+        std::array<std::set<s64>, nodes+1> gDegreeHistogramReverse{}; // degree multiplicty -> set of degrees
+        for (std::size_t i = 0; i < nodes; i += 1) {
+            gDegreeHistogramReverse[gDegreeHistogram[i]].insert(i);
         }
 
         std::array<std::vector<s64>, nodes> gNodesByDegree{};
         for (s64 n = 0; n < nodes; n += 1) {
             gNodesByDegree[gDegrees[n]].push_back(n);
         }
-#if R5_VERBOSE >= 1
-        s64 fixableNodes = gNodesByDegree[0].size() + gNodesByDegree[nodes-1].size();
-        for (s64 count : gDegreeHistogram) {
-            if (count == 1) {
-                fixableNodes += 1;
+
+
+        // Traversal Order:
+        // 1) Assign nodes of degree 0 to any node of degree 0
+        // 2) Assign nodes of degree nodes-1 to any node of degree nodes-1
+        // 3) Assign nodes of a unique degree to the one possible option
+        // 4) Traverse in order of lowest degree multiplicity first.
+        //    I.e. the node degree that is rarest comes first,
+        //    nodes with the most common degree come last.
+        //    This slims the traversal tree. Smaller fan-out first, bigger fan-out later.
+        std::array<s64, nodes> traversalOrder;
+
+        std::size_t firstNotFixedNodeIndex = 0;
+        for (s64 n : gNodesByDegree[0]) {
+            traversalOrder[firstNotFixedNodeIndex] = n;
+            firstNotFixedNodeIndex += 1;
+        }
+
+        for (s64 n : gNodesByDegree[nodes-1]) {
+            traversalOrder[firstNotFixedNodeIndex] = n;
+            firstNotFixedNodeIndex += 1;
+        }
+
+        // Not that j = 1 and < nodes-1 skips the above two cases
+        for (std::size_t d = 1; d < nodes-1; ++d) {
+            if (gDegreeHistogram[d] == 1) {
+                R5_DEBUG_ASSERT(gNodesByDegree[d].size() == 1);
+                traversalOrder[firstNotFixedNodeIndex] = gNodesByDegree[d][0];
+                firstNotFixedNodeIndex += 1;
             }
         }
-        fixableNodesSum += fixableNodes;
 
-        // cerr << "g " << g << " gAvailableNodes " << gNodesByDegree << " fixable nodes " << fixableNodes << endl;
-#endif
+        R5_VERBOSE_1(fixedNodesSum += firstNotFixedNodeIndex);
+
+        std::size_t traversedNode = firstNotFixedNodeIndex;
+        for (std::size_t degreeMultiplicity = 2; degreeMultiplicity <= nodes; degreeMultiplicity += 1) {
+            for (s64 d : gDegreeHistogramReverse[degreeMultiplicity]) {
+                if (d == 0 || d == nodes-1) { continue; }
+                for (s64 n : gNodesByDegree[d]) {
+                    traversalOrder[traversedNode] = n;
+                    traversedNode += 1;
+                }
+            }
+        }
+
+        // cerr << "  traversal order " << traversalOrder  << " firstNotFixedNodeIndex " << firstNotFixedNodeIndex << endl;
 
         bool isUnique = true;
 
         auto it = uniqueGraphs.find(gDegreeHistogram);
         if (it == std::end(uniqueGraphs)) {
+            // cerr << "  unique degree histogram" << endl;
             isUnique = true;
         } else {
-            // for each recorded unique graph with the same degree histogram as g
+            // for each recorded unique graph h with the same degree histogram as g
             // (g and h cannot be isomorphic if the node degrees differ)
             for (auto& t : it->second) {
 
@@ -552,13 +596,48 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                 // cerr << "  h " << h << " hAvailableNodes " << hAvailableNodes << endl;
 
-                std::vector<std::tuple<s64 /*n*/, s64 /*m*/, bool /*traverse*/>> stack;
-
-                for (s64 m : hAvailableNodes[gDegrees[0]]) {
-                    stack.push_back(std::make_tuple(0, m, true));
+                std::array<s64, nodes> permutation{};
+                for (std::size_t i = 0; i < firstNotFixedNodeIndex; i += 1) {
+                    s64 n = traversalOrder[i];
+                    s64 m = hAvailableNodes[gDegrees[n]].back();
+                    permutation[n] = m;
+                    hAvailableNodes[gDegrees[n]].pop_back();
                 }
 
-                std::array<s64, nodes> permutation{};
+                bool match = true;
+                for (std::size_t i = 0; i < firstNotFixedNodeIndex; i += 1) {
+                    s64 n = traversalOrder[i];
+                    for (std::size_t j = 0; j < i; j += 1) {
+                        s64 m = traversalOrder[j];
+                        if (g.edge(n, m) != h.edge(permutation[n], permutation[m])) {
+                            match = false;
+                            break;
+                        }
+                    }
+
+                    if (match == false) {
+                        break;
+                    }
+                }
+                R5_VERBOSE_1(permutationChecks += 1);
+
+                if (match == false) {
+                    // cerr << "    early mismatch" << endl;
+                    continue;
+                } else if (firstNotFixedNodeIndex == nodes) {
+                    // cerr << "    complete early match" << endl;
+                    isUnique = false;
+                    break;
+                }
+
+                R5_VERBOSE_1(graphCombinations2 += 1);
+
+                // cerr << "    possibly isomorphic" << endl;
+
+                stack.clear();
+                for (s64 m : hAvailableNodes[gDegrees[traversalOrder[firstNotFixedNodeIndex]]]) {
+                    stack.push_back(std::make_tuple(firstNotFixedNodeIndex, m, true));
+                }
 
                 while (stack.empty() == false) {
 
@@ -566,13 +645,14 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                     R5_VERBOSE_1(recursionSteps += 1);
 
-                    s64 n;
+                    s64 i;
                     s64 m;
                     bool traverse;
 
-                    std::tie(n, m, traverse) = stack.back();
+                    std::tie(i, m, traverse) = stack.back();
+                    s64 n = traversalOrder[i];
 
-                    // cerr << "    n " << n << endl;
+                    // cerr << "  " << i << " n " << n << endl;
 
                     if (traverse == false) {
                         hAvailableNodes[gDegrees[n]].push_back(m);
@@ -587,7 +667,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                     R5_VERBOSE_1(permutationChecks += 1);
 
                     bool match = true;
-                    for (s64 m = 0; m < n; m += 1) {
+                    for (s64 j = 0; j < i; j += 1) {
+                        s64 m = traversalOrder[j];
                         if (g.edge(n, m) != h.edge(permutation[n], permutation[m])) {
                             match = false;
                             break;
@@ -597,7 +678,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                     if (match == false) {
                         stack.pop_back();
                         continue;
-                    } else if (n == nodes-1) {
+                    } else if (i == nodes-1) {
                         isUnique = false;
                         // cerr << "    isomorphic" << endl;
                         break;
@@ -608,8 +689,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                         std::get<2>(stack.back()) = false;
 
-                        for (s64 m_ : hAvailableNodes[gDegrees[n+1]]) {
-                            stack.emplace_back(std::make_tuple(n+1, m_, true));
+                        for (s64 m_ : hAvailableNodes[gDegrees[traversalOrder[i+1]]]) {
+                            stack.emplace_back(std::make_tuple(i+1, m_, true));
                         }
                     }
                 }
@@ -632,10 +713,11 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         maxSize = std::max(maxSize, v.second.size());
     }
 
-    cerr << "  Average fixable nodes:                   " << std::setw(15 + 4) << std::fixed << fixableNodesSum / (double) graphs.size() << endl;
+    cerr << "  Average fixed nodes:                     " << std::setw(15 + 4) << std::fixed << fixedNodesSum / (double) graphs.size() << endl;
     cerr << "  Unique degree histograms:                " << std::setw(15) << uniqueGraphs.size() << endl;
     cerr << "  Max graphs per degree histogram:         " << std::setw(15) << maxSize << endl;
     cerr << "  Graph combinations checked               " << std::setw(15) << graphCombinations << endl;
+    cerr << "  Graph combinations requiring traversal   " << std::setw(15) << graphCombinations2 << endl;
     cerr << "  Recursion steps                          " << std::setw(15) << recursionSteps << endl;
     cerr << "  Permutation checks                       " << std::setw(15) << permutationChecks << endl;
 #endif

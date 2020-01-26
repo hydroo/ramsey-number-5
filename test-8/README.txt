@@ -65,12 +65,12 @@ uniqueAdjacencyMatrices3()
 
 Since this does not rely on exhaustively checking permutations, but searches for an isomorphism, we can succesfully compute R(3,5) !
 
-              Previously   Boost    Test-7(u=8)
-
-R(3,5) =  14   too long     0.3!    5.7      seconds
-R(3,6) =? 10   long        13       3.8
-R(4,4) =?  8    0.6         1.4     3
-R(4,4) =?  9  120          82       3
+                  Previously   Boost    Test-7(u=8)
+    
+    R(3,5) =  14   too long     0.3!    5.7      seconds
+    R(3,6) =? 10   long        13       3.8
+    R(4,4) =?  8    0.6         1.4     3
+    R(4,4) =?  9  120          82       3
 
 According to https://www.boost.org/doc/libs/1_72_0/libs/graph/doc/isomorphism.html
 (notice link https://www.boost.org/doc/libs/1_72_0/libs/graph/doc/isomorphism-impl.pdf)
@@ -86,13 +86,13 @@ Full adjaceny matrices (non-triangular) might already work, if needed.
 
 uniqueAdjacencyMatrices4()
 
-               This    Previously   Boost    Test-7(u=8)
-
-R(3,5) =  14    0.2    too long     0.3     5.7      seconds
-R(3,6) =? 10    7.2    long        13       3.8
-R(4,4) =?  8    0.6     0.6         1.4     3
-R(4,4) =?  9    33    120          82       3
-R(4,4) =? 10  2300
+                   This    Previously   Boost    Test-7(u=8)
+    
+    R(3,5) =  14    0.2    too long     0.3     5.7      seconds
+    R(3,6) =? 10    7.2    long        13       3.8
+    R(4,4) =?  8    0.6     0.6         1.4     3
+    R(4,4) =?  9    33    120          82       3
+    R(4,4) =? 10  2300
 
 Log of R(4,4) =? 10
 
@@ -142,13 +142,13 @@ That speed up things 2x.
 With std::set, due to overhead in stack pushing and popping (3x the number of `recursionSteps` than the recursive implementation),
 the iterative code was barely faster.
 
-               This    Previously    Previously2   Boost    Test-7(u=8)
-
-R(3,5) =  14     0.2      0.2          too long      0.3     5.7      seconds
-R(3,6) =? 10     3.6      7.2          long         13       3.8
-R(4,4) =?  8     0.4      0.6           0.6          1.4     3
-R(4,4) =?  9    16.6     33           120           82       3
-R(4,4) =? 10  1143     2300
+                   This    Previously    Previously2   Boost    Test-7(u=8)
+    
+    R(3,5) =  14     0.2      0.2          too long      0.3     5.7      seconds
+    R(3,6) =? 10     3.6      7.2          long         13       3.8
+    R(4,4) =?  8     0.4      0.6           0.6          1.4     3
+    R(4,4) =?  9    16.6     33           120           82       3
+    R(4,4) =? 10  1143     2300
 
 ## Next up
 
@@ -158,3 +158,50 @@ Our current DFS requires n to be iterated in order, which makes the above optimi
 I hope switching to a flexible set of possible n will make this not too slow.
 I tried incorporating this optimization while keeping the current stack handling, but turned out awful.
    
+# Customize Node Traversal Order And Fix Some Nodes - 26th Jan 2020
+
+And preallocate the stack to avoid reallocation.
+This saves ~15% time.
+
+uniqueAdjacencyMatrices5()
+
+Order:
+ - Assign any node of degree 0 to any other of degree 0
+ - Assign any node of degree nodes-1 to any other degree nodes-1
+ - Assign nodes of a unique degree to the only possible option
+ - Traverse the rest of the nodes by lowest degree multiplicity first.
+   I.e. nodes with a degree that few other nodes have are traversed earlier than more common degrees.
+   This slims down the traversal tree.
+   Small fan-out first, bigger fan-out later.
+
+    R(3,5) =  14    0.1  seconds
+    R(3,6) =? 10    1.6
+    R(4,4) =?  8    0.2
+    R(4,4) =?  9    4.6
+    R(4,4) =? 10  228.7
+
+    Ramsey(4,4)-graphs with 10 vertices
+      Smaller Ramsey graphs:                            14,701
+      New edges to fill:                                     9
+      Possible combinations:                         7,526,912 # 14,701 * 2^9
+    
+      Check all colorings:                                   0.118 seconds
+      Number of recursion steps:                     7,298,326
+      Number of colorings checked:                   8,443,496
+      Number of edge mask checks:                  107,139,220
+      Non-unique Ramsey graphs:                      1,145,170
+    
+      Average fixed nodes:                                   1.063
+      Unique degree histograms:                            520
+      Max graphs per degree histogram:                   4,674
+      Graph combinations checked                 1,078,273,657
+      Graph combinations requiring traversal       928,355,955 # !!
+      Recursion steps                           12,329,634,075 # !! compare to above output
+      Permutation checks                        10,083,114,223
+    
+      Uniquify Ramsey graphs:                              228.653 seconds
+      Ramsey graphs:                                   103,706
+    
+    Ramsey(4,4)-graphs with 10 vertices: 103,706
+    Total time: 275.582 seconds
+
