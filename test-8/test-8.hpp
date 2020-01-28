@@ -754,7 +754,7 @@ struct RamseyGraphs {
         cerr << "Ramsey(" << r << "," << s << ")-graphs with " << n << " vertices" << endl;
 #endif
 
-        auto t1 = std::chrono::steady_clock::now();
+        R5_VERBOSE_1(auto t1 = std::chrono::steady_clock::now());
 
         std::vector<AdjacencyMatrix<n>> edgeMasksComplete;
         std::vector<AdjacencyMatrix<n>> edgeMasksEmpty;
@@ -764,16 +764,16 @@ struct RamseyGraphs {
         if (n >= s) {
             edgeMasksEmpty    = invertSubgraphEdgeMasks<e, n, s>(subGraphEdgeMasks<e, n, s>());
         }
-        auto t2 = std::chrono::steady_clock::now();
-        auto t12 = std::chrono::duration<double>(t2 - t1).count();
+        R5_VERBOSE_1(auto t2 = std::chrono::steady_clock::now());
+        R5_VERBOSE_1(auto t12 = std::chrono::duration<double>(t2 - t1).count());
 
         // TODO only generate the subgraphs interesting for the current extension
 
         std::array<std::vector<AdjacencyMatrix<n>>, e + 1> edgeMasksCompleteByLastOne = subGraphEdgeMasksByLastDigit<e, n, true>(edgeMasksComplete);
         std::array<std::vector<AdjacencyMatrix<n>>, e + 1> edgeMasksEmptyByLastZero   = subGraphEdgeMasksByLastDigit<e, n, false>(edgeMasksEmpty);
 
-        auto t3 = std::chrono::steady_clock::now();
-        auto t23 = std::chrono::duration<double>(t3 - t2).count();
+        R5_VERBOSE_1(auto t3 = std::chrono::steady_clock::now());
+        R5_VERBOSE_1(auto t23 = std::chrono::duration<double>(t3 - t2).count());
 
 #if R5_VERBOSE >= 1
         cerr << "  Create subgraph edge masks:              " << std::setw(15 + 4) << std::fixed << t12 << " seconds" << endl;
@@ -805,7 +805,7 @@ struct RamseyGraphs {
         cerr << endl;
 #endif
 
-        auto t4 = std::chrono::steady_clock::now();
+        R5_VERBOSE_1(auto t4 = std::chrono::steady_clock::now());
 
         std::vector<AdjacencyMatrix<n>> nonUniqueRamseyGraphs;
 
@@ -897,8 +897,8 @@ struct RamseyGraphs {
             }
         }
 
-        auto t5 = std::chrono::steady_clock::now();
-        auto t45 = std::chrono::duration<double>(t5 - t4).count();
+        R5_VERBOSE_1(auto t5 = std::chrono::steady_clock::now());
+        R5_VERBOSE_1(auto t45 = std::chrono::duration<double>(t5 - t4).count());
 
 #if R5_VERBOSE >= 1
         cerr << "  Check all colorings:                     " << std::setw(15 + 4) << std::fixed << t45 << " seconds" << endl;
@@ -912,11 +912,11 @@ struct RamseyGraphs {
         cerr << endl;
 #endif
 
-        auto t6 = std::chrono::steady_clock::now();
+        R5_VERBOSE_1(auto t6 = std::chrono::steady_clock::now());
         auto ramseyGraphs = uniqueAdjacencyMatrices5(nonUniqueRamseyGraphs);
-        auto t7 = std::chrono::steady_clock::now();
+        R5_VERBOSE_1(auto t7 = std::chrono::steady_clock::now());
 
-        auto t67 = std::chrono::duration<double>(t7 - t6).count();
+        R5_VERBOSE_1(auto t67 = std::chrono::duration<double>(t7 - t6).count());
 
 #if R5_VERBOSE >= 1
         cerr << "  Uniquify Ramsey graphs:                  " << std::setw(15 + 4) << std::fixed << t67 << " seconds" << endl;
