@@ -62,7 +62,7 @@ std::vector<AdjacencyMatrix<nodes>> subGraphEdgeMasks() {
 
         p += 1;
 
-    } while (r5::prev_permutation(std::begin(nodeMask), std::end(nodeMask)));
+    } while (std::prev_permutation(std::begin(nodeMask), std::end(nodeMask)));
 
     return masks;
 }
@@ -735,6 +735,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #if R5_VERBOSE >= 1
     cerr << endl;
 #endif
+
+    std::sort(std::begin(ret), std::end(ret));
 
     return ret;
 }

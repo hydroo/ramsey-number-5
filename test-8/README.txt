@@ -235,3 +235,19 @@ But perhaps perf is that way, because it doesn't know for sure.
  5% edge testing loop header which belongs to the top 27%
  4% stack.emplace_back()
  3% stack.pop_back()
+
+
+# Order Graphs Properly - 31st Jan 2020
+
+This change properly orders graphs to make reasoning about extensions easier.
+
+    1 11 111 -> 1 11 000 -> 0 10 100
+
+Ordering by leftmost 1 first is good because extensions to earlier nodes are preferred over later ones.
+E.g. 0 00 001 would smaller than 0 00 100, so it would come first in traversal and uniquification.
+1 11 100 is more desirable to extend and check than 1 11 001.`
+
+The degree histogram map messes with the ordering, and thus extensions and uniquification were not done in an intuitive order.
+
+The goal is to skip some extensions to reduce the number of non-unique ramsey graphs before the uniquification step.
+Another angle of attack would be to add more properties like the degree histogram to test fewer graphs for isomorphisms.

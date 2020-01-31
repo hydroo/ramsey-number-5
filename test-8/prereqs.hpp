@@ -110,55 +110,55 @@ constexpr void fill_n(T* to, s64 count, const T& value) {
     }
 }
 
-// std::swap is not constexpr
-template<typename T>
-constexpr void swap(T& t1, T& t2) {
-    T temp = std::move(t1);
-    t1 = std::move(t2);
-    t2 = std::move(temp);
-}
+// // std::swap is not constexpr
+// template<typename T>
+// constexpr void swap(T& t1, T& t2) {
+//     T temp = std::move(t1);
+//     t1 = std::move(t2);
+//     t2 = std::move(temp);
+// }
 
-// std::iter_swap is not constexpr
-template<class ForwardIt1, class ForwardIt2>
-constexpr void iter_swap(ForwardIt1 a, ForwardIt2 b)
-{
-    r5::swap(*a, *b);
-}
+// // std::iter_swap is not constexpr
+// template<class ForwardIt1, class ForwardIt2>
+// constexpr void iter_swap(ForwardIt1 a, ForwardIt2 b)
+// {
+//     r5::swap(*a, *b);
+// }
 
-template<class BidirIt>
-constexpr void reverse(BidirIt first, BidirIt last)
-{
-    while ((first != last) && (first != --last)) {
-        r5::iter_swap(first++, last);
-    }
-}
+// template<class BidirIt>
+// constexpr void reverse(BidirIt first, BidirIt last)
+// {
+//     while ((first != last) && (first != --last)) {
+//         r5::iter_swap(first++, last);
+//     }
+// }
 
-// std::prev_permutation is not constexpr
-template<class BidirIt>
-constexpr bool prev_permutation(BidirIt first, BidirIt last)
-{
-    if (first == last) return false;
-    BidirIt i = last;
-    if (first == --i) return false;
-
-    while (1) {
-        BidirIt i1 = i, i2 = i;
-
-        i1 = i;
-        if (*i1 < *--i) {
-            i2 = last;
-            while (!(*--i2 < *i))
-                ;
-            r5::iter_swap(i, i2);
-            r5::reverse(i1, last);
-            return true;
-        }
-        if (i == first) {
-            r5::reverse(first, last);
-            return false;
-        }
-    }
-}
+// // std::prev_permutation is not constexpr
+// template<class BidirIt>
+// constexpr bool prev_permutation(BidirIt first, BidirIt last)
+// {
+//     if (first == last) return false;
+//     BidirIt i = last;
+//     if (first == --i) return false;
+// 
+//     while (1) {
+//         BidirIt i1 = i, i2 = i;
+// 
+//         i1 = i;
+//         if (*i1 < *--i) {
+//             i2 = last;
+//             while (!(*--i2 < *i))
+//                 ;
+//             r5::iter_swap(i, i2);
+//             r5::reverse(i1, last);
+//             return true;
+//         }
+//         if (i == first) {
+//             r5::reverse(first, last);
+//             return false;
+//         }
+//     }
+// }
 
 } // namespace r5
 
