@@ -503,8 +503,10 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
     // Note: std::map might not be great long-term. unordered_map?
     std::map<std::array<s64, nodes> /*degree histogram*/, std::vector<std::tuple<AdjacencyMatrix<nodes>/*g*/, std::array<std::vector<s64>, nodes>>/*gNodesByDegree*/>> uniqueGraphs;
+    s64 uniqueGraphsCount = 0;
 
-    std::vector<std::tuple<s64 /*i*/, s64 /*m*/, bool /*traverse*/>> stack(nodes*2);
+    std::vector<std::tuple<s64 /*i*/, s64 /*m*/, bool /*traverse*/>> stack;
+    stack.reserve(nodes*2);
 
     for (const auto& g : graphs) {
 
@@ -704,6 +706,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         if (isUnique) {
             // cerr << "  unique g " << g << endl;
             uniqueGraphs[gDegreeHistogram].emplace_back(std::make_tuple(g, gNodesByDegree));
+            uniqueGraphsCount += 1;
         }
     }
 
@@ -723,6 +726,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #endif
 
     std::vector<AdjacencyMatrix<nodes>> ret;
+    ret.reserve(uniqueGraphsCount);
     for (const auto& v : uniqueGraphs) {
 #if R5_VERBOSE >= 2
         cerr << "    " << v.first << " : " << v.second.size() << endl;
