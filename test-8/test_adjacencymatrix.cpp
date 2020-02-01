@@ -308,6 +308,43 @@ TEST(AdjacencyMatrix, toggleEdge) {
     }
 }
 
+TEST(AdjacencyMatrix, edgeCount) {
+    AdjacencyMatrix<1> ct1; ASSERT_EQ(ct1.edgeCount(), 0); ct1.setAllEdges(); ASSERT_EQ(ct1.edgeCount(), ct1.edges()); ;
+    AdjacencyMatrix<2> ct2; ASSERT_EQ(ct2.edgeCount(), 0); ct2.setAllEdges(); ASSERT_EQ(ct2.edgeCount(), ct2.edges()); ;
+    AdjacencyMatrix<3> ct3; ASSERT_EQ(ct3.edgeCount(), 0); ct3.setAllEdges(); ASSERT_EQ(ct3.edgeCount(), ct3.edges()); ;
+    AdjacencyMatrix<4> ct4; ASSERT_EQ(ct4.edgeCount(), 0); ct4.setAllEdges(); ASSERT_EQ(ct4.edgeCount(), ct4.edges()); ;
+
+    constexpr s64 n1 = 5;
+    constexpr s64 e1 = 10; // 5*(5-1)/2
+    AdjacencyMatrix<n1>        unct;    unct.unsetAllEdges(); ASSERT_EQ(unct.edgeCount(),  0);
+    AdjacencyMatrix<n1>        snct;    snct.setAllEdges()  ; ASSERT_EQ(snct.edgeCount(), e1);
+    AdjacencyMatrix<n1, false> uncn;    uncn.unsetAllEdges(); ASSERT_EQ(uncn.edgeCount(),  0);
+    AdjacencyMatrix<n1, false> sncn;    sncn.setAllEdges()  ; ASSERT_EQ(sncn.edgeCount(), e1);
+    AdjacencyMatrix<-1>        urt(n1); urt.unsetAllEdges() ; ASSERT_EQ(urt.edgeCount() ,  0);
+    AdjacencyMatrix<-1>        srt(n1); srt.setAllEdges()   ; ASSERT_EQ(srt.edgeCount() , e1);
+    AdjacencyMatrix<-1, false> urn(n1); urn.unsetAllEdges() ; ASSERT_EQ(urn.edgeCount() ,  0);
+    AdjacencyMatrix<-1, false> srn(n1); srn.setAllEdges()   ; ASSERT_EQ(srn.edgeCount() , e1);
+
+    constexpr s64 n2 = 6;
+    AdjacencyMatrix<n2> m1;
+    m1.unsetAllEdges();
+    for (s64 e = 0; e < m1.edges(); e += 1) {
+        m1.setEdge(e);
+        ASSERT_EQ(m1.edgeCount(), e+1);
+    }
+
+    AdjacencyMatrix<n2, false> m2;
+    m2.setAllEdges();
+    s64 e = m2.edges();
+    for (s64 n = 0; n < n2; n += 1) {
+        for (s64 m = 0; m < n; m += 1) {
+            e -= 1;
+            m2.unsetEdge(n, m);
+            ASSERT_EQ(m2.edgeCount(), e);
+        }
+    }
+}
+
 TEST(AdjacencyMatrix, copyconstruct) {
     constexpr auto ct = []() -> auto {
         AdjacencyMatrix<5> m;

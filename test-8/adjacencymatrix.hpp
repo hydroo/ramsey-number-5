@@ -238,6 +238,19 @@ protected:
         toggleEdge(edge, nodes, v);
     }
 
+    static constexpr s64 edgeCount(s64 nodes, const u64* v) {
+        s64 ret = 0;
+        for (s64 i = 0; i < elements(nodes); i += 1) {
+            ret += (s64) __builtin_popcountll(v[i]);
+        }
+
+        if(Triangular == false) {
+            ret /= 2;
+        }
+
+        return ret;
+    }
+
     static std::string print(bool multiline, std::string indent, s64 nodes, const u64* v) {
         std::ostringstream o;
 
@@ -418,6 +431,10 @@ public:
         Base::toggleEdgesChecked(edge, Nodes, _v);
     }
 
+    constexpr s64 edgeCount() const {
+        return Base::edgeCount(Nodes, _v);
+    }
+
     std::string print(bool multiline = false, std::string indent = "") const {
         return Base::print(multiline, indent, Nodes, _v);
     }
@@ -571,6 +588,10 @@ public:
 
     void toggleEdgeChecked(s64 edge) {
         Base::toggleEdgeChecked(edge, _nodes, _v);
+    }
+
+    s64 edgeCount() const {
+        return Base::edgeCount(_nodes, _v);
     }
 
     std::string print(bool multiline = false, std::string indent = "") const {
