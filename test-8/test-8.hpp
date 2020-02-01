@@ -114,7 +114,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices(const std::vector<Ad
 
 #if R5_VERBOSE >= 1
         cerr << "  Uniquify ramsey graphs" << endl;
-        cerr << "    Number of permutations                 " << std::setw(15) << permutationCount << endl;
+        cerr << "    Number of permutations:                " << std::setw(15) << permutationCount << endl;
 #endif
 
     auto t1 = std::chrono::steady_clock::now();
@@ -466,9 +466,9 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices4(const std::vector<A
 
     cerr << "  Unique degree histograms:                " << std::setw(15) << uniqueGraphs.size() << endl;
     cerr << "  Max graphs per degree histogram:         " << std::setw(15) << maxSize << endl;
-    cerr << "  Graph combinations checked               " << std::setw(15) << graphCombinations << endl;
-    cerr << "  Recursion steps                          " << std::setw(15) << recursionSteps << endl;
-    cerr << "  Permutation checks                       " << std::setw(15) << permutationChecks << endl;
+    cerr << "  Graph combinations checked:              " << std::setw(15) << graphCombinations << endl;
+    cerr << "  Recursion steps:                         " << std::setw(15) << recursionSteps << endl;
+    cerr << "  Permutation checks:                      " << std::setw(15) << permutationChecks << endl;
 #endif
 
     std::vector<AdjacencyMatrix<nodes>> ret;
@@ -719,10 +719,10 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     cerr << "  Average fixed nodes:                     " << std::setw(15 + 4) << std::fixed << fixedNodesSum / (double) graphs.size() << endl;
     cerr << "  Unique degree histograms:                " << std::setw(15) << uniqueGraphs.size() << endl;
     cerr << "  Max graphs per degree histogram:         " << std::setw(15) << maxSize << endl;
-    cerr << "  Graph combinations checked               " << std::setw(15) << graphCombinations << endl;
-    cerr << "  Graph combinations requiring traversal   " << std::setw(15) << graphCombinations2 << endl;
-    cerr << "  Recursion steps                          " << std::setw(15) << recursionSteps << endl;
-    cerr << "  Permutation checks                       " << std::setw(15) << permutationChecks << endl;
+    cerr << "  Graph combinations checked:              " << std::setw(15) << graphCombinations << endl;
+    cerr << "  Graph combinations requiring traversal:  " << std::setw(15) << graphCombinations2 << endl;
+    cerr << "  Recursion steps:                         " << std::setw(15) << recursionSteps << endl;
+    cerr << "  Permutation checks:                      " << std::setw(15) << permutationChecks << endl;
 #endif
 
     std::vector<AdjacencyMatrix<nodes>> ret;
