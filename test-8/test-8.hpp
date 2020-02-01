@@ -736,7 +736,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     cerr << endl;
 #endif
 
-    std::sort(std::begin(ret), std::end(ret));
+    // std::sort(std::begin(ret), std::end(ret)); // FIXME/NOTE: Use this to properly order ramsey graphs, but this slows everything down by 10% or so
 
     return ret;
 }

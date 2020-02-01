@@ -251,3 +251,5 @@ The degree histogram map messes with the ordering, and thus extensions and uniqu
 
 The goal is to skip some extensions to reduce the number of non-unique ramsey graphs before the uniquification step.
 Another angle of attack would be to add more properties like the degree histogram to test fewer graphs for isomorphisms.
+
+This sort decreases perf by 10% :(
