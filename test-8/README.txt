@@ -273,3 +273,8 @@ Ramsey(4,4)-Graphs of size 10 have 12-33 edges.
 So from 8 to 9 we can prune 7, 8, 28 and 29 edge graphs.
 From 9 to 10 we can prune 9, 10, 11, 34, 35 and 36 edge graphs.
 I don't know how much this can help.
+
+The current stack-based extension enumeration is ill-suited for adding in this check to shortcut.
+I'd need to redo it.
+At the moment it wouldn't help much as this part contributes almost no time.
+But in Test-7 for deeper searches it could be beneficial.
