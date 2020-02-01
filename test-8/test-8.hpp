@@ -621,6 +621,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                         break;
                     }
                 }
+
                 R5_VERBOSE_1(permutationChecks += 1);
 
                 if (match == false) {
@@ -858,7 +859,7 @@ struct RamseyGraphs {
                         // Appropriate means every graph whos complete subgraph's laste edge is exactly the lastly enumerated edge
                         bool foundCompleteSubgraph = false;
                         const auto& currentEdgeMasksComplete = edgeMasksCompleteByLastOne[edge + 1];
-                        R5_VERBOSE_1(if (edgeMasksCompleteByLastOne.size() > 0) { coloringsChecked += 1; });
+                        R5_VERBOSE_1(if (currentEdgeMasksComplete.size() > 0) { coloringsChecked += 1; });
                         for (std::size_t i = 0; i < currentEdgeMasksComplete.size(); i += 1) {
                             R5_VERBOSE_1(edgeMaskChecks += 1);
                             if ((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i]) {
@@ -875,7 +876,7 @@ struct RamseyGraphs {
                         // Do the same for empty subgraphs
                         bool foundEmptySubgraph = false;
                         const auto& currentEdgeMasksEmpty = edgeMasksEmptyByLastZero[edge + 1];
-                        R5_VERBOSE_1(if (edgeMasksEmptyByLastZero.size() > 0) { coloringsChecked += 1; });
+                        R5_VERBOSE_1(if (currentEdgeMasksEmpty.size() > 0) { coloringsChecked += 1; });
                         for (std::size_t i = 0; i < currentEdgeMasksEmpty.size(); i += 1) {
                             R5_VERBOSE_1(edgeMaskChecks += 1);
                             if ((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i]) {
