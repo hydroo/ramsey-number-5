@@ -195,7 +195,12 @@ protected:
     }
 
     static constexpr void setAllEdges(s64 nodes, u64* v) {
-        r5::fill_n(v, elements(nodes), (u64) 0xffffffffffffffff);
+        unsetAllEdges(nodes, v);
+        for (s64 n = 0; n < nodes; n += 1) {
+            for (s64 m = 0; m < n; m += 1) {
+                setEdge(n, m, nodes, v);
+            }
+        }
     }
 
     static constexpr void toggleEdge(s64 column, s64 row, s64 nodes, u64* v) {
