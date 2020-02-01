@@ -253,3 +253,19 @@ The goal is to skip some extensions to reduce the number of non-unique ramsey gr
 Another angle of attack would be to add more properties like the degree histogram to test fewer graphs for isomorphisms.
 
 This sort decreases perf by 10% :(
+
+# TODO Use Turan's Theorem
+
+https://en.wikipedia.org/wiki/Tur%C3%A1n%27s_theorem
+
+    e := (r-2)/(2*(r-1)) * n^2
+
+A graph of size n with more than e edges has to contain a complete subgraph of size r.
+In the ramsey graph searching world, the reverse (less than n*(n-1)/2 - e edges for empty graphs is also true).
+
+Ramsey(4,4)-Graphs of size  8 have  7-21 edges. An extension would add 0-8.
+Ramsey(4,4)-Graphs of size  9 have  9-27 edges. An extension would add 0-9.
+Ramsey(4,4)-Graphs of size 10 have 12-33 edges.
+So from 8 to 9 we can prune 7, 8, 28 and 29 edge graphs.
+From 9 to 10 we can prune 9, 10, 11, 34, 35 and 36 edge graphs.
+I don't know how much this can help.
