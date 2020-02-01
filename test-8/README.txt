@@ -254,7 +254,11 @@ Another angle of attack would be to add more properties like the degree histogra
 
 This sort decreases perf by 10% :(
 
-# TODO Use Turan's Theorem
+# Don't Use Turan's Theorem
+
+Update: This doesn't help, because traversing edge masks and checking them already takes care of this.
+This check would not improve anything.
+Maybe, for Test-7 on larger n it could save checking the edge masks and thus some time.
 
 https://en.wikipedia.org/wiki/Tur%C3%A1n%27s_theorem
 

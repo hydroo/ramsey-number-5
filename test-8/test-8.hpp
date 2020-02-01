@@ -941,7 +941,7 @@ struct RamseyGraphs {
             maxEdges = std::max(edges, maxEdges);
         }
 
-        cerr << "  Min, max edge count:                     " << std::setw(15) << (std::to_string(minEdges) + ", " + std::to_string(maxEdges)) << endl;
+        // cerr << "  Min, max edge count:                     " << std::setw(15) << (std::to_string(minEdges) + ", " + std::to_string(maxEdges)) << endl;
 #if R5_VERBOSE >= 2
         cerr << "  Ramsey graphs:                           " << std::setw(15) << ramseyGraphs << endl;
 #endif
