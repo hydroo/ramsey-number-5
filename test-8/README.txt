@@ -214,7 +214,7 @@ I don't know where some of the calls come from, and it doesn't say which asm lin
 Pprof seems to do a better job.
 But perhaps perf is that way, because it doesn't know for sure.
 
-    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libprofiler.so.0.4.8 CPUPROFILE=./pprof.out ./test-8
+    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libprofiler.so.0.4.18 CPUPROFILE=./pprof.out ./test-8
 
     google-pprof --text ./test-8 pprof.out
 
