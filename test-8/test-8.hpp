@@ -106,99 +106,99 @@ std::array<std::vector<AdjacencyMatrix<nodes>>, edges + 1> subGraphEdgeMasksByLa
     return ret;
 }
 
-template<s64 nodes>
-std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
-
-    constexpr s64 edges = AdjacencyMatrix<nodes>().edges();
-    constexpr s64 permutationCount = factorial(nodes);
-
-#if R5_VERBOSE >= 1
-        cerr << "  Uniquify ramsey graphs" << endl;
-        cerr << "    Number of permutations:                " << std::setw(15) << permutationCount << endl;
-#endif
-
-    auto t1 = std::chrono::steady_clock::now();
-
-    // create all permutations and store them as maps from edges to edges
-    auto edgePermutations = []() -> std::vector<std::array<s64, edges>> {
-
-        std::vector<std::array<s64, edges>> ret(permutationCount);
-        using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
-
-        std::array<s64, nodes> permutation;
-        std::iota(std::begin(permutation), std::end(permutation), 0);
-
-        s64 p = 0;
-        do {
-            for (s64 e = 0; e < edges; e += 1) {
-                auto cr = AmIndexer::reverse(e);
-                ret[p][AmIndexer::index(permutation[cr.first], permutation[cr.second])] = e;
-            }
-
-            p += 1;
-        } while (std::next_permutation(std::begin(permutation), std::end(permutation)));
-
-        return ret;
-    }();
-
-    auto t2 = std::chrono::steady_clock::now();
-    auto t12 = std::chrono::duration<double>(t2 - t1).count();
-#if R5_VERBOSE >= 1
-        cerr << "    Create permutations:                   " << std::setw(15 + 4) << std::fixed << t12 << " seconds" << endl;
-#if R5_VERBOSE >= 2
-        if (nodes < 5) {
-            cerr << "    Edge permutations:                     " << std::setw(15) << edgePermutations << endl;
-        }
-#if R5_VERBOSE >= 3
-        cerr << "    Not canonical graphs:" << endl;
-#endif
-#endif
-#endif
-
-    std::vector<AdjacencyMatrix<nodes>> ret;
-
-    auto t3 = std::chrono::steady_clock::now();
-    for (const auto& g : graphs) {
-
-        bool isCanonical = true;
-
-        for (const auto& permutation : edgePermutations) {
-
-            for (s64 e = 0; e < edges; e += 1) {
-
-                const bool e1 = g.edge(permutation[e]);
-                const bool e2 = g.edge(e);
-
-                if (e1 != e2) {
-                    isCanonical = e1 < e2;
-
-#if R5_VERBOSE >= 3
-                    if (isCanonical == false) {
-        cerr << "      " << g << " " << " e: " << e << " p[e]: " << permutation[e] << " p: "<< permutation << endl;
-                    }
-#endif
-
-                    break;
-                }
-            }
-
-            if (isCanonical == false) {
-                break;
-            }
-        }
-
-        if (isCanonical == true) {
-            ret.push_back(g);
-        }
-    }
-    auto t4  = std::chrono::steady_clock::now();
-    auto t34 = std::chrono::duration<double>(t4 - t3).count();
-#if R5_VERBOSE >= 1
-        cerr << "    Check canonicity:                      " << std::setw(15 + 4) << std::fixed << t34 << " seconds" << endl;
-#endif
-
-    return ret;
-}
+//template<s64 nodes>
+//std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
+//
+//    constexpr s64 edges = AdjacencyMatrix<nodes>().edges();
+//    constexpr s64 permutationCount = factorial(nodes);
+//
+//#if R5_VERBOSE >= 1
+//        cerr << "  Uniquify ramsey graphs" << endl;
+//        cerr << "    Number of permutations:                " << std::setw(15) << permutationCount << endl;
+//#endif
+//
+//    auto t1 = std::chrono::steady_clock::now();
+//
+//    // create all permutations and store them as maps from edges to edges
+//    auto edgePermutations = []() -> std::vector<std::array<s64, edges>> {
+//
+//        std::vector<std::array<s64, edges>> ret(permutationCount);
+//        using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
+//
+//        std::array<s64, nodes> permutation;
+//        std::iota(std::begin(permutation), std::end(permutation), 0);
+//
+//        s64 p = 0;
+//        do {
+//            for (s64 e = 0; e < edges; e += 1) {
+//                auto cr = AmIndexer::reverse(e);
+//                ret[p][AmIndexer::index(permutation[cr.first], permutation[cr.second])] = e;
+//            }
+//
+//            p += 1;
+//        } while (std::next_permutation(std::begin(permutation), std::end(permutation)));
+//
+//        return ret;
+//    }();
+//
+//    auto t2 = std::chrono::steady_clock::now();
+//    auto t12 = std::chrono::duration<double>(t2 - t1).count();
+//#if R5_VERBOSE >= 1
+//        cerr << "    Create permutations:                   " << std::setw(15 + 4) << std::fixed << t12 << " seconds" << endl;
+//#if R5_VERBOSE >= 2
+//        if (nodes < 5) {
+//            cerr << "    Edge permutations:                     " << std::setw(15) << edgePermutations << endl;
+//        }
+//#if R5_VERBOSE >= 3
+//        cerr << "    Not canonical graphs:" << endl;
+//#endif
+//#endif
+//#endif
+//
+//    std::vector<AdjacencyMatrix<nodes>> ret;
+//
+//    auto t3 = std::chrono::steady_clock::now();
+//    for (const auto& g : graphs) {
+//
+//        bool isCanonical = true;
+//
+//        for (const auto& permutation : edgePermutations) {
+//
+//            for (s64 e = 0; e < edges; e += 1) {
+//
+//                const bool e1 = g.edge(permutation[e]);
+//                const bool e2 = g.edge(e);
+//
+//                if (e1 != e2) {
+//                    isCanonical = e1 < e2;
+//
+//#if R5_VERBOSE >= 3
+//                    if (isCanonical == false) {
+//        cerr << "      " << g << " " << " e: " << e << " p[e]: " << permutation[e] << " p: "<< permutation << endl;
+//                    }
+//#endif
+//
+//                    break;
+//                }
+//            }
+//
+//            if (isCanonical == false) {
+//                break;
+//            }
+//        }
+//
+//        if (isCanonical == true) {
+//            ret.push_back(g);
+//        }
+//    }
+//    auto t4  = std::chrono::steady_clock::now();
+//    auto t34 = std::chrono::duration<double>(t4 - t3).count();
+//#if R5_VERBOSE >= 1
+//        cerr << "    Check canonicity:                      " << std::setw(15 + 4) << std::fixed << t34 << " seconds" << endl;
+//#endif
+//
+//    return ret;
+//}
 
 //template<s64 nodes>
 //std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices2(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
