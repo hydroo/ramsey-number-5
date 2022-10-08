@@ -343,150 +343,150 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices(const std::vector<Ad
 //    return ret;
 //}
 
-template<s64 nodes>
-std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices4(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
-
-    s64 graphCombinations = 0; if (graphCombinations) {} // (void) x; didn't work for unknown reasons
-    s64 recursionSteps    = 0; (void) recursionSteps;
-    s64 permutationChecks = 0; (void) permutationChecks;
-
-    // Tests whether the permutation makes g match h
-    // Only tests edges to/from the newly assigned node `n`
-    auto match = [](const AdjacencyMatrix<nodes>& g, const AdjacencyMatrix<nodes>& h, s64 n, const std::array<s64, nodes>& permutation) {
-        for (s64 m = 0; m < n; m += 1) {
-            if (g.edge(n, m) != h.edge(permutation[n], permutation[m])) {
-                return false;
-            }
-        }
-        return true;
-    };
-
-    std::function<bool(s64, const std::array<s64, nodes>&, const std::array<std::vector<s64>, nodes>&, const AdjacencyMatrix<nodes>&, const AdjacencyMatrix<nodes>&, const std::array<s64, nodes>&)> isIsomorphic = [&isIsomorphic, &match, &recursionSteps, &permutationChecks](
-            s64 n,                                                      // next node of g to be mapped
-            const std::array<s64, nodes>& permutation,                  // current permutation
-            const std::array<std::vector<s64>, nodes>& hAvailableNodes, // possible nodes where to map n to
-            const AdjacencyMatrix<nodes>& g,
-            const AdjacencyMatrix<nodes>& h,
-            const std::array<s64, nodes>& gDegrees) -> bool {
-
-        R5_VERBOSE_1(recursionSteps += 1);
-
-        if (n == nodes) {
-            return true;
-        }
-
-        const auto& hAvailableNodesDegreeOfN = hAvailableNodes[gDegrees[n]];
-
-        // for each node m in h that has the same degree as n in g
-        for (std::size_t i = 0; i < hAvailableNodesDegreeOfN.size(); ++i) {
-
-            s64 m = hAvailableNodesDegreeOfN[i];
-
-            // map n to g
-            auto newPermutation = permutation;
-            newPermutation[n] = m;
-
-            R5_VERBOSE_1(permutationChecks += 1);
-
-            // does every previously mapped node's edge with n match under the permutation
-            // g(0..n-1, n) == h(permutation[0..n-1], permutation[n])
-            if (match(g, h, n, newPermutation) == false) {
-                continue;
-            }
-
-            auto newHAvailableNodes = hAvailableNodes;
-            newHAvailableNodes[gDegrees[n]].erase(std::begin(newHAvailableNodes[gDegrees[n]]) + i);
-
-            if (isIsomorphic(n+1, newPermutation, newHAvailableNodes, g, h, gDegrees) == true) {
-                return true;
-            }
-        }
-
-        return false;
-    };
-
-    constexpr s64 edges = AdjacencyMatrix<nodes>().edges();
-
-    // Note: std::map might not be great long-term. unordered_map?
-    std::map<std::array<s64, nodes>, std::vector<std::tuple<AdjacencyMatrix<nodes>, std::array<std::vector<s64>, nodes>>>> uniqueGraphs;
-
-    for (const auto& g : graphs) {
-
-        std::array<s64, nodes> gDegrees{};
-        std::array<s64, nodes> gDegreeHistogram{};
-        using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
-
-        for (s64 e = 0; e < edges; e += 1) {
-            auto cr = AmIndexer::reverse(e);
-            gDegrees[cr.first]  += g.edge(e);
-            gDegrees[cr.second] += g.edge(e);
-        }
-
-        for (s64 d : gDegrees) {
-            gDegreeHistogram[d] += 1;
-        }
-
-        std::array<std::vector<s64>, nodes> gNodesByDegree{};
-        for (s64 n = 0; n < nodes; n += 1) {
-            gNodesByDegree[gDegrees[n]].push_back(n);
-        }
-
-        bool isUnique = true;
-
-        auto it = uniqueGraphs.find(gDegreeHistogram);
-        if (it == std::end(uniqueGraphs)) {
-            isUnique = true;
-        } else {
-            // for each recorded unique graph with the same degree histogram as g
-            // (g and h cannot be isomorphic if the node degrees differ)
-            for (const auto& t : it->second) {
-
-                R5_VERBOSE_1(graphCombinations += 1);
-
-                const auto& h              = std::get<0>(t);
-                const auto& hNodesByDegree = std::get<1>(t);
-
-                if (isIsomorphic(0, std::array<s64, nodes>{}, hNodesByDegree, g, h, gDegrees) == true) {
-                    isUnique = false;
-                    break;
-                }
-            }
-        }
-
-        if (isUnique) {
-            uniqueGraphs[gDegreeHistogram].push_back(std::make_tuple(g, gNodesByDegree));
-        }
-    }
-
-#if R5_VERBOSE >= 1
-    std::size_t maxSize = 0;
-    for (const auto& v : uniqueGraphs) {
-        maxSize = std::max(maxSize, v.second.size());
-    }
-
-    cerr << "  Unique degree histograms:                " << std::setw(15) << uniqueGraphs.size() << endl;
-    cerr << "  Max graphs per degree histogram:         " << std::setw(15) << maxSize << endl;
-    cerr << "  Graph combinations checked:              " << std::setw(15) << graphCombinations << endl;
-    cerr << "  Recursion steps:                         " << std::setw(15) << recursionSteps << endl;
-    cerr << "  Permutation checks:                      " << std::setw(15) << permutationChecks << endl;
-#endif
-
-    std::vector<AdjacencyMatrix<nodes>> ret;
-    for (const auto& v : uniqueGraphs) {
-#if R5_VERBOSE >= 2
-        cerr << "    " << v.first << " : " << v.second.size() << endl;
-#endif
-        for (const auto& t : v.second) {
-            ret.push_back(std::get<0>(t));
-        }
-    }
-
-#if R5_VERBOSE >= 1
-    cerr << endl;
-#endif
-
-    return ret;
-}
+//template<s64 nodes>
+//std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices4(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
+//
+//    s64 graphCombinations = 0; if (graphCombinations) {} // (void) x; didn't work for unknown reasons
+//    s64 recursionSteps    = 0; (void) recursionSteps;
+//    s64 permutationChecks = 0; (void) permutationChecks;
+//
+//    // Tests whether the permutation makes g match h
+//    // Only tests edges to/from the newly assigned node `n`
+//    auto match = [](const AdjacencyMatrix<nodes>& g, const AdjacencyMatrix<nodes>& h, s64 n, const std::array<s64, nodes>& permutation) {
+//        for (s64 m = 0; m < n; m += 1) {
+//            if (g.edge(n, m) != h.edge(permutation[n], permutation[m])) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    };
+//
+//    std::function<bool(s64, const std::array<s64, nodes>&, const std::array<std::vector<s64>, nodes>&, const AdjacencyMatrix<nodes>&, const AdjacencyMatrix<nodes>&, const std::array<s64, nodes>&)> isIsomorphic = [&isIsomorphic, &match, &recursionSteps, &permutationChecks](
+//            s64 n,                                                      // next node of g to be mapped
+//            const std::array<s64, nodes>& permutation,                  // current permutation
+//            const std::array<std::vector<s64>, nodes>& hAvailableNodes, // possible nodes where to map n to
+//            const AdjacencyMatrix<nodes>& g,
+//            const AdjacencyMatrix<nodes>& h,
+//            const std::array<s64, nodes>& gDegrees) -> bool {
+//
+//        R5_VERBOSE_1(recursionSteps += 1);
+//
+//        if (n == nodes) {
+//            return true;
+//        }
+//
+//        const auto& hAvailableNodesDegreeOfN = hAvailableNodes[gDegrees[n]];
+//
+//        // for each node m in h that has the same degree as n in g
+//        for (std::size_t i = 0; i < hAvailableNodesDegreeOfN.size(); ++i) {
+//
+//            s64 m = hAvailableNodesDegreeOfN[i];
+//
+//            // map n to g
+//            auto newPermutation = permutation;
+//            newPermutation[n] = m;
+//
+//            R5_VERBOSE_1(permutationChecks += 1);
+//
+//            // does every previously mapped node's edge with n match under the permutation
+//            // g(0..n-1, n) == h(permutation[0..n-1], permutation[n])
+//            if (match(g, h, n, newPermutation) == false) {
+//                continue;
+//            }
+//
+//            auto newHAvailableNodes = hAvailableNodes;
+//            newHAvailableNodes[gDegrees[n]].erase(std::begin(newHAvailableNodes[gDegrees[n]]) + i);
+//
+//            if (isIsomorphic(n+1, newPermutation, newHAvailableNodes, g, h, gDegrees) == true) {
+//                return true;
+//            }
+//        }
+//
+//        return false;
+//    };
+//
+//    constexpr s64 edges = AdjacencyMatrix<nodes>().edges();
+//
+//    // Note: std::map might not be great long-term. unordered_map?
+//    std::map<std::array<s64, nodes>, std::vector<std::tuple<AdjacencyMatrix<nodes>, std::array<std::vector<s64>, nodes>>>> uniqueGraphs;
+//
+//    for (const auto& g : graphs) {
+//
+//        std::array<s64, nodes> gDegrees{};
+//        std::array<s64, nodes> gDegreeHistogram{};
+//        using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
+//
+//        for (s64 e = 0; e < edges; e += 1) {
+//            auto cr = AmIndexer::reverse(e);
+//            gDegrees[cr.first]  += g.edge(e);
+//            gDegrees[cr.second] += g.edge(e);
+//        }
+//
+//        for (s64 d : gDegrees) {
+//            gDegreeHistogram[d] += 1;
+//        }
+//
+//        std::array<std::vector<s64>, nodes> gNodesByDegree{};
+//        for (s64 n = 0; n < nodes; n += 1) {
+//            gNodesByDegree[gDegrees[n]].push_back(n);
+//        }
+//
+//        bool isUnique = true;
+//
+//        auto it = uniqueGraphs.find(gDegreeHistogram);
+//        if (it == std::end(uniqueGraphs)) {
+//            isUnique = true;
+//        } else {
+//            // for each recorded unique graph with the same degree histogram as g
+//            // (g and h cannot be isomorphic if the node degrees differ)
+//            for (const auto& t : it->second) {
+//
+//                R5_VERBOSE_1(graphCombinations += 1);
+//
+//                const auto& h              = std::get<0>(t);
+//                const auto& hNodesByDegree = std::get<1>(t);
+//
+//                if (isIsomorphic(0, std::array<s64, nodes>{}, hNodesByDegree, g, h, gDegrees) == true) {
+//                    isUnique = false;
+//                    break;
+//                }
+//            }
+//        }
+//
+//        if (isUnique) {
+//            uniqueGraphs[gDegreeHistogram].push_back(std::make_tuple(g, gNodesByDegree));
+//        }
+//    }
+//
+//#if R5_VERBOSE >= 1
+//    std::size_t maxSize = 0;
+//    for (const auto& v : uniqueGraphs) {
+//        maxSize = std::max(maxSize, v.second.size());
+//    }
+//
+//    cerr << "  Unique degree histograms:                " << std::setw(15) << uniqueGraphs.size() << endl;
+//    cerr << "  Max graphs per degree histogram:         " << std::setw(15) << maxSize << endl;
+//    cerr << "  Graph combinations checked:              " << std::setw(15) << graphCombinations << endl;
+//    cerr << "  Recursion steps:                         " << std::setw(15) << recursionSteps << endl;
+//    cerr << "  Permutation checks:                      " << std::setw(15) << permutationChecks << endl;
+//#endif
+//
+//    std::vector<AdjacencyMatrix<nodes>> ret;
+//    for (const auto& v : uniqueGraphs) {
+//#if R5_VERBOSE >= 2
+//        cerr << "    " << v.first << " : " << v.second.size() << endl;
+//#endif
+//        for (const auto& t : v.second) {
+//            ret.push_back(std::get<0>(t));
+//        }
+//    }
+//
+//#if R5_VERBOSE >= 1
+//    cerr << endl;
+//#endif
+//
+//    return ret;
+//}
 
 template<s64 nodes>
 std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
