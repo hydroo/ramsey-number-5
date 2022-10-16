@@ -758,9 +758,4 @@ std::ostream& operator<< (std::ostream& o, const r5::AdjacencyMatrix<Nodes, Tria
 
 } // namespace r5
 
-template<s64 Nodes, bool Triangular>
-std::ostream& operator<< (std::ostream& o, const r5::AdjacencyMatrix<Nodes, Triangular>& m) {
-    return r5::operator<<(o, m);
-}
-
 #endif
