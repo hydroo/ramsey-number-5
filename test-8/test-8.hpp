@@ -147,7 +147,6 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             gNodesByDegree[gDegrees[n]].emplace_back(n);
         }
 
-
         // Traversal Order:
         // 1) Assign nodes of degree 0 to any node of degree 0
         // 2) Assign nodes of degree nodes-1 to any node of degree nodes-1
@@ -169,7 +168,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             firstNotFixedNodeIndex += 1;
         }
 
-        // Not that j = 1 and < nodes-1 skips the above two cases
+        // Note that j = 1 and < nodes-1 skips the above two cases
         for (std::size_t d = 1; d < nodes-1; ++d) {
             if (gDegreeHistogram[d] == 1) {
                 R5_DEBUG_ASSERT(gNodesByDegree[d].size() == 1);
