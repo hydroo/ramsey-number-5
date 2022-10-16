@@ -6,11 +6,6 @@
 #include <functional>
 #include <numeric>
 #include <map>
-#include <unordered_map>
-
-//#include <boost/graph/adjacency_list.hpp>
-//#include <boost/graph/adjacency_matrix.hpp>
-//#include <boost/graph/isomorphism.hpp>
 
 #include "adjacencymatrix.hpp"
 
