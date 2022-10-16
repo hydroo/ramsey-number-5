@@ -32,9 +32,9 @@ using u64 = uint64_t;
 #ifndef R5_GTEST
 #   define R5_ASSERT(expr)                                                                             \
        if ((expr) == false) {                                                                          \
-           std::cerr << "\e[0;31m\033[1m"                                                              \
+           std::cerr << "\033[0;31m\033[1m"                                                              \
                      << "ASSERT"                                                                       \
-                     << "\033[0m\e[0;30m"                                                              \
+                     << "\033[0m\033[0;30m"                                                              \
                      << " in " << __FILE__ << ":" << __LINE__ << ": \"" << #expr << "\"" << std::endl; \
            std::abort();                                                                               \
        }
