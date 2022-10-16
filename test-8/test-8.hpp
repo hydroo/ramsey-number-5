@@ -475,7 +475,7 @@ struct RamseyGraphs {
                         R5_VERBOSE_1(if (currentEdgeMasksComplete.size() > 0) { coloringsChecked += 1; });
                         for (std::size_t i = 0; i < currentEdgeMasksComplete.size(); i += 1) {
                             R5_VERBOSE_1(edgeMaskChecks += 1);
-                            if ((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i]) {
+                            if ((coloring & currentEdgeMasksComplete[i]) == currentEdgeMasksComplete[i]) { // NOTE: this can be speed up by testing more directly
                                 foundCompleteSubgraph = true;
                                 break;
                             }
@@ -492,7 +492,7 @@ struct RamseyGraphs {
                         R5_VERBOSE_1(if (currentEdgeMasksEmpty.size() > 0) { coloringsChecked += 1; });
                         for (std::size_t i = 0; i < currentEdgeMasksEmpty.size(); i += 1) {
                             R5_VERBOSE_1(edgeMaskChecks += 1);
-                            if ((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i]) {
+                            if ((coloring | currentEdgeMasksEmpty[i]) == currentEdgeMasksEmpty[i]) { // NOTE: this can be speed up by testing more directly
                                 foundEmptySubgraph = true;
                                 break;
                             }
