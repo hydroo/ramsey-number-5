@@ -541,7 +541,7 @@ struct RamseyGraphs {
 #if R5_VERBOSE >= 1
         cerr << "  Uniquify Ramsey graphs:                  " << std::setw(15 + 4) << std::fixed << t67 << " seconds" << endl;
         cerr << "  Ramsey graphs:                           " << std::setw(15) << ramseyGraphs.size() << endl;
-
+#if R5_VERBOSE >= 2
         s64 minEdges = std::numeric_limits<s64>::max();
         s64 maxEdges = -1;
         for (const auto& g : ramseyGraphs) {
@@ -555,8 +555,7 @@ struct RamseyGraphs {
             maxEdges = std::max(edges, maxEdges);
         }
 
-        // cerr << "  Min, max edge count:                     " << std::setw(15) << (std::to_string(minEdges) + ", " + std::to_string(maxEdges)) << endl;
-#if R5_VERBOSE >= 2
+        cerr << "  Min, max edge count:                     " << std::setw(15) << (std::to_string(minEdges) + ", " + std::to_string(maxEdges)) << endl;
         cerr << "  Ramsey graphs:                           " << std::setw(15) << ramseyGraphs << endl;
 #endif
         cerr << endl;
