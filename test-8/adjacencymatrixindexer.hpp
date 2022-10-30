@@ -104,7 +104,7 @@ private:
             R5_ASSERT(i <= nodes*(nodes-1)/2);
         } else {
             R5_ASSERT(i >= 0);
-            R5_ASSERT(i <= nodes*nodes-1);
+            R5_ASSERT(i <= nodes*nodes);
         }
         return reverse_(i, nodes);
     }
