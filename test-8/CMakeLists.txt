@@ -14,7 +14,7 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Wconversion")
 
 set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native")

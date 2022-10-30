@@ -88,7 +88,7 @@ private:
 
     static constexpr std::pair<s64, s64> reverse_(s64 i, s64 nodes) {
         if (Triangular == true) {
-            s64 column = (s64) floor(0.5 + sqrt(0.25 + 2*i));
+            s64 column = s64(floor(0.5 + sqrt(0.25 + double(2*i))));
             s64 row    = i - column*(column-1)/2;
             return std::make_pair(column, row);
         } else {

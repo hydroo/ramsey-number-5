@@ -329,7 +329,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         maxSize = std::max(maxSize, v.second.size());
     }
 
-    cerr << "  Average fixed nodes:                     " << std::setw(15 + 4) << std::fixed << fixedNodesSum / (double) graphs.size() << endl;
+    cerr << "  Average fixed nodes:                     " << std::setw(15 + 4) << std::fixed << double(fixedNodesSum) / double(graphs.size()) << endl;
     cerr << "  Unique degree histograms:                " << std::setw(15) << uniqueGraphs.size() << endl;
     cerr << "  Max graphs per degree histogram:         " << std::setw(15) << maxSize << endl;
     cerr << "  Graph combinations checked:              " << std::setw(15) << graphCombinations << endl;
