@@ -20,9 +20,9 @@ fi
 
 cat << EOF >> $tmp_file
 namespace config_inc {
-   constexpr s64 r = $1;
-   constexpr s64 s = $2;
-   constexpr s64 n = $3;
+   constexpr r5::Size r = $1;
+   constexpr r5::Size s = $2;
+   constexpr r5::Size n = $3;
 }
 EOF
 

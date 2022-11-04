@@ -7,6 +7,7 @@ using std::endl;
 
 using r5::AdjacencyMatrix;
 using r5::AdjacencyMatrixIndexer;
+using r5::Size;
 
 TEST(AdjacencyMatrix, create_constexpr_triangular) {
     constexpr AdjacencyMatrix<  0> m0;
@@ -95,11 +96,11 @@ TEST(AdjacencyMatrix, setedge_constexpr) {
 }
 
 TEST(AdjacencyMatrix, setedge_nonconstexpr_triangular) {
-    constexpr s64 nodes = 4;
+    constexpr Size nodes = 4;
     AdjacencyMatrix< -1> m(nodes);
 
-    for (s64 c = 0; c < nodes; c += 1) {
-        for (s64 r = 0; r < nodes; r += 1) {
+    for (Size c = 0; c < nodes; c += 1) {
+        for (Size r = 0; r < nodes; r += 1) {
             if (c == r) { continue; }
             m.unsetEdge(c, r);
             ASSERT_EQ(m.edge(c, r), false);
@@ -107,8 +108,8 @@ TEST(AdjacencyMatrix, setedge_nonconstexpr_triangular) {
             m.setEdge(c, r);
 
             // all previously set edges and this one ought to be set
-            for (s64 c2 = 0; c2 <= c; c2 += 1) {
-                for (s64 r2 = 0; r2 <= r; r2 += 1) {
+            for (Size c2 = 0; c2 <= c; c2 += 1) {
+                for (Size r2 = 0; r2 <= r; r2 += 1) {
                     if (c2 == r2) { continue; }
                     ASSERT_EQ(m.edge(c2, r2), true);
                     ASSERT_EQ(m.edge(r2, c2), true);
@@ -121,11 +122,11 @@ TEST(AdjacencyMatrix, setedge_nonconstexpr_triangular) {
 }
 
 TEST(AdjacencyMatrix, setedge_nonconstexpr_nontriangular) {
-    constexpr s64 nodes = 4;
+    constexpr Size nodes = 4;
     AdjacencyMatrix< -1, false> m(nodes);
 
-    for (s64 c = 0; c < nodes; c += 1) {
-        for (s64 r = 0; r < nodes; r += 1) {
+    for (Size c = 0; c < nodes; c += 1) {
+        for (Size r = 0; r < nodes; r += 1) {
             if (c == r) { continue; }
             m.unsetEdge(c, r);
             ASSERT_EQ(m.edge(c, r), false);
@@ -133,8 +134,8 @@ TEST(AdjacencyMatrix, setedge_nonconstexpr_nontriangular) {
             m.setEdge(c, r);
 
             // all previously set edges and this one ought to be set
-            for (s64 c2 = 0; c2 <= c; c2 += 1) {
-                for (s64 r2 = 0; r2 <= r; r2 += 1) {
+            for (Size c2 = 0; c2 <= c; c2 += 1) {
+                for (Size r2 = 0; r2 <= r; r2 += 1) {
                     if (c2 == r2) { continue; }
                     ASSERT_EQ(m.edge(c2, r2), true);
                     ASSERT_EQ(m.edge(r2, c2), true);
@@ -147,7 +148,7 @@ TEST(AdjacencyMatrix, setedge_nonconstexpr_nontriangular) {
 }
 
 TEST(AdjacencyMatrix, setEdgeByEdgeIndex) {
-    constexpr s64 n = 25;
+    constexpr Size n = 25;
 
     constexpr auto ct = []() -> auto {
         AdjacencyMatrix<n> m;
@@ -196,7 +197,7 @@ TEST(AdjacencyMatrix, setEdgeByEdgeIndex) {
 
 TEST(AdjacencyMatrix, setAllEdges) {
 
-    constexpr s64 n = 12;
+    constexpr Size n = 12;
 
     constexpr auto uct = []() -> auto {
         AdjacencyMatrix<3> m;
@@ -248,8 +249,8 @@ TEST(AdjacencyMatrix, setAllEdges) {
     AdjacencyMatrix<-1, false> srn(n); srn.setAllEdges();
 
     auto testAllEdges = [n](auto m, bool test) {
-        for (s64 c = 0; c < n; c += 1) {
-            for (s64 r = 0; r < n; r += 1) {
+        for (Size c = 0; c < n; c += 1) {
+            for (Size r = 0; r < n; r += 1) {
                 if (c == r) { continue; }
                 ASSERT_EQ(m.edge(c, r), test);
             }
@@ -267,42 +268,42 @@ TEST(AdjacencyMatrix, setAllEdges) {
 }
 
 TEST(AdjacencyMatrix, toggleEdge) {
-    constexpr s64 n = 17;
+    constexpr Size n = 17;
 
     AdjacencyMatrix<n> ct;
     ct.unsetAllEdges();
-    for (s64 e = 0; e < ct.edges(); e += 1) {
+    for (Size e = 0; e < ct.edges(); e += 1) {
         ct.toggleEdge(e);
     }
-    for (s64 e = 0; e < ct.edges(); e += 1) {
+    for (Size e = 0; e < ct.edges(); e += 1) {
         ASSERT_EQ(ct.edge(e), true);
     }
-    for (s64 e = 0; e < ct.edges(); e += 1) {
+    for (Size e = 0; e < ct.edges(); e += 1) {
         ct.toggleEdge(e);
     }
-    for (s64 e = 0; e < ct.edges(); e += 1) {
+    for (Size e = 0; e < ct.edges(); e += 1) {
         ASSERT_EQ(ct.edge(e), false);
     }
 
     AdjacencyMatrix<n, false> cn;
     cn.unsetAllEdges();
-    for (s64 i = 1; i < cn.nodes(); i += 1) {
-        for (s64 j = 0; j < i; j += 1) {
+    for (Size i = 1; i < cn.nodes(); i += 1) {
+        for (Size j = 0; j < i; j += 1) {
             cn.toggleEdge(i, j);
         }
     }
-    for (s64 i = 1; i < cn.nodes(); i += 1) {
-        for (s64 j = 0; j < i; j += 1) {
+    for (Size i = 1; i < cn.nodes(); i += 1) {
+        for (Size j = 0; j < i; j += 1) {
             ASSERT_EQ(cn.edge(i, j), true);
         }
     }
-    for (s64 i = 1; i < cn.nodes(); i += 1) {
-        for (s64 j = 0; j < i; j += 1) {
+    for (Size i = 1; i < cn.nodes(); i += 1) {
+        for (Size j = 0; j < i; j += 1) {
             cn.toggleEdge(j, i);
         }
     }
-    for (s64 i = 1; i < cn.nodes(); i += 1) {
-        for (s64 j = 0; j < i; j += 1) {
+    for (Size i = 1; i < cn.nodes(); i += 1) {
+        for (Size j = 0; j < i; j += 1) {
             ASSERT_EQ(cn.edge(j, i), false);
         }
     }
@@ -314,8 +315,8 @@ TEST(AdjacencyMatrix, edgeCount) {
     AdjacencyMatrix<3> ct3; ASSERT_EQ(ct3.edgeCount(), 0); ct3.setAllEdges(); ASSERT_EQ(ct3.edgeCount(), ct3.edges()); ;
     AdjacencyMatrix<4> ct4; ASSERT_EQ(ct4.edgeCount(), 0); ct4.setAllEdges(); ASSERT_EQ(ct4.edgeCount(), ct4.edges()); ;
 
-    constexpr s64 n1 = 5;
-    constexpr s64 e1 = 10; // 5*(5-1)/2
+    constexpr Size n1 = 5;
+    constexpr Size e1 = 10; // 5*(5-1)/2
     AdjacencyMatrix<n1>        unct;    unct.unsetAllEdges(); ASSERT_EQ(unct.edgeCount(),  0);
     AdjacencyMatrix<n1>        snct;    snct.setAllEdges()  ; ASSERT_EQ(snct.edgeCount(), e1);
     AdjacencyMatrix<n1, false> uncn;    uncn.unsetAllEdges(); ASSERT_EQ(uncn.edgeCount(),  0);
@@ -325,19 +326,19 @@ TEST(AdjacencyMatrix, edgeCount) {
     AdjacencyMatrix<-1, false> urn(n1); urn.unsetAllEdges() ; ASSERT_EQ(urn.edgeCount() ,  0);
     AdjacencyMatrix<-1, false> srn(n1); srn.setAllEdges()   ; ASSERT_EQ(srn.edgeCount() , e1);
 
-    constexpr s64 n2 = 6;
+    constexpr Size n2 = 6;
     AdjacencyMatrix<n2> m1;
     m1.unsetAllEdges();
-    for (s64 e = 0; e < m1.edges(); e += 1) {
+    for (Size e = 0; e < m1.edges(); e += 1) {
         m1.setEdge(e);
         ASSERT_EQ(m1.edgeCount(), e+1);
     }
 
     AdjacencyMatrix<n2, false> m2;
     m2.setAllEdges();
-    s64 e = m2.edges();
-    for (s64 n = 0; n < n2; n += 1) {
-        for (s64 m = 0; m < n; m += 1) {
+    Size e = m2.edges();
+    for (Size n = 0; n < n2; n += 1) {
+        for (Size m = 0; m < n; m += 1) {
             e -= 1;
             m2.unsetEdge(n, m);
             ASSERT_EQ(m2.edgeCount(), e);
@@ -552,7 +553,7 @@ TEST(AdjacencyMatrix, copyconstruct_and_assign_from_smaller_matrices) {
     rn.unsetAllEdges();
     rn.setEdge(1, 0);
 
-    constexpr s64 n = 13;
+    constexpr Size n = 13;
 
     constexpr AdjacencyMatrix<n>        ct_from_ct(ct);
     constexpr AdjacencyMatrix<n, false> cn_from_cn(cn);
@@ -564,8 +565,8 @@ TEST(AdjacencyMatrix, copyconstruct_and_assign_from_smaller_matrices) {
     AdjacencyMatrix<n, false>           ncn_from_rn (rn);
 
     auto check = [n](const auto& m) {
-        for (s64 c = 1; c < n; c += 1) {
-            for (s64 r = 0; r < c; r += 1) {
+        for (Size c = 1; c < n; c += 1) {
+            for (Size r = 0; r < c; r += 1) {
                 if (c == 1 && r == 0) {
                     ASSERT_EQ(m.edge(c, r), true);
                 } else {
@@ -969,7 +970,7 @@ TEST(AdjacencyMatrix, bitwiseAnd) {
 }
 
 TEST(AdjacencyMatrix, bitwiseComplement) {
-    constexpr s64 n = 17; // 3 (triangular) or 5 (non-triangular) elements
+    constexpr Size n = 17; // 3 (triangular) or 5 (non-triangular) elements
 
     constexpr auto ct = []() -> auto {
         AdjacencyMatrix<n> m;
@@ -990,8 +991,8 @@ TEST(AdjacencyMatrix, bitwiseComplement) {
     AdjacencyMatrix<-1, false> rn(n); rn.unsetAllEdges();  rn.setEdge(4, 14);
 
     auto testAllEdges = [n](auto m) {
-        for (s64 c = 0; c < n; c += 1) {
-            for (s64 r = 0; r < n; r += 1) {
+        for (Size c = 0; c < n; c += 1) {
+            for (Size r = 0; r < n; r += 1) {
                 if (c == r) { continue; }
                 if ((c == 4 && r == 14) || (c == 14 && r == 4)) {
                     ASSERT_EQ(m.edge(c, r), false);

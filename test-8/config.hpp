@@ -13,11 +13,11 @@ static_assert(config_inc::s >= 1);
 
 namespace config {
 
-constexpr s64 r = std::min(config_inc::r, config_inc::s);
-constexpr s64 s = std::max(config_inc::r, config_inc::s);
-constexpr s64 n = config_inc::n;
+constexpr r5::Size r = std::min(config_inc::r, config_inc::s);
+constexpr r5::Size s = std::max(config_inc::r, config_inc::s);
+constexpr r5::Size n = config_inc::n;
 
-constexpr s64 e  = n * (n - 1) / 2;
+constexpr r5::Size e  = n * (n - 1) / 2;
 
 std::string print(const std::string indent = "") {
     std::ostringstream o;
