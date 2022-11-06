@@ -261,11 +261,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                     R5_VERBOSE_1(recursionSteps += 1);
 
-                    Size i;
-                    Size m;
-                    bool traverse;
-
-                    std::tie(i, m, traverse) = stack.back();
+                    const auto& [ i, m, traverse ] = stack.back();
                     Size n = traversalOrder[i];
 
                     // cerr << "  " << i << " n " << n << endl;
@@ -284,8 +280,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                     bool match = true;
                     for (Size j = 0; j < i; j += 1) {
-                        Size m = traversalOrder[j];
-                        if (g.edge(n, m) != h.edge(permutation[n], permutation[m])) {
+                        Size o = traversalOrder[j];
+                        if (g.edge(n, o) != h.edge(m, permutation[o])) {
                             match = false;
                             break;
                         }
@@ -306,7 +302,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                         std::get<2>(stack.back()) = false;
 
                         for (Size m_ : hAvailableNodes[gDegrees[traversalOrder[i+1]]]) {
-                            stack.emplace_back(std::make_tuple(i+1, m_, true));
+                            stack.emplace_back(std::make_tuple(i+1, m_, true/*traverse*/));
                         }
                     }
                 }
