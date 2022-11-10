@@ -116,10 +116,10 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     constexpr Size edges = AdjacencyMatrix<nodes>().edges();
 
     // Note: std::map might not be great long-term. unordered_map?
-    std::map<std::array<Size, nodes> /*degree histogram*/, std::vector<std::tuple<AdjacencyMatrix<nodes>/*g*/, std::array<std::vector<Size>, nodes>>/*gNodesByDegree*/>> uniqueGraphs;
+    std::map<std::array<Size, nodes> /*degree histogram*/, std::vector<std::tuple<AdjacencyMatrix<nodes>/*g*/, std::array<std::vector<Size>, nodes>/*gNodesByDegree*/>>> uniqueGraphs;
     s64 uniqueGraphsCount = 0;
 
-    std::vector<std::tuple<s64 /*i*/, s64 /*m*/, bool /*traverse*/>> stack;
+    std::vector<std::tuple<s64 /*i*/, s64 /*m*/>> stack;
     stack.reserve(nodes*2);
 
     for (const auto& g : graphs) {
@@ -210,23 +210,27 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         } else {
             // for each recorded unique graph h with the same degree histogram as g
             // (g and h cannot be isomorphic if the node degrees differ)
-            for (auto& t : it->second) {
+            for (const auto& [ h, hAvailableNodes ] : it->second) {
 
                 R5_VERBOSE_1(graphCombinations += 1);
 
-                const auto& h        = std::get<0>(t);
-                auto hAvailableNodes = std::get<1>(t); // copy
-
+                std::array<bool, nodes> assignedNodes{};
 
 #if R5_VERBOSE >= 4
                 cerr << "  h " << h << " hAvailableNodes " << hAvailableNodes << endl;
 #endif
+
                 std::array<Size, nodes> permutation{};
                 for (Size i = 0; i < firstNotFixedNodeIndex; i += 1) {
                     Size n = traversalOrder[i];
-                    Size m = hAvailableNodes[gDegrees[n]].back();
-                    permutation[n] = m;
-                    hAvailableNodes[gDegrees[n]].pop_back();
+                    for(Size j = hAvailableNodes[gDegrees[n]].size()-1; j >= 0; j -= 1) {
+                        Size m = hAvailableNodes[gDegrees[n]][j];
+                        if (assignedNodes[m] == false) {
+                            assignedNodes[m] = true;
+                            permutation[n] = m;
+                            break;
+                        }
+                    }
                 }
 
                 bool match = true;
@@ -268,7 +272,9 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                 stack.clear();
                 for (Size m : hAvailableNodes[gDegrees[traversalOrder[firstNotFixedNodeIndex]]]) {
-                    stack.emplace_back(std::make_tuple(firstNotFixedNodeIndex, m, true));
+                    if (assignedNodes[m] == false) {
+                        stack.emplace_back(std::make_tuple(firstNotFixedNodeIndex, m));
+                    }
                 }
 
                 while (stack.empty() == false) {
@@ -279,15 +285,15 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                     R5_VERBOSE_1(recursionSteps += 1);
 
-                    const auto& [ i, m, traverse ] = stack.back();
+                    const auto& [ i, m ] = stack.back();
                     Size n = traversalOrder[i];
 
 #if R5_VERBOSE >= 4
                     cerr << "    " << i << " n " << n << endl;
 #endif
 
-                    if (traverse == false) {
-                        hAvailableNodes[gDegrees[n]].emplace_back(m);
+                    if (assignedNodes[m] == true) {
+                        assignedNodes[m] = false;
                         stack.pop_back();
                         continue;
                     }
@@ -320,13 +326,12 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                         break;
                     } else {
 
-                        auto& hAvailableNodesDegreeN = hAvailableNodes[gDegrees[n]];
-                        hAvailableNodesDegreeN.erase(std::find(std::begin(hAvailableNodesDegreeN), std::end(hAvailableNodesDegreeN), m));
-
-                        std::get<2>(stack.back()) = false;
+                        assignedNodes[m] = true;
 
                         for (Size m_ : hAvailableNodes[gDegrees[traversalOrder[i+1]]]) {
-                            stack.emplace_back(std::make_tuple(i+1, m_, true/*traverse*/));
+                            if (assignedNodes[m_] == false) {
+                                stack.emplace_back(std::make_tuple(i+1, m_));
+                            }
                         }
                     }
                 }
