@@ -124,6 +124,10 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
     for (const auto& g : graphs) {
 
+#if R5_VERBOSE >= 4
+        cerr << "g " << g << endl;
+#endif
+
         using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
 
         std::array<Size, nodes> gDegrees{};
@@ -191,13 +195,17 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             }
         }
 
-        // cerr << "  traversal order " << traversalOrder  << " firstNotFixedNodeIndex " << firstNotFixedNodeIndex << endl;
+#if R5_VERBOSE >= 4
+        cerr << "  traversal order " << traversalOrder  << " firstNotFixedNodeIndex " << firstNotFixedNodeIndex << endl;
+#endif
 
         bool isUnique = true;
 
         auto it = uniqueGraphs.find(gDegreeHistogram);
         if (it == std::end(uniqueGraphs)) {
-            // cerr << "  unique degree histogram" << endl;
+#if R5_VERBOSE >= 4
+            cerr << "  unique degree histogram" << endl;
+#endif
             isUnique = true;
         } else {
             // for each recorded unique graph h with the same degree histogram as g
@@ -209,8 +217,10 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 const auto& h        = std::get<0>(t);
                 auto hAvailableNodes = std::get<1>(t); // copy
 
-                // cerr << "  h " << h << " hAvailableNodes " << hAvailableNodes << endl;
 
+#if R5_VERBOSE >= 4
+                cerr << "  h " << h << " hAvailableNodes " << hAvailableNodes << endl;
+#endif
                 std::array<Size, nodes> permutation{};
                 for (Size i = 0; i < firstNotFixedNodeIndex; i += 1) {
                     Size n = traversalOrder[i];
@@ -238,17 +248,23 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 R5_VERBOSE_1(permutationChecks += 1);
 
                 if (match == false) {
-                    // cerr << "    early mismatch" << endl;
+#if R5_VERBOSE >= 4
+                    cerr << "    early mismatch" << endl;
+#endif
                     continue;
                 } else if (firstNotFixedNodeIndex == nodes) {
-                    // cerr << "    complete early match" << endl;
+#if R5_VERBOSE >= 4
+                    cerr << "    complete early match" << endl;
+#endif
                     isUnique = false;
                     break;
                 }
 
                 R5_VERBOSE_1(graphCombinations2 += 1);
 
-                // cerr << "    possibly isomorphic" << endl;
+#if R5_VERBOSE >= 4
+                cerr << "    possibly isomorphic" << endl;
+#endif
 
                 stack.clear();
                 for (Size m : hAvailableNodes[gDegrees[traversalOrder[firstNotFixedNodeIndex]]]) {
@@ -257,14 +273,18 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                 while (stack.empty() == false) {
 
-                    // cerr << "    stack " << stack << endl;
+#if R5_VERBOSE >= 4
+                    cerr << "    stack " << stack << endl;
+#endif
 
                     R5_VERBOSE_1(recursionSteps += 1);
 
                     const auto& [ i, m, traverse ] = stack.back();
                     Size n = traversalOrder[i];
 
-                    // cerr << "  " << i << " n " << n << endl;
+#if R5_VERBOSE >= 4
+                    cerr << "    " << i << " n " << n << endl;
+#endif
 
                     if (traverse == false) {
                         hAvailableNodes[gDegrees[n]].emplace_back(m);
@@ -274,7 +294,9 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                     permutation[n] = m;
 
-                    // cerr << "    permutation " << permutation << endl;
+#if R5_VERBOSE >= 4
+                    cerr << "    permutation " << permutation << endl;
+#endif
 
                     R5_VERBOSE_1(permutationChecks += 1);
 
@@ -292,7 +314,9 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                         continue;
                     } else if (i == nodes-1) {
                         isUnique = false;
-                        // cerr << "    isomorphic" << endl;
+#if R5_VERBOSE >= 4
+                        cerr << "    isomorphic, permutation" << permutation << endl;
+#endif
                         break;
                     } else {
 
@@ -314,7 +338,9 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         }
 
         if (isUnique) {
-            // cerr << "  unique g " << g << endl;
+#if R5_VERBOSE >= 4
+            cerr << "  unique g " << g << endl;
+#endif
             uniqueGraphs[gDegreeHistogram].emplace_back(std::make_tuple(g, gNodesByDegree));
             uniqueGraphsCount += 1;
         }

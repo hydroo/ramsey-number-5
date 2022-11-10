@@ -33,6 +33,7 @@ set_source_files_properties(test_adjacencymatrix.cpp test_adjacencymatrixindexer
 #set_source_files_properties(test-8.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=1")
 #set_source_files_properties(test-8.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=2")
 #set_source_files_properties(test-8.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=3")
+#set_source_files_properties(test-8.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=4")
 
 add_executable(test_adjacencymatrix test_adjacencymatrix.cpp)
 target_link_libraries(test_adjacencymatrix ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
