@@ -162,17 +162,18 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         //    This slims the traversal tree. Smaller fan-out first, bigger fan-out later.
         std::array<Size, nodes> traversalOrder;
 
-        Size firstNotFixedNodeIndex = 0;
+        Size firstNotEmptyOrFullNode = 0;
         for (Size n : gNodesByDegree[0]) {
-            traversalOrder[firstNotFixedNodeIndex] = n;
-            firstNotFixedNodeIndex += 1;
+            traversalOrder[firstNotEmptyOrFullNode] = n;
+            firstNotEmptyOrFullNode += 1;
         }
 
         for (Size n : gNodesByDegree[nodes-1]) {
-            traversalOrder[firstNotFixedNodeIndex] = n;
-            firstNotFixedNodeIndex += 1;
+            traversalOrder[firstNotEmptyOrFullNode] = n;
+            firstNotEmptyOrFullNode += 1;
         }
 
+        Size firstNotFixedNodeIndex = firstNotEmptyOrFullNode;
         // Note that j = 1 and < nodes-1 skips the above two cases
         for (Size d = 1; d < nodes-1; ++d) {
             if (gDegreeHistogram[d] == 1) {
@@ -234,7 +235,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 }
 
                 bool match = true;
-                for (Size i = 0; i < firstNotFixedNodeIndex; i += 1) {
+                for (Size i = firstNotEmptyOrFullNode; i < firstNotFixedNodeIndex; i += 1) {
                     Size n = traversalOrder[i];
                     for (Size j = 0; j < i; j += 1) {
                         Size m = traversalOrder[j];
@@ -307,7 +308,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                     R5_VERBOSE_1(permutationChecks += 1);
 
                     bool match = true;
-                    for (Size j = 0; j < i; j += 1) {
+                    for (Size j = firstNotEmptyOrFullNode; j < i; j += 1) {
                         Size o = traversalOrder[j];
                         if (g.edge(n, o) != h.edge(m, permutation[o])) {
                             match = false;
