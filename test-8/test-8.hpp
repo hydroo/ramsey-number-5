@@ -224,7 +224,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 std::array<Size, nodes> permutation{};
                 for (Size i = 0; i < firstNotFixedNodeIndex; i += 1) {
                     Size n = traversalOrder[i];
-                    for(Size j = hAvailableNodes[gDegrees[n]].size()-1; j >= 0; j -= 1) {
+                    for(Size j = 0; j < Size(hAvailableNodes[gDegrees[n]].size()); j += 1) {
                         Size m = hAvailableNodes[gDegrees[n]][j];
                         if (assignedNodes[m] == false) {
                             assignedNodes[m] = true;
