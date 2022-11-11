@@ -67,9 +67,7 @@ private:
                 return -1;
             } else {
                 if (column < row) {
-                    auto t = column;
-                    column = row;
-                    row = t;
+                    std::swap(column, row);
                 }
                 return column*(column-1)/2 + row;
             }
