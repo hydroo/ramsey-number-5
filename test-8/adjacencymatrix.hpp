@@ -36,7 +36,7 @@ protected:
         } else {
             for (Size c = 1; c < nodesM; c += 1) {
                 for (Size r = 0; r < c; r += 1) {
-                    if (edge(AdjacencyMatrixIndexer<NodesM, Triangular>::index(c, r, nodesM), m) == true) {
+                    if (edge(AdjacencyMatrixIndexer<NodesM, Triangular>::index(c, r, nodesM), nodesM, m) == true) {
                         setEdge(c, r, nodesV, v);
                     } else {
                         unsetEdge(c, r, nodesV, v);
@@ -98,11 +98,19 @@ protected:
 
     static constexpr bool edge(Size column, Size row, Size nodes, const u64* v) {
         auto e = Indexer::index(column, row, nodes);
-        return (bool) ((v[e/bitsPerElement]>>(e%bitsPerElement))&0x1);
+        if (elements(nodes) == 1) {
+            return (bool) ((v[0]>>e)&0x1);
+        } else {
+            return (bool) ((v[e/bitsPerElement]>>(e%bitsPerElement))&0x1);
+        }
     }
 
-    static constexpr bool edge(Size edge_, const u64* v) {
-        return (bool) ((v[edge_/bitsPerElement]>>(edge_%bitsPerElement))&0x1);
+    static constexpr bool edge(Size edge_, Size nodes, const u64* v) {
+        if (elements(nodes) == 1) {
+            return (bool) ((v[0]>>(edge_))&0x1);
+        } else {
+            return (bool) ((v[edge_/bitsPerElement]>>(edge_%bitsPerElement))&0x1);
+        }
     }
 
     static constexpr bool edgeChecked(Size column, Size row, Size nodes, const u64* v) {
@@ -117,7 +125,7 @@ protected:
     static constexpr bool edgeChecked(Size edge_, Size nodes, const u64* v) {
         R5_ASSERT(edge_ >= 0);
         R5_ASSERT(edge_ <= edges(nodes)-1);
-        return edge(edge_, v);
+        return edge(edge_, nodes, v);
     }
 
     static constexpr void unsetEdge(Size column, Size row, Size nodes, u64* v) {
@@ -364,7 +372,7 @@ public:
     }
 
     constexpr bool edge(Size edge_) const {
-        return Base::edge(edge_, _v);
+        return Base::edge(edge_, Nodes, _v);
     }
 
     constexpr bool edgeChecked(Size column, Size row) const {
@@ -523,7 +531,7 @@ public:
     }
 
     bool edge(Size edge_) const {
-        return Base::edge(edge_, _v);
+        return Base::edge(edge_, _nodes, _v);
     }
 
     bool edgeChecked(Size column, Size row) const {

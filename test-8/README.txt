@@ -279,9 +279,14 @@ I'd need to redo it.
 At the moment it wouldn't help much as this part contributes almost no time.
 But in Test-7 for deeper searches it could be beneficial.
 
-# Make hAvailableNodes constant - 10th Nov 2022
+# Make hAvailableNodes Constant - 10th Nov 2022
 
 This avoids copying/constructing/destroying this data structure and thus improves performance by 30-40%
 
     R(4,4) =?  9    2.7
     R(4,4) =? 10  129.5
+
+# Specialize AdjacencyMatrix::edge() for One Element per AdjacencyMatrix - 11th Nov 2022
+
+    R(4,4) =?  9    2.4
+    R(4,4) =? 10  119.0
