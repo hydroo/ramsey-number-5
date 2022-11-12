@@ -369,6 +369,9 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
     std::vector<AdjacencyMatrix<nodes>> ret;
     ret.reserve(uniqueGraphsCount);
+#if R5_VERBOSE >= 2
+        cerr << "  Unique graphs:" << endl;
+#endif
     for (const auto& v : uniqueGraphs) {
 #if R5_VERBOSE >= 2
         cerr << "    " << v.first << " : " << v.second.size() << endl;
