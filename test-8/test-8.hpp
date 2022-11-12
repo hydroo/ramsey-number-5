@@ -119,7 +119,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     std::map<std::array<Size, nodes> /*degree histogram*/, std::vector<std::tuple<AdjacencyMatrix<nodes>/*g*/, std::array<std::vector<Size>, nodes>/*gNodesByDegree*/>>> uniqueGraphs;
     s64 uniqueGraphsCount = 0;
 
-    std::vector<std::tuple<s64 /*i*/, s64 /*m*/>> stack;
+    std::vector<std::tuple<s64 /*i*/, Size /*m*/>> stack;
     stack.reserve(nodes*2);
 
     for (const auto& g : graphs) {
