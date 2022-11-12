@@ -290,3 +290,29 @@ This avoids copying/constructing/destroying this data structure and thus improve
 
     R(4,4) =?  9    2.4
     R(4,4) =? 10  119.0
+    R(4,4) =? 11 5276.1
+
+    Ramsey(4,4)-graphs with 11 vertices
+      Smaller Ramsey graphs:                           103,706
+      New edges to fill:                                    10
+      Possible combinations:                       106,194,944 # 103,706 * 2^10
+
+      Check all colorings:                                   1.006 seconds
+      Number of recursion steps:                    70,724,898
+      Number of colorings checked:                  76,363,130
+      Number of edge mask checks:                1,189,986,946
+      Non-unique Ramsey graphs:                      6,260,468
+
+      Average fixed nodes:                                   0.917
+      Unique degree histograms:                            690
+      Max graphs per degree histogram:                  27,365
+      Graph combinations checked:               33,703,659,110
+      Graph combinations requiring traversal:   32,084,625,029
+      Recursion steps:                         543,930,387,442
+      Permutation checks:                      426,055,285,558
+
+      Uniquify Ramsey graphs:                            5,276.118 seconds
+      Ramsey graphs:                                   546,356
+
+    Ramsey(4,4)-graphs with 11 vertices: 546,356
+    Total time: 5,387.557 seconds
