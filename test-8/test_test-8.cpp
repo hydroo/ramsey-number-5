@@ -38,6 +38,8 @@ TEST(Test8, ramseyGraphs) {
     ASSERT_EQ((RamseyGraphs<3, 5,  4>::f().size()),   7); ASSERT_EQ((RamseyGraphs<5, 3,  4>::f().size()),   7);
     ASSERT_EQ((RamseyGraphs<3, 5,  5>::f().size()),  13); ASSERT_EQ((RamseyGraphs<5, 3,  5>::f().size()),  13);
     ASSERT_EQ((RamseyGraphs<3, 5,  6>::f().size()),  32); ASSERT_EQ((RamseyGraphs<5, 3,  6>::f().size()),  32);
+    ASSERT_EQ((RamseyGraphs<3, 5,  7>::f().size()),  71); ASSERT_EQ((RamseyGraphs<5, 3,  7>::f().size()),  71);
+    ASSERT_EQ((RamseyGraphs<3, 5,  8>::f().size()), 179); ASSERT_EQ((RamseyGraphs<5, 3,  8>::f().size()), 179);
 
     ASSERT_EQ((RamseyGraphs<3, 6,  1>::f().size()),   1); ASSERT_EQ((RamseyGraphs<6, 3,  1>::f().size()),   1);
     ASSERT_EQ((RamseyGraphs<3, 6,  2>::f().size()),   2); ASSERT_EQ((RamseyGraphs<6, 3,  2>::f().size()),   2);
@@ -46,6 +48,7 @@ TEST(Test8, ramseyGraphs) {
     ASSERT_EQ((RamseyGraphs<3, 6,  5>::f().size()),  14); ASSERT_EQ((RamseyGraphs<6, 3,  5>::f().size()),  14);
     ASSERT_EQ((RamseyGraphs<3, 6,  6>::f().size()),  37); ASSERT_EQ((RamseyGraphs<6, 3,  6>::f().size()),  37);
     ASSERT_EQ((RamseyGraphs<3, 6,  7>::f().size()), 100); ASSERT_EQ((RamseyGraphs<6, 3,  7>::f().size()), 100);
+    ASSERT_EQ((RamseyGraphs<3, 6,  8>::f().size()), 356); ASSERT_EQ((RamseyGraphs<6, 3,  8>::f().size()), 356);
 
     ASSERT_EQ((RamseyGraphs<4, 4,  1>::f().size()),   1);
     ASSERT_EQ((RamseyGraphs<4, 4,  2>::f().size()),   2);

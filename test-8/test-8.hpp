@@ -114,9 +114,13 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #endif
 
     constexpr Size edges = AdjacencyMatrix<nodes>().edges();
+    constexpr Size triangleHistogramSize = nodes > 2 ? nChooseK(nodes-1, Size(2)) + 1 : 1; // maximum number of triangles per node is "choose 2 other nodes"
+
+    using AdjacencyMatrixProperties = std::tuple<std::array<Size, nodes> /*gDegreeHistogram*/, std::array<Size, triangleHistogramSize>/*gTriangleHistogram*/, std::array<Size, triangleHistogramSize> /*gEmptyTriangleHistogram*/>;
 
     // Note: std::map might not be great long-term. unordered_map?
-    std::map<std::array<Size, nodes> /*degree histogram*/, std::vector<std::tuple<AdjacencyMatrix<nodes>/*g*/, std::array<std::vector<Size>, nodes>/*gNodesByDegree*/>>> uniqueGraphs;
+    std::map<AdjacencyMatrixProperties, std::vector<std::tuple<AdjacencyMatrix<nodes>/*g*/, std::array<std::vector<Size>, nodes>/*gNodesByDegree*/>>> uniqueGraphs;
+
     s64 uniqueGraphsCount = 0;
 
     std::vector<std::tuple<s64 /*i*/, Size /*m*/>> stack;
@@ -150,6 +154,35 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         std::array<std::vector<Size>, nodes> gNodesByDegree{};
         for (Size n = 0; n < nodes; n += 1) {
             gNodesByDegree[gDegrees[n]].emplace_back(n);
+        }
+
+        std::array<Size, nodes> gTriangles{};
+        std::array<Size, nodes> gEmptyTriangles{};
+        for (Size n = 0; n < nodes; n += 1) {
+            for (Size m = 0; m < n; m += 1) {
+                for (Size j = 0; j < m; j += 1) {
+                    if (g.edge(n, m) &&  g.edge(m, j) && g.edge(n, j)) {
+                        gTriangles[n] += 1;
+                        gTriangles[m] += 1;
+                        gTriangles[j] += 1;
+                    } else if (g.edge(n, m) == false && g.edge(m, j) == false && g.edge(n, j) == false) {
+                        gEmptyTriangles[n] += 1;
+                        gEmptyTriangles[m] += 1;
+                        gEmptyTriangles[j] += 1;
+                    }
+                }
+            }
+        }
+
+        std::array<Size, triangleHistogramSize> gTriangleHistogram{}; // FIXME nodes is not right here. It's probably nChooseK(nodes-1, 2)
+        for (Size t : gTriangles) {
+            R5_ASSERT(t < triangleHistogramSize);
+            gTriangleHistogram[t] += 1;
+        }
+        std::array<Size, triangleHistogramSize> gEmptyTriangleHistogram{};  // FIXME nodes is not right here. It's probably nChooseK(nodes-1, 2)
+        for (Size t : gEmptyTriangles) {
+            R5_ASSERT(t < triangleHistogramSize);
+            gEmptyTriangleHistogram[t] += 1;
         }
 
         // Traversal Order:
@@ -202,10 +235,12 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         bool isUnique = true;
 
-        auto it = uniqueGraphs.find(gDegreeHistogram);
+        AdjacencyMatrixProperties gProperties = std::make_tuple(gDegreeHistogram, gTriangleHistogram, gEmptyTriangleHistogram);
+
+        auto it = uniqueGraphs.find(gProperties);
         if (it == std::end(uniqueGraphs)) {
 #if R5_VERBOSE >= 4
-            cerr << "  unique degree histogram" << endl;
+            cerr << "  unique properties" << endl;
 #endif
             isUnique = true;
         } else {
@@ -347,7 +382,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #if R5_VERBOSE >= 4
             cerr << "  unique g " << g << endl;
 #endif
-            uniqueGraphs[gDegreeHistogram].emplace_back(std::make_tuple(g, gNodesByDegree));
+            uniqueGraphs[gProperties].emplace_back(std::make_tuple(g, gNodesByDegree));
             uniqueGraphsCount += 1;
         }
     }
@@ -359,8 +394,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     }
 
     cerr << "  Average fixed nodes:                     " << std::setw(15 + 4) << std::fixed << double(fixedNodesSum) / double(graphs.size()) << endl;
-    cerr << "  Unique degree histograms:                " << std::setw(15) << uniqueGraphs.size() << endl;
-    cerr << "  Max graphs per degree histogram:         " << std::setw(15) << maxSize << endl;
+    cerr << "  Unique properties:                       " << std::setw(15) << uniqueGraphs.size() << endl;
+    cerr << "  Max graphs per property:                 " << std::setw(15) << maxSize << endl;
     cerr << "  Graph combinations checked:              " << std::setw(15) << graphCombinations << endl;
     cerr << "  Graph combinations requiring traversal:  " << std::setw(15) << graphCombinations2 << endl;
     cerr << "  Recursion steps:                         " << std::setw(15) << recursionSteps << endl;
