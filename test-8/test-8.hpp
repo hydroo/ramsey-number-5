@@ -9,6 +9,8 @@
 
 #include "adjacencymatrix.hpp"
 
+#include "checkramseygraphcount.hpp"
+
 using std::cerr;
 using std::cout;
 using std::endl;
@@ -626,6 +628,8 @@ struct RamseyGraphs {
 #endif
         cerr << endl;
 #endif
+
+        checkRamseyGraphCount(r, s, n, ramseyGraphs.size());
 
         return ramseyGraphs;
     }
