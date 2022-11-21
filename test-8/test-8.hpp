@@ -124,7 +124,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     s64 uniqueGraphsCount = 0;
 
     std::vector<std::tuple<s64 /*i*/, Size /*m*/>> stack;
-    stack.reserve(nodes*2);
+    stack.reserve(nodes*(nodes-1));
 
     for (const auto& g : graphs) {
 
@@ -321,7 +321,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                     R5_VERBOSE_1(recursionSteps += 1);
 
-                    const auto& [ i, m ] = stack.back();
+                    auto [ i, m ] = stack.back();
                     Size n = traversalOrder[i];
 
 #if R5_VERBOSE >= 4
