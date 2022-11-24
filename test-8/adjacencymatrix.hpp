@@ -759,7 +759,7 @@ public:
 };
 
 template<Size Nodes, bool Triangular>
-std::ostream& operator<< (std::ostream& o, const r5::AdjacencyMatrix<Nodes, Triangular>& m) {
+std::ostream& operator<< (std::ostream& o, const AdjacencyMatrix<Nodes, Triangular>& m) {
     o << m.print();
     return o;
 }
