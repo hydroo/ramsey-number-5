@@ -123,6 +123,14 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     // Note: std::map might not be great long-term. unordered_map?
     std::map<AdjacencyMatrixProperties, std::vector<std::tuple<AdjacencyMatrix<nodes>/*g*/, std::array<std::vector<Size>, nodes>/*gNodesByDegree*/>>> uniqueGraphs;
 
+#if R5_VERBOSE >= 1
+    auto uniqueGraphsSize = [](const auto& uniqueGraphs) {
+        std::size_t keysByteSize = sizeof(AdjacencyMatrixProperties) * uniqueGraphs.size();
+        std::size_t valuesByteSize = (AdjacencyMatrix<nodes>{}.byteSize()/*g*/ + nodes*(sizeof(Size)/*nodes*/ + (sizeof(void*)/*pointer*/ + sizeof(std::size_t)/*size*/)/*vectors*/)/*gNodesByDegree*/) * uniqueGraphs.size();
+        return std::make_pair(keysByteSize, valuesByteSize);
+    };
+#endif
+
     s64 uniqueGraphsCount = 0;
 
     std::vector<std::tuple<s64 /*i*/, Size /*m*/>> stack;
@@ -397,6 +405,12 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
     cerr << "  Average fixed nodes:                     " << std::setw(15 + 4) << std::fixed << double(fixedNodesSum) / double(graphs.size()) << endl;
     cerr << "  Unique properties:                       " << std::setw(15) << uniqueGraphs.size() << endl;
+    auto [keysByteSize_, valuesByteSize_] = uniqueGraphsSize(uniqueGraphs);
+    float keysByteSize = float(keysByteSize_) / (1024*1024);
+    float valuesByteSize = float(valuesByteSize_) / (1024*1024);
+
+    cerr << "  Unique graphs keys byte size             " << std::setw(15 + 4) << std::fixed << keysByteSize << " MiB"<< endl;
+    cerr << "  Unique graphs values byte size           " << std::setw(15 + 4) << std::fixed << valuesByteSize << " MiB" << endl;
     cerr << "  Max graphs per property:                 " << std::setw(15) << maxSize << endl;
     cerr << "  Graph combinations checked:              " << std::setw(15) << graphCombinations << endl;
     cerr << "  Graph combinations requiring traversal:  " << std::setw(15) << graphCombinations2 << endl;
@@ -594,6 +608,8 @@ struct RamseyGraphs {
         cerr << "  Number of colorings checked:             " << std::setw(15) << coloringsChecked << endl;
         cerr << "  Number of edge mask checks:              " << std::setw(15) << edgeMaskChecks   << endl;
         cerr << "  Non-unique Ramsey graphs:                " << std::setw(15) << nonUniqueRamseyGraphs.size() << endl;
+        float nonUniqueRamseyGraphsByteSize = float(nonUniqueRamseyGraphs.size() * AdjacencyMatrix<n>{}.byteSize()) / (1024*1024);
+        cerr << "  Non-unique Ramsey graphs byte size:      " << std::setw(15 + 4) << std::fixed << nonUniqueRamseyGraphsByteSize << " MiB" << endl;
 #if R5_VERBOSE >= 2
         cerr << "  Non-unique Ramsey graphs:                " << std::setw(15) << nonUniqueRamseyGraphs << endl;
 #endif
@@ -609,6 +625,8 @@ struct RamseyGraphs {
 #if R5_VERBOSE >= 1
         cerr << "  Uniquify Ramsey graphs:                  " << std::setw(15 + 4) << std::fixed << t67 << " seconds" << endl;
         cerr << "  Ramsey graphs:                           " << std::setw(15) << ramseyGraphs.size() << endl;
+        float ramseyGraphsByteSize = float(ramseyGraphs.size() * AdjacencyMatrix<n>{}.byteSize()) / (1024*1024);
+        cerr << "  Ramsey graphs byte size:                 " << std::setw(15 + 4) << std::fixed << ramseyGraphsByteSize << " MiB" << endl;
 #if R5_VERBOSE >= 2
         Size minEdges = std::numeric_limits<Size>::max();
         Size maxEdges = -1;

@@ -443,6 +443,10 @@ public:
         return Base::edgeCount(Nodes, _v);
     }
 
+    constexpr std::size_t byteSize() const {
+        return sizeof(*this);
+    }
+
     std::string print(bool multiline = false, std::string indent = "") const {
         return Base::print(multiline, indent, Nodes, _v);
     }
@@ -600,6 +604,10 @@ public:
 
     Size edgeCount() const {
         return Base::edgeCount(_nodes, _v);
+    }
+
+    constexpr std::size_t byteSize() const {
+        return sizeof(*this) + sizeof(u64) * elements();
     }
 
     std::string print(bool multiline = false, std::string indent = "") const {
@@ -762,6 +770,11 @@ template<Size Nodes, bool Triangular>
 std::ostream& operator<< (std::ostream& o, const AdjacencyMatrix<Nodes, Triangular>& m) {
     o << m.print();
     return o;
+}
+
+template<Size Nodes, bool Triangular>
+constexpr std::size_t byteSize(const AdjacencyMatrix<Nodes, Triangular>& m) {
+    return m.byteSize();
 }
 
 } // namespace r5
