@@ -184,12 +184,12 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             }
         }
 
-        std::array<Size, triangleHistogramSize> gTriangleHistogram{}; // FIXME nodes is not right here. It's probably nChooseK(nodes-1, 2)
+        std::array<Size, triangleHistogramSize> gTriangleHistogram{};
         for (Size t : gTriangles) {
             R5_ASSERT(t < triangleHistogramSize);
             gTriangleHistogram[t] += 1;
         }
-        std::array<Size, triangleHistogramSize> gEmptyTriangleHistogram{};  // FIXME nodes is not right here. It's probably nChooseK(nodes-1, 2)
+        std::array<Size, triangleHistogramSize> gEmptyTriangleHistogram{};
         for (Size t : gEmptyTriangles) {
             R5_ASSERT(t < triangleHistogramSize);
             gEmptyTriangleHistogram[t] += 1;
