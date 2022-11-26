@@ -67,7 +67,7 @@ std::vector<AdjacencyMatrix<nodes>> subGraphEdgeMasks() {
 // flips all edges
 template <Size edges, Size nodes, Size subGraphSize>
 std::vector<AdjacencyMatrix<nodes>> invertSubgraphEdgeMasks(const std::vector<AdjacencyMatrix<nodes>>& edgeMasks) {
-    R5_ASSERT(edgeMasks.size() == nChooseK(nodes, subGraphSize));
+    R5_DEBUG_ASSERT(edgeMasks.size() == nChooseK(nodes, subGraphSize));
     std::vector<AdjacencyMatrix<nodes>> ret(nChooseK(nodes, subGraphSize));
     for (std::size_t i = 0; i < edgeMasks.size(); i += 1) {
         ret[i] = ~edgeMasks[i];
@@ -185,12 +185,12 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         std::array<Size, triangleHistogramSize> gTriangleHistogram{};
         for (Size t : gTriangles) {
-            R5_ASSERT(t < triangleHistogramSize);
+            R5_DEBUG_ASSERT(t < triangleHistogramSize);
             gTriangleHistogram[t] += 1;
         }
         std::array<Size, triangleHistogramSize> gEmptyTriangleHistogram{};
         for (Size t : gEmptyTriangles) {
-            R5_ASSERT(t < triangleHistogramSize);
+            R5_DEBUG_ASSERT(t < triangleHistogramSize);
             gEmptyTriangleHistogram[t] += 1;
         }
 
