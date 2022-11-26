@@ -5,6 +5,7 @@
 #include <array>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <set>
 #include <sstream>
 #include <stdint.h>
@@ -255,6 +256,21 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
         o << v.back();
     }
     o << ']';
+    return o;
+}
+
+template <typename K, typename V>
+std::ostream& operator<<(std::ostream& o, const std::map<K, V>& m) {
+    o << '{';
+
+    for (auto i = m.begin(); i != m.end(); ++i) {
+        o << i->first << " : " << i->second;
+        auto j = i;
+        if (++j != m.end()) {
+            o << ", ";
+        }
+    }
+    o << '}';
     return o;
 }
 

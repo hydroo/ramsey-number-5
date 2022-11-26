@@ -5,7 +5,6 @@
 #include <chrono>
 #include <functional>
 #include <numeric>
-#include <map>
 
 #include "adjacencymatrix.hpp"
 
