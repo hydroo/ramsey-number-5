@@ -300,3 +300,27 @@ This avoids copying/constructing/destroying this data structure and thus improve
     R(4,4) =? 12  194.1
     R(4,4) =? 13  410.9
     R(4,4) == 18  473.9
+
+# Possible next steps - November 2022
+
+- Don't store the whole key in the map. Rather hash gProperties. This can save up to 15% of total runtime.
+- Code the gNodesByDegree thingy as a more abstract class for reuse with triangles, and with fewer mallocs
+- Use Triangle information to inform permutation assignment
+- Generalize the concept to all K_2, K_3, K_... so that R(4,5) can profit from K_4 occurences
+  - Probably would use subGraphEdgeMasks() and some smarts to find the subgraphs, instead of the hardcoded degree+triangle+empty triangle stuff we do now
+- We are running into RAM problems with RamseyGraphs > 1M and non-unique Ramsey graphs > 100M
+  - Use hash map rather than storing the full properties per bucket
+  - Start unifying at the same time as graphs are generated so we don't have to store all non-unique Ramsey graphs in a vector
+- Add more graph properties for prebucketing potentially isomorphic graphs
+    - Maybe add determinant calculation and see how that looks - https://en.wikipedia.org/wiki/Determinant?
+    - others?
+- Read, understand and implement the algorithm from geng - Applications of a technique for labelled enumeration (http://cs.anu.edu.au/~bdm/papers/LabelledEnumeration.pdf)
+- Make the magic value size max, instead of -1, so I can try unsigned ints for size
+  - (Make element size flexible)
+  - ?Throw out runtime-sized matrix code?
+  - ?Throw out non-triangular matrix code?
+- Add read/write/checkpointing facility in order to let this thing run day and night, and be able to continue working without starting from scratch
+- Parallelize on CPU
+- Port to CUDA
+- Eventually it will be necessary to combine graphs to form candidates for larger Ramsey graphs
+- Maybe subGraphEdgeMasks can be used to construct counter examples. E.g. is it possible to generate a counter example for one of the unknowns in the Survey (page 4)
