@@ -10,7 +10,7 @@ using r5::AdjacencyMatrixIndexer;
 using r5::Size;
 
 TEST(AdjacencyMatrixIndexer, index_constexpr_triangular) {
-    using I = AdjacencyMatrixIndexer<5>;
+    using I = AdjacencyMatrixIndexer<4>;
 
     R5_STATIC_ASSERT(I::indexChecked(0, 0) == -1);
     R5_STATIC_ASSERT(I::indexChecked(0, 1) ==  0);
