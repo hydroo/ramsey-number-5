@@ -248,7 +248,7 @@ TEST(AdjacencyMatrix, setAllEdges) {
     AdjacencyMatrix<-1, false> urn(n); urn.unsetAllEdges();
     AdjacencyMatrix<-1, false> srn(n); srn.setAllEdges();
 
-    auto testAllEdges = [n](auto m, bool test) {
+    auto testAllEdges = [](auto m, bool test) {
         for (Size c = 0; c < n; c += 1) {
             for (Size r = 0; r < n; r += 1) {
                 if (c == r) { continue; }
@@ -564,7 +564,7 @@ TEST(AdjacencyMatrix, copyconstruct_and_assign_from_smaller_matrices) {
     AdjacencyMatrix<n, false>           ncn_from_ncn(ncn);
     AdjacencyMatrix<n, false>           ncn_from_rn (rn);
 
-    auto check = [n](const auto& m) {
+    auto check = [](const auto& m) {
         for (Size c = 1; c < n; c += 1) {
             for (Size r = 0; r < c; r += 1) {
                 if (c == 1 && r == 0) {
@@ -990,7 +990,7 @@ TEST(AdjacencyMatrix, bitwiseComplement) {
     AdjacencyMatrix<-1>        rt(n); rt.unsetAllEdges();  rt.setEdge(4, 14);
     AdjacencyMatrix<-1, false> rn(n); rn.unsetAllEdges();  rn.setEdge(4, 14);
 
-    auto testAllEdges = [n](auto m) {
+    auto testAllEdges = [](auto m) {
         for (Size c = 0; c < n; c += 1) {
             for (Size r = 0; r < n; r += 1) {
                 if (c == r) { continue; }
