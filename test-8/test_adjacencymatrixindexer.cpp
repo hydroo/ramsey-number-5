@@ -93,16 +93,16 @@ TEST(AdjacencyMatrixIndexer, index_nonconstexpr_nontriangular) {
     ASSERT_EQ(I::indexChecked(3, 3, 4), 15);
 }
 
-TEST(AdjacencyMatrixIndexer, reverse_constexpr_triangular) {
-    using I = AdjacencyMatrixIndexer<4>;
-
-    R5_STATIC_ASSERT((I::reverseChecked(0) == make_pair<Size, Size>(1, 0)));
-    R5_STATIC_ASSERT((I::reverseChecked(1) == make_pair<Size, Size>(2, 0)));
-    R5_STATIC_ASSERT((I::reverseChecked(2) == make_pair<Size, Size>(2, 1)));
-    R5_STATIC_ASSERT((I::reverseChecked(3) == make_pair<Size, Size>(3, 0)));
-    R5_STATIC_ASSERT((I::reverseChecked(4) == make_pair<Size, Size>(3, 1)));
-    R5_STATIC_ASSERT((I::reverseChecked(5) == make_pair<Size, Size>(3, 2)));
-}
+//TEST(AdjacencyMatrixIndexer, reverse_constexpr_triangular) {
+//    using I = AdjacencyMatrixIndexer<4>;
+//
+//    R5_STATIC_ASSERT((I::reverseChecked(0) == make_pair<Size, Size>(1, 0)));
+//    R5_STATIC_ASSERT((I::reverseChecked(1) == make_pair<Size, Size>(2, 0)));
+//    R5_STATIC_ASSERT((I::reverseChecked(2) == make_pair<Size, Size>(2, 1)));
+//    R5_STATIC_ASSERT((I::reverseChecked(3) == make_pair<Size, Size>(3, 0)));
+//    R5_STATIC_ASSERT((I::reverseChecked(4) == make_pair<Size, Size>(3, 1)));
+//    R5_STATIC_ASSERT((I::reverseChecked(5) == make_pair<Size, Size>(3, 2)));
+//}
 
 TEST(AdjacencyMatrixIndexer, reverse_constexpr_nontriangular) {
     using I = AdjacencyMatrixIndexer<4, false>;

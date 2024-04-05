@@ -84,16 +84,20 @@ private:
         return index_(column, row, nodes);
     }
 
+    // sqrt cannot be used at compile time --> not constexpr for Triangular matrices
+    template<bool Triangular_ = Triangular, std::enable_if_t<Triangular_ == true, bool> = true>
+    static std::pair<Size, Size> reverse_(Size i, Size nodes) {
+        (void) nodes;
+        Size column = Size(floor(0.5 + sqrt(0.25 + double(2*i))));
+        Size row    = i - column*(column-1)/2;
+        return std::make_pair(column, row);
+    }
+
+    template<bool Triangular_ = Triangular, std::enable_if_t<Triangular_ == false, bool> = true>
     static constexpr std::pair<Size, Size> reverse_(Size i, Size nodes) {
-        if (Triangular == true) {
-            Size column = Size(floor(0.5 + sqrt(0.25 + double(2*i))));
-            Size row    = i - column*(column-1)/2;
-            return std::make_pair(column, row);
-        } else {
-            Size row    = i % nodes;
-            Size column = (i - row) / nodes;
-            return std::make_pair(column, row);
-        }
+        Size row    = i % nodes;
+        Size column = (i - row) / nodes;
+        return std::make_pair(column, row);
     }
 
     static constexpr std::pair<Size, Size> reverseChecked_(Size i, Size nodes) {
