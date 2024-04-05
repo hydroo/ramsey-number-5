@@ -1125,29 +1125,30 @@ TEST(AdjacencyMatrix, compareEqual) {
     AdjacencyMatrix<-1, false>          wrn1(1);
     AdjacencyMatrix<-1, false>          wrn2(2);
 
+    bool b; (void) b;
     // auto wct_and_wct  = wct1 == wct2;  // Compilation error
     // auto wct_and_wnct = wct1 == wnct2; // Compilation error
-    ASSERT_THROW2(wct1 == wrt2);
+    ASSERT_THROW2(b = (wct1 == wrt2));
 
     // auto wcn_and_wcn  = wcn1 == wcn2;  // Compilation error
     // auto wcn_and_wncn = wcn1 == wncn2; // Compilation error
-    ASSERT_THROW2(wcn1 == wrn2);
+    ASSERT_THROW2(b = (wcn1 == wrn2));
 
     // auto wnct_and_wct  = wnct1 == wct2;  // Compilation error
     // auto wnct_and_wnct = wnct1 == wnct2; // Compilation error
-    ASSERT_THROW2(wnct1 == wrt2);
+    ASSERT_THROW2(b = (wnct1 == wrt2));
 
     // auto wncn_and_wcn  = wncn1 == wcn2;  // Compilation error
     // auto wncn_and_wncn = wncn1 == wncn2; // Compilation error
-    ASSERT_THROW2(wncn1 == wrn2);
+    ASSERT_THROW2(b = (wncn1 == wrn2));
 
-    ASSERT_THROW2(wrt1 == wct2);
-    ASSERT_THROW2(wrt1 == wnct2);
-    ASSERT_THROW2(wrt1 == wrt2);
+    ASSERT_THROW2(b = (wrt1 == wct2));
+    ASSERT_THROW2(b = (wrt1 == wnct2));
+    ASSERT_THROW2(b = (wrt1 == wrt2));
 
-    ASSERT_THROW2(wrn1 == wcn2);
-    ASSERT_THROW2(wrn1 == wncn2);
-    ASSERT_THROW2(wrn1 == wrn2);
+    ASSERT_THROW2(b = (wrn1 == wcn2));
+    ASSERT_THROW2(b = (wrn1 == wncn2));
+    ASSERT_THROW2(b = (wrn1 == wrn2));
 }
 
 TEST(AdjacencyMatrix, compareLessThan) {
