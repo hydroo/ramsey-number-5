@@ -299,7 +299,7 @@ This avoids copying/constructing/destroying this data structure and thus improve
     R(4,4) =? 11   30.5
     R(4,4) =? 12  194.1
     R(4,4) =? 13  410.9
-    R(4,4) == 18  473.9           328.8 (m2pro)
+    R(4,4) == 18  473.9           296.8 (M2 Pro, 5th Apr 2024)
 
 # Possible next steps - November 2022
 
