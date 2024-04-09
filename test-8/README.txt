@@ -294,12 +294,22 @@ This avoids copying/constructing/destroying this data structure and thus improve
 
 # Add Triangle and Empty Triangle Count Histograms as Properties for Pre-Bucketing Potentially Isomorphic Graphs - 13th Nov 2022
 
-    R(4,4) =?  9    0.4
-    R(4,4) =? 10    3.7
-    R(4,4) =? 11   30.5
-    R(4,4) =? 12  194.1
-    R(4,4) =? 13  410.9
-    R(4,4) == 18  473.9           296.8 (M2 Pro, 5th Apr 2024)
+                  i7-9750H   M2 Pro (9th Apr 2024)
+    R(4,4) =?  9    ~0.4          ~0.2
+    R(4,4) =? 10     3.7           2.5
+    R(4,4) =? 11    30.5          24.2
+    R(4,4) =? 12   194.1         135.5
+    R(4,4) =? 13   410.9         264.2
+    R(4,4) == 18   473.9         300.2
+
+    R(3,6) =? 11                   1.6
+    R(3,6) =? 12                  16.2
+    R(3,6) =? 13                 118.1
+    R(3,6) =? 14                 280.9
+    R(3,6) == 18                 329.7
+
+    R(5,5) ==  9                   4.0
+    R(5,5) == 10                 245.8
 
 # Possible next steps - November 2022
 

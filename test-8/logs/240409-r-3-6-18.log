@@ -1,0 +1,534 @@
+Nodes                   :     18   # n
+Nodes Complete Subgraphs:      3   # r
+Nodes Empty Subgraphs   :      6   # s
+Edges                   :    153   # n*(n-1)/2
+
+Ramsey(3,6)-graphs with 2 vertices
+  Create subgraph edge masks:                            0.000 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               []
+  Number of empty    edge masks by last 0:               []
+
+  Smaller Ramsey graphs:                                 1
+  New edges to fill:                                     1
+  Possible combinations:                                 2 # 1 * 2^1
+
+  Check all colorings:                                   0.000 seconds
+  Number of recursion steps:                             2
+  Number of colorings checked:                           2
+  Number of edge mask checks:                            0
+  Non-unique Ramsey graphs:                              2
+  Non-unique Ramsey graphs byte size:                    0.000 MiB
+
+  Average fixed nodes:                                   2.000
+  Unique properties:                                     2
+  Unique graphs keys byte size                           0.000 MiB
+  Unique graphs values byte size                         0.000 MiB
+  Max graphs per property:                               1
+  Graph combinations checked:                            0
+  Graph combinations requiring traversal:                0
+  Recursion steps:                                       0
+  Permutation checks:                                    0
+
+  Uniquify Ramsey graphs:                                0.000 seconds
+  Ramsey graphs:                                         2
+  Ramsey graphs byte size:                               0.000 MiB
+
+Ramsey(3,6)-graphs with 3 vertices
+  Create subgraph edge masks:                            0.000 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1]
+  Number of empty    edge masks by last 0:               []
+
+  Smaller Ramsey graphs:                                 2
+  New edges to fill:                                     2
+  Possible combinations:                                 8 # 2 * 2^2
+
+  Check all colorings:                                   0.000 seconds
+  Number of recursion steps:                            12
+  Number of colorings checked:                          11
+  Number of edge mask checks:                            4
+  Non-unique Ramsey graphs:                              7
+  Non-unique Ramsey graphs byte size:                    0.000 MiB
+
+  Average fixed nodes:                                   1.286
+  Unique properties:                                     3
+  Unique graphs keys byte size                           0.000 MiB
+  Unique graphs values byte size                         0.000 MiB
+  Max graphs per property:                               1
+  Graph combinations checked:                            4
+  Graph combinations requiring traversal:                4
+  Recursion steps:                                       8
+  Permutation checks:                                   12
+
+  Uniquify Ramsey graphs:                                0.000 seconds
+  Ramsey graphs:                                         3
+  Ramsey graphs byte size:                               0.000 MiB
+
+Ramsey(3,6)-graphs with 4 vertices
+  Create subgraph edge masks:                            0.000 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2]
+  Number of empty    edge masks by last 0:               []
+
+  Smaller Ramsey graphs:                                 3
+  New edges to fill:                                     3
+  Possible combinations:                                24 # 3 * 2^3
+
+  Check all colorings:                                   0.000 seconds
+  Number of recursion steps:                            38
+  Number of colorings checked:                          35
+  Number of edge mask checks:                           25
+  Non-unique Ramsey graphs:                             19
+  Non-unique Ramsey graphs byte size:                    0.000 MiB
+
+  Average fixed nodes:                                   1.368
+  Unique properties:                                     7
+  Unique graphs keys byte size                           0.001 MiB
+  Unique graphs values byte size                         0.001 MiB
+  Max graphs per property:                               1
+  Graph combinations checked:                           12
+  Graph combinations requiring traversal:               12
+  Recursion steps:                                      31
+  Permutation checks:                                   43
+
+  Uniquify Ramsey graphs:                                0.000 seconds
+  Ramsey graphs:                                         7
+  Ramsey graphs byte size:                               0.000 MiB
+
+Ramsey(3,6)-graphs with 5 vertices
+  Create subgraph edge masks:                            0.000 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3]
+  Number of empty    edge masks by last 0:               []
+
+  Smaller Ramsey graphs:                                 7
+  New edges to fill:                                     4
+  Possible combinations:                               112 # 7 * 2^4
+
+  Check all colorings:                                   0.000 seconds
+  Number of recursion steps:                           166
+  Number of colorings checked:                         147
+  Number of edge mask checks:                          168
+  Non-unique Ramsey graphs:                             71
+  Non-unique Ramsey graphs byte size:                    0.001 MiB
+
+  Average fixed nodes:                                   1.620
+  Unique properties:                                    14
+  Unique graphs keys byte size                           0.002 MiB
+  Unique graphs values byte size                         0.002 MiB
+  Max graphs per property:                               1
+  Graph combinations checked:                           57
+  Graph combinations requiring traversal:               57
+  Recursion steps:                                     220
+  Permutation checks:                                  277
+
+  Uniquify Ramsey graphs:                                0.000 seconds
+  Ramsey graphs:                                        14
+  Ramsey graphs byte size:                               0.000 MiB
+
+Ramsey(3,6)-graphs with 6 vertices
+  Create subgraph edge masks:                            0.000 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4]
+  Number of empty    edge masks by last 0:               [14 : 1]
+
+  Smaller Ramsey graphs:                                14
+  New edges to fill:                                     5
+  Possible combinations:                               448 # 14 * 2^5
+
+  Check all colorings:                                   0.000 seconds
+  Number of recursion steps:                           576
+  Number of colorings checked:                         635
+  Number of edge mask checks:                          913
+  Non-unique Ramsey graphs:                            234
+  Non-unique Ramsey graphs byte size:                    0.002 MiB
+
+  Average fixed nodes:                                   1.671
+  Unique properties:                                    37
+  Unique graphs keys byte size                           0.008 MiB
+  Unique graphs values byte size                         0.005 MiB
+  Max graphs per property:                               1
+  Graph combinations checked:                          197
+  Graph combinations requiring traversal:              197
+  Recursion steps:                                   1,025
+  Permutation checks:                                1,220
+
+  Uniquify Ramsey graphs:                                0.000 seconds
+  Ramsey graphs:                                        37
+  Ramsey graphs byte size:                               0.000 MiB
+
+Ramsey(3,6)-graphs with 7 vertices
+  Create subgraph edge masks:                            0.000 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4, 16 : 1, 17 : 2, 18 : 3, 19 : 4, 20 : 5]
+  Number of empty    edge masks by last 0:               [14 : 1, 19 : 1, 20 : 5]
+
+  Smaller Ramsey graphs:                                37
+  New edges to fill:                                     6
+  Possible combinations:                             2,368 # 37 * 2^6
+
+  Check all colorings:                                   0.000 seconds
+  Number of recursion steps:                         2,458
+  Number of colorings checked:                       2,915
+  Number of edge mask checks:                        7,029
+  Non-unique Ramsey graphs:                            909
+  Non-unique Ramsey graphs byte size:                    0.007 MiB
+
+  Average fixed nodes:                                   1.461
+  Unique properties:                                   100
+  Unique graphs keys byte size                           0.030 MiB
+  Unique graphs values byte size                         0.017 MiB
+  Max graphs per property:                               1
+  Graph combinations checked:                          809
+  Graph combinations requiring traversal:              809
+  Recursion steps:                                   6,724
+  Permutation checks:                                7,295
+
+  Uniquify Ramsey graphs:                                0.001 seconds
+  Ramsey graphs:                                       100
+  Ramsey graphs byte size:                               0.001 MiB
+
+Ramsey(3,6)-graphs with 8 vertices
+  Create subgraph edge masks:                            0.000 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4, 16 : 1, 17 : 2, 18 : 3, 19 : 4, 20 : 5, 22 : 1, 23 : 2, 24 : 3, 25 : 4, 26 : 5, 27 : 6]
+  Number of empty    edge masks by last 0:               [14 : 1, 19 : 1, 20 : 5, 25 : 1, 26 : 5, 27 : 15]
+
+  Smaller Ramsey graphs:                               100
+  New edges to fill:                                     7
+  Possible combinations:                            12,800 # 100 * 2^7
+
+  Check all colorings:                                   0.000 seconds
+  Number of recursion steps:                        10,406
+  Number of colorings checked:                      12,763
+  Number of edge mask checks:                       58,791
+  Non-unique Ramsey graphs:                          3,574
+  Non-unique Ramsey graphs byte size:                    0.027 MiB
+
+  Average fixed nodes:                                   1.340
+  Unique properties:                                   338
+  Unique graphs keys byte size                           0.134 MiB
+  Unique graphs values byte size                         0.064 MiB
+  Max graphs per property:                               3
+  Graph combinations checked:                        3,370
+  Graph combinations requiring traversal:            3,370
+  Recursion steps:                                  50,068
+  Permutation checks:                               48,531
+
+  Uniquify Ramsey graphs:                                0.006 seconds
+  Ramsey graphs:                                       356
+  Ramsey graphs byte size:                               0.003 MiB
+
+Ramsey(3,6)-graphs with 9 vertices
+  Create subgraph edge masks:                            0.000 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4, 16 : 1, 17 : 2, 18 : 3, 19 : 4, 20 : 5, 22 : 1, 23 : 2, 24 : 3, 25 : 4, 26 : 5, 27 : 6, 29 : 1, 30 : 2, 31 : 3, 32 : 4, 33 : 5, 34 : 6, 35 : 7]
+  Number of empty    edge masks by last 0:               [14 : 1, 19 : 1, 20 : 5, 25 : 1, 26 : 5, 27 : 15, 32 : 1, 33 : 5, 34 : 15, 35 : 35]
+
+  Smaller Ramsey graphs:                               356
+  New edges to fill:                                     8
+  Possible combinations:                            91,136 # 356 * 2^8
+
+  Check all colorings:                                   0.001 seconds
+  Number of recursion steps:                        56,728
+  Number of colorings checked:                      69,541
+  Number of edge mask checks:                      616,996
+  Non-unique Ramsey graphs:                         17,129
+  Non-unique Ramsey graphs byte size:                    0.131 MiB
+
+  Average fixed nodes:                                   1.200
+  Unique properties:                                 1,231
+  Unique graphs keys byte size                           0.629 MiB
+  Unique graphs values byte size                         0.263 MiB
+  Max graphs per property:                               4
+  Graph combinations checked:                       18,662
+  Graph combinations requiring traversal:           18,662
+  Recursion steps:                                 486,136
+  Permutation checks:                              433,285
+
+  Uniquify Ramsey graphs:                                0.029 seconds
+  Ramsey graphs:                                     1,407
+  Ramsey graphs byte size:                               0.011 MiB
+
+Ramsey(3,6)-graphs with 10 vertices
+  Create subgraph edge masks:                            0.000 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4, 16 : 1, 17 : 2, 18 : 3, 19 : 4, 20 : 5, 22 : 1, 23 : 2, 24 : 3, 25 : 4, 26 : 5, 27 : 6, 29 : 1, 30 : 2, 31 : 3, 32 : 4, 33 : 5, 34 : 6, 35 : 7, 37 : 1, 38 : 2, 39 : 3, 40 : 4, 41 : 5, 42 : 6, 43 : 7, 44 : 8]
+  Number of empty    edge masks by last 0:               [14 : 1, 19 : 1, 20 : 5, 25 : 1, 26 : 5, 27 : 15, 32 : 1, 33 : 5, 34 : 15, 35 : 35, 40 : 1, 41 : 5, 42 : 15, 43 : 35, 44 : 70]
+
+  Smaller Ramsey graphs:                             1,407
+  New edges to fill:                                     9
+  Possible combinations:                           720,384 # 1,407 * 2^9
+
+  Check all colorings:                                   0.005 seconds
+  Number of recursion steps:                       335,460
+  Number of colorings checked:                     401,675
+  Number of edge mask checks:                    6,361,531
+  Non-unique Ramsey graphs:                         83,197
+  Non-unique Ramsey graphs byte size:                    0.635 MiB
+
+  Average fixed nodes:                                   1.103
+  Unique properties:                                 4,716
+  Unique graphs keys byte size                           3.022 MiB
+  Unique graphs values byte size                         1.115 MiB
+  Max graphs per property:                              17
+  Graph combinations checked:                      126,220
+  Graph combinations requiring traversal:          126,167
+  Recursion steps:                               5,706,247
+  Permutation checks:                            4,770,686
+
+  Uniquify Ramsey graphs:                                0.160 seconds
+  Ramsey graphs:                                     6,657
+  Ramsey graphs byte size:                               0.051 MiB
+
+Ramsey(3,6)-graphs with 11 vertices
+  Create subgraph edge masks:                            0.000 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4, 16 : 1, 17 : 2, 18 : 3, 19 : 4, 20 : 5, 22 : 1, 23 : 2, 24 : 3, 25 : 4, 26 : 5, 27 : 6, 29 : 1, 30 : 2, 31 : 3, 32 : 4, 33 : 5, 34 : 6, 35 : 7, 37 : 1, 38 : 2, 39 : 3, 40 : 4, 41 : 5, 42 : 6, 43 : 7, 44 : 8, 46 : 1, 47 : 2, 48 : 3, 49 : 4, 50 : 5, 51 : 6, 52 : 7, 53 : 8, 54 : 9]
+  Number of empty    edge masks by last 0:               [14 : 1, 19 : 1, 20 : 5, 25 : 1, 26 : 5, 27 : 15, 32 : 1, 33 : 5, 34 : 15, 35 : 35, 40 : 1, 41 : 5, 42 : 15, 43 : 35, 44 : 70, 49 : 1, 50 : 5, 51 : 15, 52 : 35, 53 : 70, 54 : 126]
+
+  Smaller Ramsey graphs:                             6,657
+  New edges to fill:                                    10
+  Possible combinations:                         6,816,768 # 6,657 * 2^10
+
+  Check all colorings:                                   0.036 seconds
+  Number of recursion steps:                     2,285,246
+  Number of colorings checked:                   2,606,222
+  Number of edge mask checks:                   66,425,051
+  Non-unique Ramsey graphs:                        401,084
+  Non-unique Ramsey graphs byte size:                    3.060 MiB
+
+  Average fixed nodes:                                   0.986
+  Unique properties:                                15,742
+  Unique graphs keys byte size                          12.370 MiB
+  Unique graphs values byte size                         4.083 MiB
+  Max graphs per property:                              55
+  Graph combinations checked:                    1,160,292
+  Graph combinations requiring traversal:        1,159,783
+  Recursion steps:                              73,986,312
+  Permutation checks:                           60,295,016
+
+  Uniquify Ramsey graphs:                                1.423 seconds
+  Ramsey graphs:                                    30,395
+  Ramsey graphs byte size:                               0.232 MiB
+
+Ramsey(3,6)-graphs with 12 vertices
+  Create subgraph edge masks:                            0.000 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4, 16 : 1, 17 : 2, 18 : 3, 19 : 4, 20 : 5, 22 : 1, 23 : 2, 24 : 3, 25 : 4, 26 : 5, 27 : 6, 29 : 1, 30 : 2, 31 : 3, 32 : 4, 33 : 5, 34 : 6, 35 : 7, 37 : 1, 38 : 2, 39 : 3, 40 : 4, 41 : 5, 42 : 6, 43 : 7, 44 : 8, 46 : 1, 47 : 2, 48 : 3, 49 : 4, 50 : 5, 51 : 6, 52 : 7, 53 : 8, 54 : 9, 56 : 1, 57 : 2, 58 : 3, 59 : 4, 60 : 5, 61 : 6, 62 : 7, 63 : 8, 64 : 9, 65 : 10]
+  Number of empty    edge masks by last 0:               [14 : 1, 19 : 1, 20 : 5, 25 : 1, 26 : 5, 27 : 15, 32 : 1, 33 : 5, 34 : 15, 35 : 35, 40 : 1, 41 : 5, 42 : 15, 43 : 35, 44 : 70, 49 : 1, 50 : 5, 51 : 15, 52 : 35, 53 : 70, 54 : 126, 59 : 1, 60 : 5, 61 : 15, 62 : 35, 63 : 70, 64 : 126, 65 : 210]
+
+  Smaller Ramsey graphs:                            30,395
+  New edges to fill:                                    11
+  Possible combinations:                        62,248,960 # 30,395 * 2^11
+
+  Check all colorings:                                   0.375 seconds
+  Number of recursion steps:                    14,257,528
+  Number of colorings checked:                  15,448,859
+  Number of edge mask checks:                  576,764,678
+  Non-unique Ramsey graphs:                      1,556,424
+  Non-unique Ramsey graphs byte size:                   23.749 MiB
+
+  Average fixed nodes:                                   0.849
+  Unique properties:                                40,955
+  Unique graphs keys byte size                          38.745 MiB
+  Unique graphs values byte size                        11.874 MiB
+  Max graphs per property:                             188
+  Graph combinations checked:                   11,337,314
+  Graph combinations requiring traversal:       11,311,859
+  Recursion steps:                             959,170,157
+  Permutation checks:                          764,067,131
+
+  Uniquify Ramsey graphs:                               14.475 seconds
+  Ramsey graphs:                                   116,792
+  Ramsey graphs byte size:                               1.782 MiB
+
+Ramsey(3,6)-graphs with 13 vertices
+  Create subgraph edge masks:                            0.001 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4, 16 : 1, 17 : 2, 18 : 3, 19 : 4, 20 : 5, 22 : 1, 23 : 2, 24 : 3, 25 : 4, 26 : 5, 27 : 6, 29 : 1, 30 : 2, 31 : 3, 32 : 4, 33 : 5, 34 : 6, 35 : 7, 37 : 1, 38 : 2, 39 : 3, 40 : 4, 41 : 5, 42 : 6, 43 : 7, 44 : 8, 46 : 1, 47 : 2, 48 : 3, 49 : 4, 50 : 5, 51 : 6, 52 : 7, 53 : 8, 54 : 9, 56 : 1, 57 : 2, 58 : 3, 59 : 4, 60 : 5, 61 : 6, 62 : 7, 63 : 8, 64 : 9, 65 : 10, 67 : 1, 68 : 2, 69 : 3, 70 : 4, 71 : 5, 72 : 6, 73 : 7, 74 : 8, 75 : 9, 76 : 10, 77 : 11]
+  Number of empty    edge masks by last 0:               [14 : 1, 19 : 1, 20 : 5, 25 : 1, 26 : 5, 27 : 15, 32 : 1, 33 : 5, 34 : 15, 35 : 35, 40 : 1, 41 : 5, 42 : 15, 43 : 35, 44 : 70, 49 : 1, 50 : 5, 51 : 15, 52 : 35, 53 : 70, 54 : 126, 59 : 1, 60 : 5, 61 : 15, 62 : 35, 63 : 70, 64 : 126, 65 : 210, 70 : 1, 71 : 5, 72 : 15, 73 : 35, 74 : 70, 75 : 126, 76 : 210, 77 : 330]
+
+  Smaller Ramsey graphs:                           116,792
+  New edges to fill:                                    12
+  Possible combinations:                       478,380,032 # 116,792 * 2^12
+
+  Check all colorings:                                   2.293 seconds
+  Number of recursion steps:                    69,649,150
+  Number of colorings checked:                  72,041,092
+  Number of edge mask checks:                3,602,702,956
+  Non-unique Ramsey graphs:                      3,793,828
+  Non-unique Ramsey graphs byte size:                   57.889 MiB
+
+  Average fixed nodes:                                   0.755
+  Unique properties:                                67,708
+  Unique graphs keys byte size                          75.936 MiB
+  Unique graphs values byte size                        21.179 MiB
+  Max graphs per property:                             475
+  Graph combinations checked:                   64,050,368
+  Graph combinations requiring traversal:       63,828,556
+  Recursion steps:                           8,262,110,469
+  Permutation checks:                        6,593,529,191
+
+  Uniquify Ramsey graphs:                               98.980 seconds
+  Ramsey graphs:                                   275,086
+  Ramsey graphs byte size:                               4.197 MiB
+
+Ramsey(3,6)-graphs with 14 vertices
+  Create subgraph edge masks:                            0.001 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4, 16 : 1, 17 : 2, 18 : 3, 19 : 4, 20 : 5, 22 : 1, 23 : 2, 24 : 3, 25 : 4, 26 : 5, 27 : 6, 29 : 1, 30 : 2, 31 : 3, 32 : 4, 33 : 5, 34 : 6, 35 : 7, 37 : 1, 38 : 2, 39 : 3, 40 : 4, 41 : 5, 42 : 6, 43 : 7, 44 : 8, 46 : 1, 47 : 2, 48 : 3, 49 : 4, 50 : 5, 51 : 6, 52 : 7, 53 : 8, 54 : 9, 56 : 1, 57 : 2, 58 : 3, 59 : 4, 60 : 5, 61 : 6, 62 : 7, 63 : 8, 64 : 9, 65 : 10, 67 : 1, 68 : 2, 69 : 3, 70 : 4, 71 : 5, 72 : 6, 73 : 7, 74 : 8, 75 : 9, 76 : 10, 77 : 11, 79 : 1, 80 : 2, 81 : 3, 82 : 4, 83 : 5, 84 : 6, 85 : 7, 86 : 8, 87 : 9, 88 : 10, 89 : 11, 90 : 12]
+  Number of empty    edge masks by last 0:               [14 : 1, 19 : 1, 20 : 5, 25 : 1, 26 : 5, 27 : 15, 32 : 1, 33 : 5, 34 : 15, 35 : 35, 40 : 1, 41 : 5, 42 : 15, 43 : 35, 44 : 70, 49 : 1, 50 : 5, 51 : 15, 52 : 35, 53 : 70, 54 : 126, 59 : 1, 60 : 5, 61 : 15, 62 : 35, 63 : 70, 64 : 126, 65 : 210, 70 : 1, 71 : 5, 72 : 15, 73 : 35, 74 : 70, 75 : 126, 76 : 210, 77 : 330, 82 : 1, 83 : 5, 84 : 15, 85 : 35, 86 : 70, 87 : 126, 88 : 210, 89 : 330, 90 : 495]
+
+  Smaller Ramsey graphs:                           275,086
+  New edges to fill:                                    13
+  Possible combinations:                     2,253,504,512 # 275,086 * 2^13
+
+  Check all colorings:                                   7.791 seconds
+  Number of recursion steps:                   194,506,552
+  Number of colorings checked:                 194,963,602
+  Number of edge mask checks:               12,079,630,601
+  Non-unique Ramsey graphs:                      3,758,201
+  Non-unique Ramsey graphs byte size:                   57.346 MiB
+
+  Average fixed nodes:                                   0.499
+  Unique properties:                                53,095
+  Unique graphs keys byte size                          69.674 MiB
+  Unique graphs values byte size                        17.824 MiB
+  Max graphs per property:                             627
+  Graph combinations checked:                   96,055,487
+  Graph combinations requiring traversal:       96,034,888
+  Recursion steps:                          11,578,412,168
+  Permutation checks:                        9,647,129,549
+
+  Uniquify Ramsey graphs:                              153.896 seconds
+  Ramsey graphs:                                   263,520
+  Ramsey graphs byte size:                               4.021 MiB
+
+Ramsey(3,6)-graphs with 15 vertices
+  Create subgraph edge masks:                            0.002 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4, 16 : 1, 17 : 2, 18 : 3, 19 : 4, 20 : 5, 22 : 1, 23 : 2, 24 : 3, 25 : 4, 26 : 5, 27 : 6, 29 : 1, 30 : 2, 31 : 3, 32 : 4, 33 : 5, 34 : 6, 35 : 7, 37 : 1, 38 : 2, 39 : 3, 40 : 4, 41 : 5, 42 : 6, 43 : 7, 44 : 8, 46 : 1, 47 : 2, 48 : 3, 49 : 4, 50 : 5, 51 : 6, 52 : 7, 53 : 8, 54 : 9, 56 : 1, 57 : 2, 58 : 3, 59 : 4, 60 : 5, 61 : 6, 62 : 7, 63 : 8, 64 : 9, 65 : 10, 67 : 1, 68 : 2, 69 : 3, 70 : 4, 71 : 5, 72 : 6, 73 : 7, 74 : 8, 75 : 9, 76 : 10, 77 : 11, 79 : 1, 80 : 2, 81 : 3, 82 : 4, 83 : 5, 84 : 6, 85 : 7, 86 : 8, 87 : 9, 88 : 10, 89 : 11, 90 : 12, 92 : 1, 93 : 2, 94 : 3, 95 : 4, 96 : 5, 97 : 6, 98 : 7, 99 : 8, 100 : 9, 101 : 10, 102 : 11, 103 : 12, 104 : 13]
+  Number of empty    edge masks by last 0:               [14 : 1, 19 : 1, 20 : 5, 25 : 1, 26 : 5, 27 : 15, 32 : 1, 33 : 5, 34 : 15, 35 : 35, 40 : 1, 41 : 5, 42 : 15, 43 : 35, 44 : 70, 49 : 1, 50 : 5, 51 : 15, 52 : 35, 53 : 70, 54 : 126, 59 : 1, 60 : 5, 61 : 15, 62 : 35, 63 : 70, 64 : 126, 65 : 210, 70 : 1, 71 : 5, 72 : 15, 73 : 35, 74 : 70, 75 : 126, 76 : 210, 77 : 330, 82 : 1, 83 : 5, 84 : 15, 85 : 35, 86 : 70, 87 : 126, 88 : 210, 89 : 330, 90 : 495, 95 : 1, 96 : 5, 97 : 15, 98 : 35, 99 : 70, 100 : 126, 101 : 210, 102 : 330, 103 : 495, 104 : 715]
+
+  Smaller Ramsey graphs:                           263,520
+  New edges to fill:                                    14
+  Possible combinations:                     4,317,511,680 # 263,520 * 2^14
+
+  Check all colorings:                                   8.974 seconds
+  Number of recursion steps:                   210,701,850
+  Number of colorings checked:                 208,512,791
+  Number of edge mask checks:               15,260,799,490
+  Non-unique Ramsey graphs:                        973,199
+  Non-unique Ramsey graphs byte size:                   14.850 MiB
+
+  Average fixed nodes:                                   0.342
+  Unique properties:                                13,496
+  Unique graphs keys byte size                          20.490 MiB
+  Unique graphs values byte size                         4.839 MiB
+  Max graphs per property:                             273
+  Graph combinations checked:                   16,847,394
+  Graph combinations requiring traversal:       16,847,360
+  Recursion steps:                           2,611,014,937
+  Permutation checks:                        2,147,502,582
+
+  Uniquify Ramsey graphs:                               36.373 seconds
+  Ramsey graphs:                                    64,732
+  Ramsey graphs byte size:                               0.988 MiB
+
+Ramsey(3,6)-graphs with 16 vertices
+  Create subgraph edge masks:                            0.003 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4, 16 : 1, 17 : 2, 18 : 3, 19 : 4, 20 : 5, 22 : 1, 23 : 2, 24 : 3, 25 : 4, 26 : 5, 27 : 6, 29 : 1, 30 : 2, 31 : 3, 32 : 4, 33 : 5, 34 : 6, 35 : 7, 37 : 1, 38 : 2, 39 : 3, 40 : 4, 41 : 5, 42 : 6, 43 : 7, 44 : 8, 46 : 1, 47 : 2, 48 : 3, 49 : 4, 50 : 5, 51 : 6, 52 : 7, 53 : 8, 54 : 9, 56 : 1, 57 : 2, 58 : 3, 59 : 4, 60 : 5, 61 : 6, 62 : 7, 63 : 8, 64 : 9, 65 : 10, 67 : 1, 68 : 2, 69 : 3, 70 : 4, 71 : 5, 72 : 6, 73 : 7, 74 : 8, 75 : 9, 76 : 10, 77 : 11, 79 : 1, 80 : 2, 81 : 3, 82 : 4, 83 : 5, 84 : 6, 85 : 7, 86 : 8, 87 : 9, 88 : 10, 89 : 11, 90 : 12, 92 : 1, 93 : 2, 94 : 3, 95 : 4, 96 : 5, 97 : 6, 98 : 7, 99 : 8, 100 : 9, 101 : 10, 102 : 11, 103 : 12, 104 : 13, 106 : 1, 107 : 2, 108 : 3, 109 : 4, 110 : 5, 111 : 6, 112 : 7, 113 : 8, 114 : 9, 115 : 10, 116 : 11, 117 : 12, 118 : 13, 119 : 14]
+  Number of empty    edge masks by last 0:               [14 : 1, 19 : 1, 20 : 5, 25 : 1, 26 : 5, 27 : 15, 32 : 1, 33 : 5, 34 : 15, 35 : 35, 40 : 1, 41 : 5, 42 : 15, 43 : 35, 44 : 70, 49 : 1, 50 : 5, 51 : 15, 52 : 35, 53 : 70, 54 : 126, 59 : 1, 60 : 5, 61 : 15, 62 : 35, 63 : 70, 64 : 126, 65 : 210, 70 : 1, 71 : 5, 72 : 15, 73 : 35, 74 : 70, 75 : 126, 76 : 210, 77 : 330, 82 : 1, 83 : 5, 84 : 15, 85 : 35, 86 : 70, 87 : 126, 88 : 210, 89 : 330, 90 : 495, 95 : 1, 96 : 5, 97 : 15, 98 : 35, 99 : 70, 100 : 126, 101 : 210, 102 : 330, 103 : 495, 104 : 715, 109 : 1, 110 : 5, 111 : 15, 112 : 35, 113 : 70, 114 : 126, 115 : 210, 116 : 330, 117 : 495, 118 : 715, 119 : 1,001]
+
+  Smaller Ramsey graphs:                            64,732
+  New edges to fill:                                    15
+  Possible combinations:                     2,121,138,176 # 64,732 * 2^15
+
+  Check all colorings:                                   2.775 seconds
+  Number of recursion steps:                    57,706,632
+  Number of colorings checked:                  56,967,126
+  Number of edge mask checks:                4,861,359,258
+  Non-unique Ramsey graphs:                         37,281
+  Non-unique Ramsey graphs byte size:                    0.569 MiB
+
+  Average fixed nodes:                                   0.348
+  Unique properties:                                   716
+  Unique graphs keys byte size                           1.245 MiB
+  Unique graphs values byte size                         0.273 MiB
+  Max graphs per property:                              94
+  Graph combinations checked:                      275,573
+  Graph combinations requiring traversal:          275,573
+  Recursion steps:                             133,696,005
+  Permutation checks:                          111,655,281
+
+  Uniquify Ramsey graphs:                                1.973 seconds
+  Ramsey graphs:                                     2,576
+  Ramsey graphs byte size:                               0.039 MiB
+
+Ramsey(3,6)-graphs with 17 vertices
+  Create subgraph edge masks:                            0.004 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4, 16 : 1, 17 : 2, 18 : 3, 19 : 4, 20 : 5, 22 : 1, 23 : 2, 24 : 3, 25 : 4, 26 : 5, 27 : 6, 29 : 1, 30 : 2, 31 : 3, 32 : 4, 33 : 5, 34 : 6, 35 : 7, 37 : 1, 38 : 2, 39 : 3, 40 : 4, 41 : 5, 42 : 6, 43 : 7, 44 : 8, 46 : 1, 47 : 2, 48 : 3, 49 : 4, 50 : 5, 51 : 6, 52 : 7, 53 : 8, 54 : 9, 56 : 1, 57 : 2, 58 : 3, 59 : 4, 60 : 5, 61 : 6, 62 : 7, 63 : 8, 64 : 9, 65 : 10, 67 : 1, 68 : 2, 69 : 3, 70 : 4, 71 : 5, 72 : 6, 73 : 7, 74 : 8, 75 : 9, 76 : 10, 77 : 11, 79 : 1, 80 : 2, 81 : 3, 82 : 4, 83 : 5, 84 : 6, 85 : 7, 86 : 8, 87 : 9, 88 : 10, 89 : 11, 90 : 12, 92 : 1, 93 : 2, 94 : 3, 95 : 4, 96 : 5, 97 : 6, 98 : 7, 99 : 8, 100 : 9, 101 : 10, 102 : 11, 103 : 12, 104 : 13, 106 : 1, 107 : 2, 108 : 3, 109 : 4, 110 : 5, 111 : 6, 112 : 7, 113 : 8, 114 : 9, 115 : 10, 116 : 11, 117 : 12, 118 : 13, 119 : 14, 121 : 1, 122 : 2, 123 : 3, 124 : 4, 125 : 5, 126 : 6, 127 : 7, 128 : 8, 129 : 9, 130 : 10, 131 : 11, 132 : 12, 133 : 13, 134 : 14, 135 : 15]
+  Number of empty    edge masks by last 0:               [14 : 1, 19 : 1, 20 : 5, 25 : 1, 26 : 5, 27 : 15, 32 : 1, 33 : 5, 34 : 15, 35 : 35, 40 : 1, 41 : 5, 42 : 15, 43 : 35, 44 : 70, 49 : 1, 50 : 5, 51 : 15, 52 : 35, 53 : 70, 54 : 126, 59 : 1, 60 : 5, 61 : 15, 62 : 35, 63 : 70, 64 : 126, 65 : 210, 70 : 1, 71 : 5, 72 : 15, 73 : 35, 74 : 70, 75 : 126, 76 : 210, 77 : 330, 82 : 1, 83 : 5, 84 : 15, 85 : 35, 86 : 70, 87 : 126, 88 : 210, 89 : 330, 90 : 495, 95 : 1, 96 : 5, 97 : 15, 98 : 35, 99 : 70, 100 : 126, 101 : 210, 102 : 330, 103 : 495, 104 : 715, 109 : 1, 110 : 5, 111 : 15, 112 : 35, 113 : 70, 114 : 126, 115 : 210, 116 : 330, 117 : 495, 118 : 715, 119 : 1,001, 124 : 1, 125 : 5, 126 : 15, 127 : 35, 128 : 70, 129 : 126, 130 : 210, 131 : 330, 132 : 495, 133 : 715, 134 : 1,001, 135 : 1,365]
+
+  Smaller Ramsey graphs:                             2,576
+  New edges to fill:                                    16
+  Possible combinations:                       168,820,736 # 2,576 * 2^16
+
+  Check all colorings:                                   0.137 seconds
+  Number of recursion steps:                     2,472,620
+  Number of colorings checked:                   2,441,775
+  Number of edge mask checks:                  236,154,685
+  Non-unique Ramsey graphs:                             69
+  Non-unique Ramsey graphs byte size:                    0.002 MiB
+
+  Average fixed nodes:                                   0.203
+  Unique properties:                                     5
+  Unique graphs keys byte size                           0.010 MiB
+  Unique graphs values byte size                         0.002 MiB
+  Max graphs per property:                               2
+  Graph combinations checked:                           75
+  Graph combinations requiring traversal:               75
+  Recursion steps:                                  73,893
+  Permutation checks:                               68,125
+
+  Uniquify Ramsey graphs:                                0.002 seconds
+  Ramsey graphs:                                         7
+  Ramsey graphs byte size:                               0.000 MiB
+
+Ramsey(3,6)-graphs with 18 vertices
+  Create subgraph edge masks:                            0.006 seconds
+  Sort subgraph edge masks by last digit:                0.000 seconds
+  Number of complete edge masks by last 1:               [2 : 1, 4 : 1, 5 : 2, 7 : 1, 8 : 2, 9 : 3, 11 : 1, 12 : 2, 13 : 3, 14 : 4, 16 : 1, 17 : 2, 18 : 3, 19 : 4, 20 : 5, 22 : 1, 23 : 2, 24 : 3, 25 : 4, 26 : 5, 27 : 6, 29 : 1, 30 : 2, 31 : 3, 32 : 4, 33 : 5, 34 : 6, 35 : 7, 37 : 1, 38 : 2, 39 : 3, 40 : 4, 41 : 5, 42 : 6, 43 : 7, 44 : 8, 46 : 1, 47 : 2, 48 : 3, 49 : 4, 50 : 5, 51 : 6, 52 : 7, 53 : 8, 54 : 9, 56 : 1, 57 : 2, 58 : 3, 59 : 4, 60 : 5, 61 : 6, 62 : 7, 63 : 8, 64 : 9, 65 : 10, 67 : 1, 68 : 2, 69 : 3, 70 : 4, 71 : 5, 72 : 6, 73 : 7, 74 : 8, 75 : 9, 76 : 10, 77 : 11, 79 : 1, 80 : 2, 81 : 3, 82 : 4, 83 : 5, 84 : 6, 85 : 7, 86 : 8, 87 : 9, 88 : 10, 89 : 11, 90 : 12, 92 : 1, 93 : 2, 94 : 3, 95 : 4, 96 : 5, 97 : 6, 98 : 7, 99 : 8, 100 : 9, 101 : 10, 102 : 11, 103 : 12, 104 : 13, 106 : 1, 107 : 2, 108 : 3, 109 : 4, 110 : 5, 111 : 6, 112 : 7, 113 : 8, 114 : 9, 115 : 10, 116 : 11, 117 : 12, 118 : 13, 119 : 14, 121 : 1, 122 : 2, 123 : 3, 124 : 4, 125 : 5, 126 : 6, 127 : 7, 128 : 8, 129 : 9, 130 : 10, 131 : 11, 132 : 12, 133 : 13, 134 : 14, 135 : 15, 137 : 1, 138 : 2, 139 : 3, 140 : 4, 141 : 5, 142 : 6, 143 : 7, 144 : 8, 145 : 9, 146 : 10, 147 : 11, 148 : 12, 149 : 13, 150 : 14, 151 : 15, 152 : 16]
+  Number of empty    edge masks by last 0:               [14 : 1, 19 : 1, 20 : 5, 25 : 1, 26 : 5, 27 : 15, 32 : 1, 33 : 5, 34 : 15, 35 : 35, 40 : 1, 41 : 5, 42 : 15, 43 : 35, 44 : 70, 49 : 1, 50 : 5, 51 : 15, 52 : 35, 53 : 70, 54 : 126, 59 : 1, 60 : 5, 61 : 15, 62 : 35, 63 : 70, 64 : 126, 65 : 210, 70 : 1, 71 : 5, 72 : 15, 73 : 35, 74 : 70, 75 : 126, 76 : 210, 77 : 330, 82 : 1, 83 : 5, 84 : 15, 85 : 35, 86 : 70, 87 : 126, 88 : 210, 89 : 330, 90 : 495, 95 : 1, 96 : 5, 97 : 15, 98 : 35, 99 : 70, 100 : 126, 101 : 210, 102 : 330, 103 : 495, 104 : 715, 109 : 1, 110 : 5, 111 : 15, 112 : 35, 113 : 70, 114 : 126, 115 : 210, 116 : 330, 117 : 495, 118 : 715, 119 : 1,001, 124 : 1, 125 : 5, 126 : 15, 127 : 35, 128 : 70, 129 : 126, 130 : 210, 131 : 330, 132 : 495, 133 : 715, 134 : 1,001, 135 : 1,365, 140 : 1, 141 : 5, 142 : 15, 143 : 35, 144 : 70, 145 : 126, 146 : 210, 147 : 330, 148 : 495, 149 : 715, 150 : 1,001, 151 : 1,365, 152 : 1,820]
+
+  Smaller Ramsey graphs:                                 7
+  New edges to fill:                                    17
+  Possible combinations:                           917,504 # 7 * 2^17
+
+  Check all colorings:                                   0.000 seconds
+  Number of recursion steps:                         5,400
+  Number of colorings checked:                       5,316
+  Number of edge mask checks:                      446,544
+  Non-unique Ramsey graphs:                              0
+  Non-unique Ramsey graphs byte size:                    0.000 MiB
+
+  Average fixed nodes:                                     nan
+  Unique properties:                                     0
+  Unique graphs keys byte size                           0.000 MiB
+  Unique graphs values byte size                         0.000 MiB
+  Max graphs per property:                               0
+  Graph combinations checked:                            0
+  Graph combinations requiring traversal:                0
+  Recursion steps:                                       0
+  Permutation checks:                                    0
+
+  Uniquify Ramsey graphs:                                0.000 seconds
+  Ramsey graphs:                                         0
+  Ramsey graphs byte size:                               0.000 MiB
+
+Ramsey(3,6)-graphs with 18 vertices: 0
+Total time: 329.740 seconds
