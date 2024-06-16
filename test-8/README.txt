@@ -308,6 +308,8 @@ This avoids copying/constructing/destroying this data structure and thus improve
     R(3,6) =? 14                 280.9
     R(3,6) == 18                 329.7
 
+    R(4,5) == 10                   52.2
+
     R(5,5) ==  9                   4.0
     R(5,5) == 10                 245.8
 
