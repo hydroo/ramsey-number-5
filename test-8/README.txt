@@ -326,7 +326,7 @@ This avoids copying/constructing/destroying this data structure and thus improve
     - others?
 - Read, understand and implement the algorithm from geng - Applications of a technique for labelled enumeration (http://cs.anu.edu.au/~bdm/papers/LabelledEnumeration.pdf)
 - Make the magic value size max, instead of -1, so I can try unsigned ints for size
-  - (Make element size flexible)
+  - Make the data type for Size flexible (smaller indexes could save storage/time)
   - ?Throw out runtime-sized matrix code?
   - ?Throw out non-triangular matrix code?
 - Add read/write/checkpointing facility in order to let this thing run day and night, and be able to continue working without starting from scratch
