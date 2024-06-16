@@ -15,6 +15,18 @@
 #   include <gtest/gtest.h>
 #endif
 
+#if defined(__APPLE__) && defined(__MACH__)
+#   define R5_OS_MAC
+#elif defined(__linux__)
+#   define R5_OS_LINUX
+#elif defined(_WIN32)
+#   define R5_OS_WINDOWS
+#endif
+
+#ifdef R5_OS_MAC
+#   include<mach/mach.h>
+#endif
+
 using s8  =  int8_t;
 using u8  = uint8_t;
 using s16 =  int16_t;
@@ -273,5 +285,22 @@ std::ostream& operator<<(std::ostream& o, const std::map<K, V>& m) {
     o << '}';
     return o;
 }
+
+namespace r5 {
+std::size_t memoryUsage() {
+    std::size_t usage = 0;
+#ifdef R5_OS_MAC
+    struct task_basic_info info;
+    mach_msg_type_number_t infoCount = TASK_BASIC_INFO_COUNT;
+    kern_return_t ret =  task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)&info, &infoCount);
+    if (ret == KERN_SUCCESS) {
+        usage = info.resident_size;
+    }
+#else
+#   pragma message("not implemented")
+#endif
+    return usage;
+}
+} // namespace r5
 
 #endif // PREREQS_HPP

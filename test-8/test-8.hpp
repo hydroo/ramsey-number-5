@@ -626,6 +626,7 @@ struct RamseyGraphs {
         cerr << "  Ramsey graphs:                           " << std::setw(15) << ramseyGraphs.size() << endl;
         float ramseyGraphsByteSize = float(ramseyGraphs.size() * AdjacencyMatrix<n>{}.byteSize()) / (1024*1024);
         cerr << "  Ramsey graphs byte size:                 " << std::setw(15 + 4) << std::fixed << ramseyGraphsByteSize << " MiB" << endl;
+        cerr << "  Total memory usage:                      " << std::setw(15 + 4) << std::fixed << double(r5::memoryUsage()) / (1024*1024) << " MiB" << endl;
 #if R5_VERBOSE >= 2
         Size minEdges = std::numeric_limits<Size>::max();
         Size maxEdges = -1;
