@@ -5,6 +5,7 @@
 #include <chrono>
 #include <functional>
 #include <numeric>
+#include <utility>
 
 #include "adjacencymatrix.hpp"
 
@@ -441,15 +442,14 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 }
 
 
+// Note: Partial specialization of function templates is not allowed. Therefore use struct to wrap the function.
 template<Size r, Size s, Size n, typename Enable = void>
 struct RamseyGraphs {
-    static std::vector<AdjacencyMatrix<n>> f() {
+    static std::vector<AdjacencyMatrix<n>> f(const std::vector<AdjacencyMatrix<n-1>>& smallerRamseyGraphs) {
         R5_STATIC_ASSERT(r >= 1);
         R5_STATIC_ASSERT(s >= 1);
 
         constexpr auto e = AdjacencyMatrix<n>().edges();
-
-        auto smallerRamseyGraphs = RamseyGraphs<r, s, n-1>::f();
 
 #if R5_VERBOSE >= 1
         cerr << "Ramsey(" << r << "," << s << ")-graphs with " << n << " vertices" << endl;
@@ -655,14 +655,30 @@ struct RamseyGraphs {
 
 template<Size r, Size s>
 struct RamseyGraphs<r, s, 1, std::enable_if_t<(r > 1 && s > 1)>> {
-    static std::vector<AdjacencyMatrix<1>> f() { return {AdjacencyMatrix<1>()}; }
+    static std::vector<AdjacencyMatrix<1>> f(const std::vector<AdjacencyMatrix<0>>&) { return {AdjacencyMatrix<1>()}; }
 };
 template<Size r>
 struct RamseyGraphs<r, 1, 1> {
-    static std::vector<AdjacencyMatrix<1>> f() { return {}; }
+    static std::vector<AdjacencyMatrix<1>> f(const std::vector<AdjacencyMatrix<0>>&) { return {}; }
 };
 template<Size s>
 struct RamseyGraphs<1, s, 1, std::enable_if_t<(s > 1)>> {
-    static std::vector<AdjacencyMatrix<1>> f() { return {}; }
+    static std::vector<AdjacencyMatrix<1>> f(const std::vector<AdjacencyMatrix<0>>&) { return {}; }
 };
 
+template<Size r, Size s, Size n>
+std::vector<AdjacencyMatrix<n>> ramseyGraphs() {
+
+    auto ramseyGraphs2 = []<Size... NodesMinusOne>(std::integer_sequence<Size, NodesMinusOne...> /*nodeCountSequence*/) {
+        auto allGraphs = std::make_tuple(std::vector<AdjacencyMatrix<0>>{}, std::vector<AdjacencyMatrix<NodesMinusOne+1>>{} ...);
+
+        ([&]{
+            auto previousGraphs = std::get<NodesMinusOne>(allGraphs);
+            std::get<NodesMinusOne+1>(allGraphs) = RamseyGraphs<r, s, NodesMinusOne+1>::f(previousGraphs);
+        }(), ...);
+
+        return std::get<n>(allGraphs);
+    };
+
+    return ramseyGraphs2(std::make_integer_sequence<Size, n>{});
+}

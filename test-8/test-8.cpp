@@ -14,11 +14,11 @@ int main(int argc, char** args) {
     cerr << config::print() << endl;
 
     auto t1 = std::chrono::steady_clock::now();
-    std::vector<AdjacencyMatrix<config::n>> ramseyGraphs = RamseyGraphs<config::r, config::s, config::n>::f();
+    auto graphs = ramseyGraphs<config::r, config::s, config::n>();
     auto t2 = std::chrono::steady_clock::now();
     auto t12 = std::chrono::duration<double>(t2 - t1).count();
 
-    cerr << "Ramsey(" << config::r << "," << config::s << ")-graphs with " << config::n << " vertices: " << ramseyGraphs.size() << endl;
+    cerr << "Ramsey(" << config::r << "," << config::s << ")-graphs with " << config::n << " vertices: " << graphs.size() << endl;
     cerr << "Total time: " << std::fixed << t12 << " seconds" << endl;
 
     return 0;
