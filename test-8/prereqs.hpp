@@ -198,6 +198,19 @@ constexpr void fill_n(T* to, s64 count, const T& value) {
 // };
 
 template <typename T, std::size_t length>
+std::ostream& operator<<(std::ostream& o, const std::array<T, length>& a);
+template <typename T, typename U>
+std::ostream& operator<<(std::ostream& o, const std::pair<T, U>& p);
+template <typename K, typename V>
+std::ostream& operator<<(std::ostream& o, const std::map<K, V>& m);
+template <typename T>
+std::ostream& operator<<(std::ostream& o, const std::set<T>& s);
+template<class... Args>
+std::ostream& operator<<(std::ostream& o, const std::tuple<Args...>& t);
+template <typename T>
+std::ostream& operator<<(std::ostream& o, const std::vector<T>& v);
+
+template <typename T, std::size_t length>
 std::ostream& operator<<(std::ostream& o, const std::array<T, length>& a) {
     o << '[';
     for (s64 i = 0; i < ((s64)length) - 1; i += 1) {
@@ -207,6 +220,21 @@ std::ostream& operator<<(std::ostream& o, const std::array<T, length>& a) {
         o << a.back();
     }
     o << ']';
+    return o;
+}
+
+template <typename K, typename V>
+std::ostream& operator<<(std::ostream& o, const std::map<K, V>& m) {
+    o << '{';
+
+    for (auto i = m.begin(); i != m.end(); ++i) {
+        o << i->first << " : " << i->second;
+        auto j = i;
+        if (++j != m.end()) {
+            o << ", ";
+        }
+    }
+    o << '}';
     return o;
 }
 
@@ -268,21 +296,6 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
         o << v.back();
     }
     o << ']';
-    return o;
-}
-
-template <typename K, typename V>
-std::ostream& operator<<(std::ostream& o, const std::map<K, V>& m) {
-    o << '{';
-
-    for (auto i = m.begin(); i != m.end(); ++i) {
-        o << i->first << " : " << i->second;
-        auto j = i;
-        if (++j != m.end()) {
-            o << ", ";
-        }
-    }
-    o << '}';
     return o;
 }
 
