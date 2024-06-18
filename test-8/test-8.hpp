@@ -673,8 +673,8 @@ std::vector<AdjacencyMatrix<n>> ramseyGraphs() {
         auto allGraphs = std::make_tuple(std::vector<AdjacencyMatrix<0>>{}, std::vector<AdjacencyMatrix<NodesMinusOne+1>>{} ...);
 
         ([&]{
-            auto previousGraphs = std::get<NodesMinusOne>(allGraphs);
-            std::get<NodesMinusOne+1>(allGraphs) = RamseyGraphs<r, s, NodesMinusOne+1>::f(previousGraphs);
+            auto smallerGraphs = std::get<NodesMinusOne>(allGraphs);
+            std::get<NodesMinusOne+1>(allGraphs) = RamseyGraphs<r, s, NodesMinusOne+1>::f(smallerGraphs);
         }(), ...);
 
         return std::get<n>(allGraphs);
