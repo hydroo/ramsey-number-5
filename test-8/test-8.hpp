@@ -115,7 +115,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     s64 fixedNodesSum      = 0;
 #endif
 
-    using AdjacencyMatrixProperties = std::vector<std::tuple<std::tuple<Size/*degree*/, Size/*triangleDegree*/, Size/*emptyTriangleDegree*/>, Size>> /*gDegreeHistogram*/;
+    using AdjacencyMatrixProperties = std::array<std::tuple<std::tuple<Size/*degree*/, Size/*triangleDegree*/, Size/*emptyTriangleDegree*/>, Size>, nodes> /*gDegreeHistogram*/;
     using DegreeTuple = std::tuple<Size/*degree*/, Size/*triangleDegree*/, Size/*emptyTriangleDegree*/>;
 
     // Note: std::map might not be great long-term. unordered_map?
@@ -195,16 +195,20 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         }
 
         Size maxDegreeMultiplicity = 0;
-        std::vector<std::tuple<DegreeTuple, Size/*multiplicity*/>> gDegreeHistogram;
+        // Note: This works because gNodesByDegree's keys are already sorted.
+        //       The right side is automatically padded with [[0, 0, 0], 0] tuples, because we don't know how many elements exactly we need.
+        //       If gDegreeHistogram is used for other purposes, you'd need to reevaluate whether this is still OK.
+        std::array<std::tuple<DegreeTuple, Size>/*multiplicity*/, nodes> gDegreeHistogram{};
+        std::size_t gDegreeHistogramIndex = 0;
         for (auto const& [degreeTuple, nodesVector] : gNodesByDegree) {
-            gDegreeHistogram.emplace_back(std::make_tuple(degreeTuple, nodesVector.size()));
+            gDegreeHistogram[gDegreeHistogramIndex] = std::make_tuple(degreeTuple, nodesVector.size());
+            gDegreeHistogramIndex += 1;
             maxDegreeMultiplicity = std::max(maxDegreeMultiplicity, Size(nodesVector.size()));
         }
-        std::sort(gDegreeHistogram.begin(), gDegreeHistogram.end());
 
         std::map<Size, std::set<DegreeTuple>> gDegreeHistogramReverse{}; // degree multiplicty -> set of degrees
-        for (auto const& [degreeTuple, count] : gDegreeHistogram) {
-            gDegreeHistogramReverse[count].insert(degreeTuple);
+        for (auto const& [degreeTuple, multiplicity] : gDegreeHistogram) {
+            gDegreeHistogramReverse[multiplicity].insert(degreeTuple);
         }
 
 #if R5_VERBOSE >= 4
@@ -230,9 +234,9 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         }
 
         Size firstNotUniqueDegreeMultiplicityNodeIndex = firstNotEmptyOrFullNodeIndex;
-        for (auto const& [dt, count] : gDegreeHistogram) {
+        for (auto const& [dt, multiplicity] : gDegreeHistogram) {
             if (firstNotUniqueDegreeMultiplicityNodeIndex >= nodes) { break; }
-            if (count == 1) {
+            if (multiplicity == 1) {
                 auto n = gNodesByDegree[dt][0];
                 traversalOrder[firstNotUniqueDegreeMultiplicityNodeIndex] = n;
                 if (fixedNodes[n] == true) { continue; }
