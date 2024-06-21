@@ -121,12 +121,27 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     using AdjacencyMatrixProperties = std::tuple<std::array<Size, nodes> /*gDegreeHistogram*/, std::array<Size, triangleHistogramSize>/*gTriangleHistogram*/, std::array<Size, triangleHistogramSize> /*gEmptyTriangleHistogram*/>;
 
     // Note: std::map might not be great long-term. unordered_map?
-    std::map<AdjacencyMatrixProperties, std::vector<std::tuple<AdjacencyMatrix<nodes>/*g*/, std::array<std::vector<Size>, nodes>/*gNodesByDegree*/>>> uniqueGraphs;
+    std::map<
+        AdjacencyMatrixProperties,
+        std::vector<
+            std::tuple<
+                AdjacencyMatrix<nodes>/*g*/,
+                std::array<std::vector<Size>, nodes>/*gNodesByDegree*/,
+                std::array<std::vector<Size>, triangleHistogramSize>/*gNodesByTriangleDegree*/,
+                std::array<std::vector<Size>, triangleHistogramSize>/*gNodesByEmptyTriangleDegree*/
+            >
+        >
+    > uniqueGraphs;
 
 #if R5_VERBOSE >= 1
     auto uniqueGraphsSize = [](const auto& uniqueGraphs) {
         std::size_t keysByteSize = sizeof(AdjacencyMatrixProperties) * uniqueGraphs.size();
-        std::size_t valuesByteSize = (AdjacencyMatrix<nodes>{}.byteSize()/*g*/ + nodes*(sizeof(Size)/*nodes*/ + (sizeof(void*)/*pointer*/ + sizeof(std::size_t)/*size*/)/*vectors*/)/*gNodesByDegree*/) * uniqueGraphs.size();
+        std::size_t valuesByteSize = (sizeof(void*)/*pointer*/ + sizeof(std::size_t)/*size*/) + (
+                AdjacencyMatrix<nodes>{}.byteSize()/*g*/
+                +  (sizeof(void*)/*pointer*/ + sizeof(std::size_t)/*size*/) + (nodes                 * sizeof(Size)) /*gNodesByDegree*/
+                +  (sizeof(void*)/*pointer*/ + sizeof(std::size_t)/*size*/) + (triangleHistogramSize * sizeof(Size)) /*gNodesByTriangleDegree*/
+                +  (sizeof(void*)/*pointer*/ + sizeof(std::size_t)/*size*/) + (triangleHistogramSize * sizeof(Size)) /*gNodesByEmptyTriangleDegree*/
+                ) * uniqueGraphs.size();
         return std::make_pair(keysByteSize, valuesByteSize);
     };
 #endif
@@ -151,9 +166,47 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             gDegrees[cr.second] += g.edge(e);
         }
 
+        std::array<Size, nodes> gTriangleDegrees{};
+        std::array<Size, nodes> gEmptyTriangleDegrees{};
+        for (Size n = 0; n < nodes; n += 1) {
+            for (Size m = 0; m < n; m += 1) {
+                for (Size j = 0; j < m; j += 1) {
+                    if (g.edge(n, m) &&  g.edge(m, j) && g.edge(n, j)) {
+                        gTriangleDegrees[n] += 1;
+                        gTriangleDegrees[m] += 1;
+                        gTriangleDegrees[j] += 1;
+                    } else if (g.edge(n, m) == false && g.edge(m, j) == false && g.edge(n, j) == false) {
+                        gEmptyTriangleDegrees[n] += 1;
+                        gEmptyTriangleDegrees[m] += 1;
+                        gEmptyTriangleDegrees[j] += 1;
+                    }
+                }
+            }
+        }
+
+        std::array<std::vector<Size>, nodes> gNodesByDegree{};
+        std::array<std::vector<Size>, triangleHistogramSize> gNodesByTriangleDegree{};
+        std::array<std::vector<Size>, triangleHistogramSize> gNodesByEmptyTriangleDegree{};
+        for (Size n = 0; n < nodes; n += 1) {
+            gNodesByDegree[gDegrees[n]].emplace_back(n);
+            gNodesByTriangleDegree[gTriangleDegrees[n]].emplace_back(n);
+            gNodesByEmptyTriangleDegree[gEmptyTriangleDegrees[n]].emplace_back(n);
+        }
+
         std::array<Size, nodes> gDegreeHistogram{}; // degree -> degree multiplicity
         for (Size d : gDegrees) {
             gDegreeHistogram[d] += 1;
+        }
+
+        std::array<Size, triangleHistogramSize> gTriangleHistogram{};
+        for (Size t : gTriangleDegrees) {
+            R5_DEBUG_ASSERT(t < triangleHistogramSize);
+            gTriangleHistogram[t] += 1;
+        }
+        std::array<Size, triangleHistogramSize> gEmptyTriangleHistogram{};
+        for (Size t : gEmptyTriangleDegrees) {
+            R5_DEBUG_ASSERT(t < triangleHistogramSize);
+            gEmptyTriangleHistogram[t] += 1;
         }
 
         std::array<std::set<Size>, nodes+1> gDegreeHistogramReverse{}; // degree multiplicty -> set of degrees
@@ -161,39 +214,9 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             gDegreeHistogramReverse[gDegreeHistogram[i]].insert(i);
         }
 
-        std::array<std::vector<Size>, nodes> gNodesByDegree{};
-        for (Size n = 0; n < nodes; n += 1) {
-            gNodesByDegree[gDegrees[n]].emplace_back(n);
-        }
-
-        std::array<Size, nodes> gTriangles{};
-        std::array<Size, nodes> gEmptyTriangles{};
-        for (Size n = 0; n < nodes; n += 1) {
-            for (Size m = 0; m < n; m += 1) {
-                for (Size j = 0; j < m; j += 1) {
-                    if (g.edge(n, m) &&  g.edge(m, j) && g.edge(n, j)) {
-                        gTriangles[n] += 1;
-                        gTriangles[m] += 1;
-                        gTriangles[j] += 1;
-                    } else if (g.edge(n, m) == false && g.edge(m, j) == false && g.edge(n, j) == false) {
-                        gEmptyTriangles[n] += 1;
-                        gEmptyTriangles[m] += 1;
-                        gEmptyTriangles[j] += 1;
-                    }
-                }
-            }
-        }
-
-        std::array<Size, triangleHistogramSize> gTriangleHistogram{};
-        for (Size t : gTriangles) {
-            R5_DEBUG_ASSERT(t < triangleHistogramSize);
-            gTriangleHistogram[t] += 1;
-        }
-        std::array<Size, triangleHistogramSize> gEmptyTriangleHistogram{};
-        for (Size t : gEmptyTriangles) {
-            R5_DEBUG_ASSERT(t < triangleHistogramSize);
-            gEmptyTriangleHistogram[t] += 1;
-        }
+#if R5_VERBOSE >= 4
+        cerr << "  gNodesByDegree " << gNodesByDegree << " gNodesByTriangleDegree " << gNodesByTriangleDegree << " gNodesByEmptyTriangleDegree " << gNodesByEmptyTriangleDegree << endl;
+#endif
 
         // Traversal Order:
         // 1) Assign nodes of degree 0 to any node of degree 0
@@ -204,27 +227,63 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         //    nodes with the most common degree come last.
         //    This slims the traversal tree. Smaller fan-out first, bigger fan-out later.
         std::array<Size, nodes> traversalOrder;
+        std::array<bool, nodes> fixedNodes{};
 
-        Size firstNotEmptyOrFullNode = 0;
+        Size firstNotEmptyOrFullNodeIndex = 0;
         for (Size n : gNodesByDegree[0]) {
-            traversalOrder[firstNotEmptyOrFullNode] = n;
-            firstNotEmptyOrFullNode += 1;
+            traversalOrder[firstNotEmptyOrFullNodeIndex] = n;
+            R5_DEBUG_ASSERT(fixedNodes[n] == false);
+            fixedNodes[n] = true;
+            firstNotEmptyOrFullNodeIndex += 1;
         }
 
         for (Size n : gNodesByDegree[nodes-1]) {
-            traversalOrder[firstNotEmptyOrFullNode] = n;
-            firstNotEmptyOrFullNode += 1;
+            traversalOrder[firstNotEmptyOrFullNodeIndex] = n;
+            R5_DEBUG_ASSERT(fixedNodes[n] == false);
+            fixedNodes[n] = true;
+            firstNotEmptyOrFullNodeIndex += 1;
         }
 
-        Size firstNotFixedNodeIndex = firstNotEmptyOrFullNode;
-        // Note that j = 1 and < nodes-1 skips the above two cases
+        Size firstNotUniqueDegreeMultiplicityNodeIndex = firstNotEmptyOrFullNodeIndex;
+        // Note that d = 1 and < nodes-1 skips the above two cases
         for (Size d = 1; d < nodes-1; ++d) {
             if (gDegreeHistogram[d] == 1) {
                 R5_DEBUG_ASSERT(gNodesByDegree[d].size() == 1);
-                traversalOrder[firstNotFixedNodeIndex] = gNodesByDegree[d][0];
-                firstNotFixedNodeIndex += 1;
+                auto n = gNodesByDegree[d][0];
+                traversalOrder[firstNotUniqueDegreeMultiplicityNodeIndex] = n;
+                R5_DEBUG_ASSERT(fixedNodes[n] == false);
+                fixedNodes[n] = true;
+                firstNotUniqueDegreeMultiplicityNodeIndex += 1;
             }
         }
+
+        Size firstNotUniqueTriangleDegreeMultiplicityNodeIndex = firstNotUniqueDegreeMultiplicityNodeIndex;
+        for (Size td = 0; td < triangleHistogramSize && firstNotUniqueTriangleDegreeMultiplicityNodeIndex < nodes; ++td) {
+            if (gTriangleHistogram[td] == 1) {
+                R5_DEBUG_ASSERT(gNodesByTriangleDegree[td].size() == 1);
+                auto n = gNodesByTriangleDegree[td][0];
+                if (fixedNodes[n] == false) {
+                    traversalOrder[firstNotUniqueTriangleDegreeMultiplicityNodeIndex] = n;
+                    fixedNodes[n] = true;
+                    firstNotUniqueTriangleDegreeMultiplicityNodeIndex += 1;
+                }
+            }
+        }
+
+        Size firstNotUniqueEmptyTriangleDegreeMultiplicityNodeIndex = firstNotUniqueTriangleDegreeMultiplicityNodeIndex;
+        for (Size etd = 0; etd < triangleHistogramSize && firstNotUniqueEmptyTriangleDegreeMultiplicityNodeIndex < nodes; ++etd) {
+            if (gEmptyTriangleHistogram[etd] == 1) {
+                R5_DEBUG_ASSERT(gNodesByEmptyTriangleDegree[etd].size() == 1);
+                auto n = gNodesByEmptyTriangleDegree[etd][0];
+                if (fixedNodes[n] == false) {
+                    traversalOrder[firstNotUniqueEmptyTriangleDegreeMultiplicityNodeIndex] = n;
+                    fixedNodes[n] = true;
+                    firstNotUniqueEmptyTriangleDegreeMultiplicityNodeIndex += 1;
+                }
+            }
+        }
+
+        Size firstNotFixedNodeIndex = firstNotUniqueEmptyTriangleDegreeMultiplicityNodeIndex;
 
         R5_VERBOSE_1(fixedNodesSum += firstNotFixedNodeIndex);
 
@@ -233,6 +292,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             for (Size d : gDegreeHistogramReverse[degreeMultiplicity]) {
                 if (d == 0 || d == nodes-1) { continue; }
                 for (Size n : gNodesByDegree[d]) {
+                    if (fixedNodes[n] == true) { continue; }
                     traversalOrder[traversedNode] = n;
                     traversedNode += 1;
                 }
@@ -256,34 +316,73 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         } else {
             // for each recorded unique graph h with the same degree histogram as g
             // (g and h cannot be isomorphic if the node degrees differ)
-            for (const auto& [ h, hAvailableNodes ] : it->second) {
+            for (const auto& [ h, hNodesByDegree, hNodesByTriangleDegree, hNodesByEmptyTriangleDegree ] : it->second) {
 
                 R5_VERBOSE_1(graphCombinations += 1);
 
                 std::array<bool, nodes> assignedNodes{};
 
 #if R5_VERBOSE >= 4
-                cerr << "  h " << h << " hAvailableNodes " << hAvailableNodes << endl;
+                cerr << "  h " << h << " hNodesByDegree " << hNodesByDegree << " hNodesByTriangleDegree " << hNodesByTriangleDegree << " hNodesByEmptyTriangleDegree " << hNodesByEmptyTriangleDegree << endl;
 #endif
 
+                int fixedNodes = 0;
                 std::array<Size, nodes> permutation{};
-                for (Size i = 0; i < firstNotFixedNodeIndex; i += 1) {
+                for (Size i = 0; i < firstNotUniqueDegreeMultiplicityNodeIndex; i += 1) {
                     Size n = traversalOrder[i];
-                    for(Size j = 0; j < Size(hAvailableNodes[gDegrees[n]].size()); j += 1) {
-                        Size m = hAvailableNodes[gDegrees[n]][j];
+                    for(Size j = 0; j < Size(hNodesByDegree[gDegrees[n]].size()); j += 1) {
+                        Size m = hNodesByDegree[gDegrees[n]][j];
                         if (assignedNodes[m] == false) {
                             assignedNodes[m] = true;
                             permutation[n] = m;
+                            fixedNodes += 1;
                             break;
                         }
                     }
                 }
 
+                for (Size i = firstNotUniqueDegreeMultiplicityNodeIndex; i < firstNotUniqueTriangleDegreeMultiplicityNodeIndex; i += 1) {
+                    Size n = traversalOrder[i];
+                    for(Size j = 0; j < Size(hNodesByTriangleDegree[gTriangleDegrees[n]].size()); j += 1) {
+                        Size m = hNodesByTriangleDegree[gTriangleDegrees[n]][j];
+                        if (assignedNodes[m] == false) {
+                            assignedNodes[m] = true;
+                            permutation[n] = m;
+                            fixedNodes += 1;
+                            break;
+                        }
+                    }
+                }
+
+                for (Size i = firstNotUniqueTriangleDegreeMultiplicityNodeIndex; i < firstNotUniqueEmptyTriangleDegreeMultiplicityNodeIndex; i += 1) {
+                    Size n = traversalOrder[i];
+                    for(Size j = 0; j < Size(hNodesByEmptyTriangleDegree[gEmptyTriangleDegrees[n]].size()); j += 1) {
+                        Size m = hNodesByEmptyTriangleDegree[gEmptyTriangleDegrees[n]][j];
+                        if (assignedNodes[m] == false) {
+                            assignedNodes[m] = true;
+                            permutation[n] = m;
+                            fixedNodes += 1;
+                            break;
+                        }
+                    }
+                }
+
+                if (fixedNodes < firstNotFixedNodeIndex) {
+#if R5_VERBOSE >= 4
+                    cerr << "    early mismatch: could not assign all fixed nodes" << endl;
+#endif
+                    continue;
+                }
+
+                R5_DEBUG_ASSERT(firstNotFixedNodeIndex == firstNotUniqueEmptyTriangleDegreeMultiplicityNodeIndex);
+
                 bool match = true;
-                for (Size i = firstNotEmptyOrFullNode; i < firstNotFixedNodeIndex; i += 1) {
+                for (Size i = firstNotEmptyOrFullNodeIndex; i < firstNotFixedNodeIndex; i += 1) {
                     Size n = traversalOrder[i];
                     for (Size j = 0; j < i; j += 1) {
                         Size m = traversalOrder[j];
+                        R5_DEBUG_ASSERT(n != m)
+                        R5_DEBUG_ASSERT(permutation[n] != permutation[m])
                         if (g.edge(n, m) != h.edge(permutation[n], permutation[m])) {
                             match = false;
                             break;
@@ -299,7 +398,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                 if (match == false) {
 #if R5_VERBOSE >= 4
-                    cerr << "    early mismatch" << endl;
+                    cerr << "    early mismatch: permutation check failed" << endl;
 #endif
                     continue;
                 } else if (firstNotFixedNodeIndex == nodes) {
@@ -317,8 +416,16 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #endif
 
                 stack.clear();
-                for (Size m : hAvailableNodes[gDegrees[traversalOrder[firstNotFixedNodeIndex]]]) {
-                    if (assignedNodes[m] == false) {
+                Size degree              = gDegrees[traversalOrder[firstNotFixedNodeIndex]];
+                Size triangleDegree      = gTriangleDegrees[traversalOrder[firstNotFixedNodeIndex]];
+                Size emptyTriangleDegree = gEmptyTriangleDegrees[traversalOrder[firstNotFixedNodeIndex]];
+                const auto& mCandidates1 = hNodesByDegree[degree];
+                const auto& mCandidates2 = hNodesByTriangleDegree[triangleDegree];
+                const auto& mCandidates3 = hNodesByEmptyTriangleDegree[emptyTriangleDegree];
+                for (Size m : mCandidates1) {
+                    bool found  = std::find(mCandidates2.begin(), mCandidates2.end(), m) != mCandidates2.end();
+                    found      &= std::find(mCandidates3.begin(), mCandidates3.end(), m) != mCandidates3.end();
+                    if (found && assignedNodes[m] == false) {
                         stack.emplace_back(std::make_tuple(firstNotFixedNodeIndex, m));
                     }
                 }
@@ -353,7 +460,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                     R5_VERBOSE_1(permutationChecks += 1);
 
                     bool match = true;
-                    for (Size j = firstNotEmptyOrFullNode; j < i; j += 1) {
+                    for (Size j = firstNotEmptyOrFullNodeIndex; j < i; j += 1) {
                         Size o = traversalOrder[j];
                         if (g.edge(n, o) != h.edge(m, permutation[o])) {
                             match = false;
@@ -374,8 +481,22 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                         assignedNodes[m] = true;
 
-                        for (Size m_ : hAvailableNodes[gDegrees[traversalOrder[i+1]]]) {
-                            if (assignedNodes[m_] == false) {
+                        //for (Size m_ : hNodesByDegree[gDegrees[traversalOrder[i+1]]]) {
+                        //    if (assignedNodes[m_] == false) {
+                        //        stack.emplace_back(std::make_tuple(i+1, m_));
+                        //    }
+                        //}
+
+                        Size degree_              = gDegrees[traversalOrder[i+1]];
+                        Size triangleDegree_      = gTriangleDegrees[traversalOrder[i+1]];
+                        Size emptyTriangleDegree_ = gEmptyTriangleDegrees[traversalOrder[i+1]];
+                        const auto& mCandidates1_ = hNodesByDegree[degree_];
+                        const auto& mCandidates2_ = hNodesByTriangleDegree[triangleDegree_];
+                        const auto& mCandidates3_ = hNodesByEmptyTriangleDegree[emptyTriangleDegree_];
+                        for (Size m_ : mCandidates1_) {
+                            bool found_  = std::find(mCandidates2_.begin(), mCandidates2_.end(), m_) != mCandidates2_.end();
+                            found_      &= std::find(mCandidates3_.begin(), mCandidates3_.end(), m_) != mCandidates3_.end();
+                            if (found_ && assignedNodes[m_] == false) {
                                 stack.emplace_back(std::make_tuple(i+1, m_));
                             }
                         }
@@ -392,7 +513,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #if R5_VERBOSE >= 4
             cerr << "  unique g " << g << endl;
 #endif
-            uniqueGraphs[gProperties].emplace_back(std::make_tuple(g, gNodesByDegree));
+            uniqueGraphs[gProperties].emplace_back(std::make_tuple(g, gNodesByDegree, gNodesByTriangleDegree, gNodesByEmptyTriangleDegree));
             uniqueGraphsCount += 1;
         }
     }
