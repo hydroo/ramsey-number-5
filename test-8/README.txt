@@ -317,7 +317,6 @@ This avoids copying/constructing/destroying this data structure and thus improve
 
 - Don't store the whole key in the map. Rather hash gProperties. This can save up to 15% of total runtime.
 - Code the gNodesByDegree thingy as a more abstract class for reuse with triangles, and with fewer mallocs
-- Use Triangle information to inform permutation assignment
 - Generalize the concept to all K_2, K_3, K_... so that R(4,5) can profit from K_4 occurences
   - Probably would use subGraphEdgeMasks() and some smarts to find the subgraphs, instead of the hardcoded degree+triangle+empty triangle stuff we do now
 - We are running into RAM problems with RamseyGraphs > 1M and non-unique Ramsey graphs > 100M
