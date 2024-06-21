@@ -211,10 +211,9 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #endif
 
         // Traversal Order:
-        // 1) Assign nodes of degree 0 to any node of degree 0
-        // 2) Assign nodes of degree nodes-1 to any node of degree nodes-1
-        // 3) Assign nodes of a unique degree to the one possible option
-        // 4) Traverse in order of lowest degree multiplicity first.
+        // 1) Assign nodes of degree 0 or nodes-1 to any node of the same degree
+        // 2) Assign nodes of a unique degree to the one possible option
+        // 3) Traverse in order of lowest degree multiplicity first.
         //    I.e. the node degree that is rarest comes first,
         //    nodes with the most common degree come last.
         //    This slims the traversal tree. Smaller fan-out first, bigger fan-out later.
