@@ -115,8 +115,6 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     s64 fixedNodesSum      = 0;
 #endif
 
-    constexpr Size edges = AdjacencyMatrix<nodes>().edges();
-
     using AdjacencyMatrixProperties = std::vector<std::tuple<std::tuple<Size/*degree*/, Size/*triangleDegree*/, Size/*emptyTriangleDegree*/>, Size>> /*gDegreeHistogram2*/;
     using DegreeTuple = std::tuple<Size/*degree*/, Size/*triangleDegree*/, Size/*emptyTriangleDegree*/>;
 
@@ -159,25 +157,23 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         cerr << "g " << g << endl;
 #endif
 
-        using AmIndexer = r5::AdjacencyMatrixIndexer<nodes>;
-
         std::array<Size, nodes> gDegrees{};
-        for (Size e = 0; e < edges; e += 1) {
-            auto cr = AmIndexer::reverse(e);
-            gDegrees[cr.first]  += g.edge(e);
-            gDegrees[cr.second] += g.edge(e);
-        }
-
         std::array<Size, nodes> gTriangleDegrees{};
         std::array<Size, nodes> gEmptyTriangleDegrees{};
         for (Size n = 0; n < nodes; n += 1) {
             for (Size m = 0; m < n; m += 1) {
+                auto nm = g.edge(n, m);
+                if (nm) {
+                    gDegrees[n] += 1;
+                    gDegrees[m] += 1;
+                }
+
                 for (Size j = 0; j < m; j += 1) {
-                    if (g.edge(n, m) &&  g.edge(m, j) && g.edge(n, j)) {
+                    if (nm && g.edge(m, j) && g.edge(n, j)) {
                         gTriangleDegrees[n] += 1;
                         gTriangleDegrees[m] += 1;
                         gTriangleDegrees[j] += 1;
-                    } else if (g.edge(n, m) == false && g.edge(m, j) == false && g.edge(n, j) == false) {
+                    } else if (nm == false && g.edge(m, j) == false && g.edge(n, j) == false) {
                         gEmptyTriangleDegrees[n] += 1;
                         gEmptyTriangleDegrees[m] += 1;
                         gEmptyTriangleDegrees[j] += 1;
