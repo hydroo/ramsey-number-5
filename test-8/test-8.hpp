@@ -246,7 +246,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         Size traversedNode = firstNotFixedNodeIndex;
         for (Size degreeMultiplicity = 2; degreeMultiplicity <= maxDegreeMultiplicity; degreeMultiplicity += 1) {
-            for (auto dt : gDegreeHistogramReverse[degreeMultiplicity]) {
+            for (const auto& dt : gDegreeHistogramReverse[degreeMultiplicity]) {
                 for (Size n : gNodesByDegree[dt]) {
                     if (fixedNodes[n] == true) { continue; }
                     traversalOrder[traversedNode] = n;
@@ -286,7 +286,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 std::array<Size, nodes> permutation{};
                 for (Size i = 0; i < firstNotUniqueDegreeMultiplicityNodeIndex; i += 1) {
                     Size n = traversalOrder[i];
-                    auto degreeTuple = gDegrees[n];
+                    const auto& degreeTuple = gDegrees[n];
                     auto candidateNodesIt = hNodesByDegree.find(degreeTuple);
                     if (candidateNodesIt == hNodesByDegree.end()) { continue; }
                     for(Size j = 0; j < Size(candidateNodesIt->second.size()); j += 1) {
@@ -349,7 +349,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #endif
 
                 stack.clear();
-                auto degreeTuple = gDegrees[traversalOrder[firstNotFixedNodeIndex]];
+                const auto& degreeTuple = gDegrees[traversalOrder[firstNotFixedNodeIndex]];
                 auto it = hNodesByDegree.find(degreeTuple);
                 if (it != hNodesByDegree.end()) {
                     for (Size m : it->second) {
@@ -410,7 +410,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                         assignedNodes[m] = true;
 
-                        auto degreeTuple_ = gDegrees[traversalOrder[i+1]];
+                        const auto& degreeTuple_ = gDegrees[traversalOrder[i+1]];
                         auto it_ = hNodesByDegree.find(degreeTuple_);
                         if (it_ != hNodesByDegree.end()) {
                             for (Size m_ : it_->second) {
