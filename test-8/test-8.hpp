@@ -115,7 +115,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     s64 fixedNodesSum      = 0;
 #endif
 
-    using AdjacencyMatrixProperties = std::vector<std::tuple<std::tuple<Size/*degree*/, Size/*triangleDegree*/, Size/*emptyTriangleDegree*/>, Size>> /*gDegreeHistogram2*/;
+    using AdjacencyMatrixProperties = std::vector<std::tuple<std::tuple<Size/*degree*/, Size/*triangleDegree*/, Size/*emptyTriangleDegree*/>, Size>> /*gDegreeHistogram*/;
     using DegreeTuple = std::tuple<Size/*degree*/, Size/*triangleDegree*/, Size/*emptyTriangleDegree*/>;
 
     // Note: std::map might not be great long-term. unordered_map?
@@ -124,7 +124,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         std::vector<
             std::tuple<
                 AdjacencyMatrix<nodes>/*g*/,
-                std::map<DegreeTuple, std::vector<Size>>/*gNodesByDegree2*/
+                std::map<DegreeTuple, std::vector<Size>>/*gNodesByDegree*/
             >
         >
     > uniqueGraphs;
@@ -157,15 +157,15 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         cerr << "g " << g << endl;
 #endif
 
-        std::array<Size, nodes> gDegrees{};
+        std::array<Size, nodes> gEdgeDegrees{};
         std::array<Size, nodes> gTriangleDegrees{};
         std::array<Size, nodes> gEmptyTriangleDegrees{};
         for (Size n = 0; n < nodes; n += 1) {
             for (Size m = 0; m < n; m += 1) {
                 auto nm = g.edge(n, m);
                 if (nm) {
-                    gDegrees[n] += 1;
-                    gDegrees[m] += 1;
+                    gEdgeDegrees[n] += 1;
+                    gEdgeDegrees[m] += 1;
                 }
 
                 for (Size j = 0; j < m; j += 1) {
@@ -183,31 +183,31 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         }
 
         std::vector<Size> gEmptyOrFullNodes{};
-        std::array<DegreeTuple, nodes> gDegrees2{};
+        std::array<DegreeTuple, nodes> gDegrees{};
         for (Size n = 0; n < nodes; n += 1) {
-            if (gDegrees[n] == 0 || gDegrees[n] == nodes-1) { gEmptyOrFullNodes.emplace_back(n); }
-            gDegrees2[n] = std::make_tuple(gDegrees[n], gTriangleDegrees[n], gEmptyTriangleDegrees[n]);
+            if (gEdgeDegrees[n] == 0 || gEdgeDegrees[n] == nodes-1) { gEmptyOrFullNodes.emplace_back(n); }
+            gDegrees[n] = std::make_tuple(gEdgeDegrees[n], gTriangleDegrees[n], gEmptyTriangleDegrees[n]);
         }
 
-        std::map<DegreeTuple, std::vector<Size>> gNodesByDegree2{};
+        std::map<DegreeTuple, std::vector<Size>> gNodesByDegree{};
         for (Size n = 0; n < nodes; n += 1) {
-            gNodesByDegree2[gDegrees2[n]].emplace_back(n);
+            gNodesByDegree[gDegrees[n]].emplace_back(n);
         }
 
         Size maxDegreeMultiplicity = 0;
-        std::vector<std::tuple<DegreeTuple, Size/*multiplicity*/>> gDegreeHistogram2;
-        for (auto const& [degreeTuple, nodesVector] : gNodesByDegree2) {
-            gDegreeHistogram2.emplace_back(std::make_tuple(degreeTuple, nodesVector.size()));
+        std::vector<std::tuple<DegreeTuple, Size/*multiplicity*/>> gDegreeHistogram;
+        for (auto const& [degreeTuple, nodesVector] : gNodesByDegree) {
+            gDegreeHistogram.emplace_back(std::make_tuple(degreeTuple, nodesVector.size()));
             maxDegreeMultiplicity = std::max(maxDegreeMultiplicity, Size(nodesVector.size()));
         }
 
-        std::map<Size, std::set<DegreeTuple>> gDegreeHistogramReverse2{}; // degree multiplicty -> set of degrees
-        for (auto const& [degreeTuple, count] : gDegreeHistogram2) {
-            gDegreeHistogramReverse2[count].insert(degreeTuple);
+        std::map<Size, std::set<DegreeTuple>> gDegreeHistogramReverse{}; // degree multiplicty -> set of degrees
+        for (auto const& [degreeTuple, count] : gDegreeHistogram) {
+            gDegreeHistogramReverse[count].insert(degreeTuple);
         }
 
 #if R5_VERBOSE >= 4
-        cerr << "  gNodesByDegree2 " << gNodesByDegree2 << endl;
+        cerr << "  gNodesByDegree " << gNodesByDegree << endl;
 #endif
 
         // Traversal Order:
@@ -230,10 +230,10 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         }
 
         Size firstNotUniqueDegreeMultiplicityNodeIndex = firstNotEmptyOrFullNodeIndex;
-        for (auto const& [dt, count] : gDegreeHistogram2) {
+        for (auto const& [dt, count] : gDegreeHistogram) {
             if (firstNotUniqueDegreeMultiplicityNodeIndex >= nodes) { break; }
             if (count == 1) {
-                auto n = gNodesByDegree2[dt][0];
+                auto n = gNodesByDegree[dt][0];
                 traversalOrder[firstNotUniqueDegreeMultiplicityNodeIndex] = n;
                 if (fixedNodes[n] == true) { continue; }
                 fixedNodes[n] = true;
@@ -247,8 +247,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         Size traversedNode = firstNotFixedNodeIndex;
         for (Size degreeMultiplicity = 2; degreeMultiplicity <= maxDegreeMultiplicity; degreeMultiplicity += 1) {
-            for (auto dt : gDegreeHistogramReverse2[degreeMultiplicity]) {
-                for (Size n : gNodesByDegree2[dt]) {
+            for (auto dt : gDegreeHistogramReverse[degreeMultiplicity]) {
+                for (Size n : gNodesByDegree[dt]) {
                     if (fixedNodes[n] == true) { continue; }
                     traversalOrder[traversedNode] = n;
                     traversedNode += 1;
@@ -262,7 +262,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         bool isUnique = true;
 
-        AdjacencyMatrixProperties gProperties = gDegreeHistogram2;
+        AdjacencyMatrixProperties gProperties = gDegreeHistogram;
 
         auto it = uniqueGraphs.find(gProperties);
         if (it == std::end(uniqueGraphs)) {
@@ -273,23 +273,23 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         } else {
             // for each recorded unique graph h with the same degree histogram as g
             // (g and h cannot be isomorphic if the node degrees differ)
-            for (const auto& [ h, hNodesByDegree2 ] : it->second) {
+            for (const auto& [ h, hNodesByDegree ] : it->second) {
 
                 R5_VERBOSE_1(graphCombinations += 1);
 
                 std::array<bool, nodes> assignedNodes{};
 
 #if R5_VERBOSE >= 4
-                cerr << "  h " << h << " hNodesByDegree2 " << hNodesByDegree2 << endl;
+                cerr << "  h " << h << " hNodesByDegree " << hNodesByDegree << endl;
 #endif
 
                 int fixedNodes = 0;
                 std::array<Size, nodes> permutation{};
                 for (Size i = 0; i < firstNotUniqueDegreeMultiplicityNodeIndex; i += 1) {
                     Size n = traversalOrder[i];
-                    auto degreeTuple = gDegrees2[n];
-                    auto candidateNodesIt = hNodesByDegree2.find(degreeTuple);
-                    if (candidateNodesIt == hNodesByDegree2.end()) { continue; }
+                    auto degreeTuple = gDegrees[n];
+                    auto candidateNodesIt = hNodesByDegree.find(degreeTuple);
+                    if (candidateNodesIt == hNodesByDegree.end()) { continue; }
                     for(Size j = 0; j < Size(candidateNodesIt->second.size()); j += 1) {
                         Size m = candidateNodesIt->second[j];
                         if (assignedNodes[m] == false) {
@@ -350,9 +350,9 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #endif
 
                 stack.clear();
-                auto degreeTuple = gDegrees2[traversalOrder[firstNotFixedNodeIndex]];
-                auto it = hNodesByDegree2.find(degreeTuple);
-                if (it != hNodesByDegree2.end()) {
+                auto degreeTuple = gDegrees[traversalOrder[firstNotFixedNodeIndex]];
+                auto it = hNodesByDegree.find(degreeTuple);
+                if (it != hNodesByDegree.end()) {
                     for (Size m : it->second) {
                         if (assignedNodes[m] == false) {
                             stack.emplace_back(std::make_tuple(firstNotFixedNodeIndex, m));
@@ -411,9 +411,9 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                         assignedNodes[m] = true;
 
-                        auto degreeTuple_ = gDegrees2[traversalOrder[i+1]];
-                        auto it_ = hNodesByDegree2.find(degreeTuple_);
-                        if (it_ != hNodesByDegree2.end()) {
+                        auto degreeTuple_ = gDegrees[traversalOrder[i+1]];
+                        auto it_ = hNodesByDegree.find(degreeTuple_);
+                        if (it_ != hNodesByDegree.end()) {
                             for (Size m_ : it_->second) {
                                 if (assignedNodes[m_] == false) {
                                     stack.emplace_back(std::make_tuple(i+1, m_));
@@ -433,7 +433,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #if R5_VERBOSE >= 4
             cerr << "  unique g " << g << endl;
 #endif
-            uniqueGraphs[gProperties].emplace_back(std::make_tuple(g, gNodesByDegree2));
+            uniqueGraphs[gProperties].emplace_back(std::make_tuple(g, gNodesByDegree));
             uniqueGraphsCount += 1;
         }
     }
