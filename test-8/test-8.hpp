@@ -210,7 +210,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         std::map<Size, std::set<DegreeTuple>> gDegreeHistogramReverse{}; // degree multiplicty -> set of degrees
         for (auto const& [degreeTuple, multiplicity] : gDegreeHistogram) {
-            gDegreeHistogramReverse[multiplicity].insert(degreeTuple);
+            gDegreeHistogramReverse[multiplicity].emplace(degreeTuple);
         }
 
 #if R5_VERBOSE >= 4
