@@ -270,8 +270,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         AdjacencyMatrixProperties gProperties = gDegreeHistogram;
 
-        auto it = uniqueGraphs.find(gProperties);
-        if (it == std::end(uniqueGraphs)) {
+        const auto it = uniqueGraphs.find(gProperties);
+        if (it == uniqueGraphs.cend()) {
 #if R5_VERBOSE >= 4
             cerr << "  unique properties" << endl;
 #endif
@@ -294,8 +294,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 for (Size i = 0; i < firstNotUniqueDegreeMultiplicityNodeIndex; i += 1) {
                     Size n = traversalOrder[i];
                     const auto& degreeTuple = gDegrees[n];
-                    auto candidateNodesIt = hNodesByDegree.find(degreeTuple);
-                    if (candidateNodesIt == hNodesByDegree.end()) { continue; }
+                    const auto candidateNodesIt = hNodesByDegree.find(degreeTuple);
+                    if (candidateNodesIt == hNodesByDegree.cend()) { continue; }
                     for(Size j = 0; j < Size(candidateNodesIt->second.size()); j += 1) {
                         Size m = candidateNodesIt->second[j];
                         if (assignedNodes[m] == false) {
@@ -357,8 +357,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                 stack.clear();
                 const auto& degreeTuple = gDegrees[traversalOrder[firstNotFixedNodeIndex]];
-                auto it = hNodesByDegree.find(degreeTuple);
-                if (it != hNodesByDegree.end()) {
+                const auto it = hNodesByDegree.find(degreeTuple);
+                if (it != hNodesByDegree.cend()) {
                     for (Size m : it->second) {
                         if (assignedNodes[m] == false) {
                             stack.emplace_back(std::make_tuple(firstNotFixedNodeIndex, m));
@@ -418,8 +418,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                         assignedNodes[m] = true;
 
                         const auto& degreeTuple_ = gDegrees[traversalOrder[i+1]];
-                        auto it_ = hNodesByDegree.find(degreeTuple_);
-                        if (it_ != hNodesByDegree.end()) {
+                        const auto it_ = hNodesByDegree.find(degreeTuple_);
+                        if (it_ != hNodesByDegree.cend()) {
                             for (Size m_ : it_->second) {
                                 if (assignedNodes[m_] == false) {
                                     stack.emplace_back(std::make_tuple(i+1, m_));

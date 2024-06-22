@@ -227,10 +227,10 @@ template <typename K, typename V>
 std::ostream& operator<<(std::ostream& o, const std::map<K, V>& m) {
     o << '{';
 
-    for (auto i = m.begin(); i != m.end(); ++i) {
+    for (auto i = m.cbegin(); i != m.cend(); ++i) {
         o << i->first << " : " << i->second;
         auto j = i;
-        if (++j != m.end()) {
+        if (++j != m.cend()) {
             o << ", ";
         }
     }
