@@ -268,7 +268,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         bool isUnique = true;
 
-        AdjacencyMatrixProperties gProperties = gDegreeHistogram;
+        const AdjacencyMatrixProperties& gProperties = gDegreeHistogram;
 
         const auto it = uniqueGraphs.find(gProperties);
         if (it == uniqueGraphs.cend()) {
