@@ -289,6 +289,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 cerr << "  h " << h << " hNodesByDegree " << hNodesByDegree << endl;
 #endif
 
+                // Idea: It might be possible to skip assigning empty/full nodes here
+                // Idea: You could check permutations while assigning them for an early exit here -- But this could make SIMD optimizations less interesting
                 int fixedNodes = 0;
                 std::array<Size, nodes> permutation{};
                 for (Size i = 0; i < firstNotUniqueDegreeMultiplicityNodeIndex; i += 1) {
@@ -311,6 +313,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #if R5_VERBOSE >= 4
                     cerr << "    early mismatch: could not assign all fixed nodes" << endl;
 #endif
+                    isUnique = true;
                     continue;
                 }
 
@@ -340,6 +343,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #if R5_VERBOSE >= 4
                     cerr << "    early mismatch: permutation check failed" << endl;
 #endif
+                    isUnique = true;
                     continue;
                 } else if (firstNotFixedNodeIndex == nodes) {
 #if R5_VERBOSE >= 4
