@@ -313,9 +313,28 @@ This avoids copying/constructing/destroying this data structure and thus improve
     R(5,5) ==  9                   4.0                   4.5
     R(5,5) == 10                 245.8                 283.0
 
+# Combine all Three Degree Types and Also Use Them to Inform Traversal - 22nd June 2024
+
+Achieved a large reduction in key operations for uniqueness checking, via fewer collisions (more property buckets)
+and up to 10x fewer traversal steps in the traversal stack.
+Updated performance numbers in the previous section.
+
+Unfortunately, the gNodesByDegree map in the value type of uniqueGraphs ate up a lot of potential upside (35%+ of current runtime).
+Furthermore the large number of fixed nodes also incurs more permutation assignment upfront than before (20 of the above 35%+).
+These two factors should account for most of the new downside.
+Additionally, the map of uniqueGraphs itself costs 30%+ perf.
+
+Apple Instruments is a bit finicky: ~20% of runtime is not accounted for, but likely burried in map-related functions (destruction of uniqueGraphs?).
+
+So we basically traded a reduction of operations uniqueAdjacencyMatrices5 for "performance potential".
+The good thing is, if these two maps are properly optimized the upside is 3-10x.
+Hard to tell how much exactly.
+
 # Possible next steps - June 2024
 - Fix `make test`
-- Don't store the whole key in the uniqueGraphs map. Rather hash gProperties. (Sadly there is no std::hash for the current keytype. Would need to add.)
+- Replace std::map for uniqueGraphs and gNodesByDegree with more efficient data structures
+- Don't store the whole key in the uniqueGraphs map. Rather hash gProperties.
+  (Sadly there is no std::hash for the current keytype. Would need to add.)
 - Improve gProperties/gDegrees beyond edge and triangle degrees
   - Maybe entirely new properties like ?orbit lengths?
   - Maybe K_4+: Probably would use subGraphEdgeMasks() and some smarts to find the subgraphs, instead of the hardcoded degree+triangle+empty triangle stuff we do now
