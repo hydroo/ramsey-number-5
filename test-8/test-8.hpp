@@ -117,6 +117,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
     using DegreeTuple = std::tuple<Size/*degree*/, Size/*triangleDegree*/, Size/*emptyTriangleDegree*/>;
     using AdjacencyMatrixProperties = std::array<std::tuple<DegreeTuple, Size>, nodes> /*gDegreeHistogram*/;
+    [[maybe_unused]] constexpr Size edgeDegreeCount     = nodes;                                      // == maxEdgeDegree+1
+    [[maybe_unused]] constexpr Size triangleDegreeCount = nodes >= 2 ? (nodes-1)*(nodes-2)/2 + 1 : 0; // == maxtriangleDegree+1
 
     // Note: std::map might not be great long-term. unordered_map?
     std::map<
