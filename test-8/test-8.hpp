@@ -439,7 +439,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #if R5_VERBOSE >= 4
             cerr << "  unique g " << g << endl;
 #endif
-            uniqueGraphs[gProperties].emplace_back(std::make_tuple(g, gNodesByDegree));
+            uniqueGraphs[gProperties].emplace_back(std::make_tuple(g, std::move(gNodesByDegree)));
             uniqueGraphsCount += 1;
         }
     }
