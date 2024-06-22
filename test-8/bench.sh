@@ -32,6 +32,7 @@ for rsn in $args; do
     printf "%1d %1d %2d" $r $s $n
     build_log=$(./build.sh $r $s $n 2>&1)
     log=$(./test-8 2>&1)
+    sleep 0.2
     echo "$log" > "$date-r-$r-$s-$n.log"
     total_time="$(echo "$log" | tail -n 1 | sed "s/Total time: //g" | sed "s/ seconds//g")"
     printf " %7.3f s\n" $total_time
