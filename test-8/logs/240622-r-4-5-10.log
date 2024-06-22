@@ -33,7 +33,7 @@ Ramsey(4,5)-graphs with 2 vertices
   Uniquify Ramsey graphs:                                0.000 seconds
   Ramsey graphs:                                         2
   Ramsey graphs byte size:                               0.000 MiB
-  Total memory usage:                                    1.750 MiB
+  Total memory usage:                                    1.828 MiB
 
 Ramsey(4,5)-graphs with 3 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -65,7 +65,7 @@ Ramsey(4,5)-graphs with 3 vertices
   Uniquify Ramsey graphs:                                0.000 seconds
   Ramsey graphs:                                         4
   Ramsey graphs byte size:                               0.000 MiB
-  Total memory usage:                                    1.781 MiB
+  Total memory usage:                                    1.906 MiB
 
 Ramsey(4,5)-graphs with 4 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -97,7 +97,7 @@ Ramsey(4,5)-graphs with 4 vertices
   Uniquify Ramsey graphs:                                0.000 seconds
   Ramsey graphs:                                        10
   Ramsey graphs byte size:                               0.000 MiB
-  Total memory usage:                                    1.828 MiB
+  Total memory usage:                                    1.953 MiB
 
 Ramsey(4,5)-graphs with 5 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -126,10 +126,10 @@ Ramsey(4,5)-graphs with 5 vertices
   Recursion steps:                                     387
   Permutation checks:                                  511
 
-  Uniquify Ramsey graphs:                                0.001 seconds
+  Uniquify Ramsey graphs:                                0.000 seconds
   Ramsey graphs:                                        28
   Ramsey graphs byte size:                               0.000 MiB
-  Total memory usage:                                    2.031 MiB
+  Total memory usage:                                    2.016 MiB
 
 Ramsey(4,5)-graphs with 6 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -161,7 +161,7 @@ Ramsey(4,5)-graphs with 6 vertices
   Uniquify Ramsey graphs:                                0.002 seconds
   Ramsey graphs:                                       114
   Ramsey graphs byte size:                               0.001 MiB
-  Total memory usage:                                    2.109 MiB
+  Total memory usage:                                    2.219 MiB
 
 Ramsey(4,5)-graphs with 7 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -190,10 +190,10 @@ Ramsey(4,5)-graphs with 7 vertices
   Recursion steps:                                  17,775
   Permutation checks:                               23,172
 
-  Uniquify Ramsey graphs:                                0.012 seconds
+  Uniquify Ramsey graphs:                                0.013 seconds
   Ramsey graphs:                                       627
   Ramsey graphs byte size:                               0.005 MiB
-  Total memory usage:                                    2.688 MiB
+  Total memory usage:                                    2.953 MiB
 
 Ramsey(4,5)-graphs with 8 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -225,7 +225,7 @@ Ramsey(4,5)-graphs with 8 vertices
   Uniquify Ramsey graphs:                                0.087 seconds
   Ramsey graphs:                                     5,588
   Ramsey graphs byte size:                               0.043 MiB
-  Total memory usage:                                    8.219 MiB
+  Total memory usage:                                    8.797 MiB
 
 Ramsey(4,5)-graphs with 9 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -237,7 +237,7 @@ Ramsey(4,5)-graphs with 9 vertices
   New edges to fill:                                     8
   Possible combinations:                         1,430,528 # 5,588 * 2^8
 
-  Check all colorings:                                   0.021 seconds
+  Check all colorings:                                   0.020 seconds
   Number of recursion steps:                     2,298,636
   Number of colorings checked:                   3,155,315
   Number of edge mask checks:                   42,134,910
@@ -254,10 +254,10 @@ Ramsey(4,5)-graphs with 9 vertices
   Recursion steps:                               2,536,250
   Permutation checks:                            3,343,889
 
-  Uniquify Ramsey graphs:                                1.565 seconds
+  Uniquify Ramsey graphs:                                1.514 seconds
   Ramsey graphs:                                    81,321
   Ramsey graphs byte size:                               0.620 MiB
-  Total memory usage:                                   80.188 MiB
+  Total memory usage:                                   81.016 MiB
 
 Ramsey(4,5)-graphs with 10 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -269,7 +269,7 @@ Ramsey(4,5)-graphs with 10 vertices
   New edges to fill:                                     9
   Possible combinations:                        41,636,352 # 81,321 * 2^9
 
-  Check all colorings:                                   0.779 seconds
+  Check all colorings:                                   0.769 seconds
   Number of recursion steps:                    59,472,740
   Number of colorings checked:                  80,460,141
   Number of edge mask checks:                1,655,819,045
@@ -286,10 +286,10 @@ Ramsey(4,5)-graphs with 10 vertices
   Recursion steps:                              58,532,034
   Permutation checks:                           79,031,922
 
-  Uniquify Ramsey graphs:                               58.817 seconds
+  Uniquify Ramsey graphs:                               58.544 seconds
   Ramsey graphs:                                 1,915,582
   Ramsey graphs byte size:                              14.615 MiB
-  Total memory usage:                                2,056.719 MiB
+  Total memory usage:                                2,056.000 MiB
 
 Ramsey(4,5)-graphs with 10 vertices: 1,915,582
-Total time: 61.295 seconds
+Total time: 60.960 seconds

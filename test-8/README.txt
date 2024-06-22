@@ -294,24 +294,24 @@ This avoids copying/constructing/destroying this data structure and thus improve
 
 # Add Triangle and Empty Triangle Count Histograms as Properties for Pre-Bucketing Potentially Isomorphic Graphs - 13th Nov 2022
 
-                  i7-9750H   M2 Pro (9th Apr 2024)  (21st June 2024)
+                  i7-9750H   M2 Pro (9th Apr 2024)  (22st June 2024)
     R(4,4) =?  9    ~0.4          ~0.2                  ~0.3
-    R(4,4) =? 10     3.7           2.5                   2.9
-    R(4,4) =? 11    30.5          24.2                  23.1
-    R(4,4) =? 12   194.1         135.5                  95.3
-    R(4,4) =? 13   410.9         264.2                 184.5
-    R(4,4) == 18   473.9         300.2                 211.3
+    R(4,4) =? 10     3.7           2.5                   2.7
+    R(4,4) =? 11    30.5          24.2                  21.5
+    R(4,4) =? 12   194.1         135.5                  89.6
+    R(4,4) =? 13   410.9         264.2                 171.7
+    R(4,4) == 18   473.9         300.2                 203.7
 
     R(3,6) =? 11                   1.6                   1.3
-    R(3,6) =? 12                  16.2                   8.2
-    R(3,6) =? 13                 118.1                  38.1
-    R(3,6) =? 14                 280.9                  87.6
-    R(3,6) == 18                 329.7                 112.2
+    R(3,6) =? 12                  16.2                   8.0
+    R(3,6) =? 13                 118.1                  37.0
+    R(3,6) =? 14                 280.9                  86.0
+    R(3,6) == 18                 329.7                 111.2
 
-    R(4,5) == 10                   52.2                 61.3
+    R(4,5) == 10                   52.2                 61.0
 
-    R(5,5) ==  9                   4.0                   4.6
-    R(5,5) == 10                 245.8                 293.3
+    R(5,5) ==  9                   4.0                   4.5
+    R(5,5) == 10                 245.8                 283.0
 
 # Possible next steps - June 2024
 - Fix `make test`
