@@ -32,6 +32,7 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -march=native -mtune=native -g 
 add_executable(test-8 test-8.cpp)
 
 configure_file(build.sh build.sh COPYONLY)
+configure_file(bench.sh bench.sh COPYONLY)
 
 set_source_files_properties(test_adjacencymatrix.cpp test_adjacencymatrixindexer.cpp test_test-8 PROPERTIES COMPILE_FLAGS "-DR5_GTEST")
 
