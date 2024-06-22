@@ -294,43 +294,45 @@ This avoids copying/constructing/destroying this data structure and thus improve
 
 # Add Triangle and Empty Triangle Count Histograms as Properties for Pre-Bucketing Potentially Isomorphic Graphs - 13th Nov 2022
 
-                  i7-9750H   M2 Pro (9th Apr 2024)
-    R(4,4) =?  9    ~0.4          ~0.2
-    R(4,4) =? 10     3.7           2.5
-    R(4,4) =? 11    30.5          24.2
-    R(4,4) =? 12   194.1         135.5
-    R(4,4) =? 13   410.9         264.2
-    R(4,4) == 18   473.9         300.2
+                  i7-9750H   M2 Pro (9th Apr 2024)  (21st June 2024)
+    R(4,4) =?  9    ~0.4          ~0.2                  ~0.3
+    R(4,4) =? 10     3.7           2.5                   2.9
+    R(4,4) =? 11    30.5          24.2                  23.1
+    R(4,4) =? 12   194.1         135.5                  95.3
+    R(4,4) =? 13   410.9         264.2                 184.5
+    R(4,4) == 18   473.9         300.2                 211.3
 
-    R(3,6) =? 11                   1.6
-    R(3,6) =? 12                  16.2
-    R(3,6) =? 13                 118.1
-    R(3,6) =? 14                 280.9
-    R(3,6) == 18                 329.7
+    R(3,6) =? 11                   1.6                   1.3
+    R(3,6) =? 12                  16.2                   8.2
+    R(3,6) =? 13                 118.1                  38.1
+    R(3,6) =? 14                 280.9                  87.6
+    R(3,6) == 18                 329.7                 112.2
 
-    R(4,5) == 10                   52.2
+    R(4,5) == 10                   52.2                 61.3
 
-    R(5,5) ==  9                   4.0
-    R(5,5) == 10                 245.8
+    R(5,5) ==  9                   4.0                   4.6
+    R(5,5) == 10                 245.8                 293.3
 
-# Possible next steps - November 2022
-
-- Don't store the whole key in the map. Rather hash gProperties. This can save up to 15% of total runtime.
-- Code the gNodesByDegree thingy as a more abstract class for reuse with triangles, and with fewer mallocs
-- Generalize the concept to all K_2, K_3, K_... so that R(4,5) can profit from K_4 occurences
-  - Probably would use subGraphEdgeMasks() and some smarts to find the subgraphs, instead of the hardcoded degree+triangle+empty triangle stuff we do now
-- We are running into RAM problems with RamseyGraphs > 1M and non-unique Ramsey graphs > 100M
-  - Use hash map rather than storing the full properties per bucket
-  - Start unifying at the same time as graphs are generated so we don't have to store all non-unique Ramsey graphs in a vector
-- Add more graph properties for prebucketing potentially isomorphic graphs
-    - Maybe add determinant calculation and see how that looks - https://en.wikipedia.org/wiki/Determinant?
-    - others?
+# Possible next steps - June 2024
+- Fix `make test`
+- Don't store the whole key in the uniqueGraphs map. Rather hash gProperties. (Sadly there is no std::hash for the current keytype. Would need to add.)
+- Improve gProperties/gDegrees beyond edge and triangle degrees
+  - Maybe entirely new properties like ?orbit lengths?
+  - Maybe K_4+: Probably would use subGraphEdgeMasks() and some smarts to find the subgraphs, instead of the hardcoded degree+triangle+empty triangle stuff we do now
+- Address RAM usage. If we get a bit faster, than RAM usage could become limiting (Lots of options here)
+  - It could be the case the current map in the uniqueGraphs value causes a lot of fragmentation and increases RAM usage.
+    It used to be smaller before the map, but the map has fewer elements than the old structure.
+    Which makes me think, a new container might improve the situation by 2-10x.
 - Read, understand and implement the algorithm from geng - Applications of a technique for labelled enumeration (http://cs.anu.edu.au/~bdm/papers/LabelledEnumeration.pdf)
+- Make the data type for Size flexible (smaller indexes could save storage/time)
+  - In combination with SIMD-accelerated algorithms this becomes even more attractive
+    Right now the hold-up here is that STL's handling of map.find() and tuple comparison are attrocious.
+    But if you would improve that, it could enable benefiting from smaller a smaller Size-type / packing
 - Make the magic value size max, instead of -1, so I can try unsigned ints for size
-  - Make the data type for Size flexible (smaller indexes could save storage/time)
   - ?Throw out runtime-sized matrix code?
   - ?Throw out non-triangular matrix code?
 - Add read/write/checkpointing facility in order to let this thing run day and night, and be able to continue working without starting from scratch
+- SIMD-accelerated permutation application and comparison
 - Parallelize on CPU
 - Port to CUDA
 - Eventually it will be necessary to combine graphs to form candidates for larger Ramsey graphs
