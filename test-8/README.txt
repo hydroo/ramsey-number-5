@@ -331,6 +331,8 @@ The good thing is, if these two maps are properly optimized the upside is 3-10x.
 Hard to tell how much exactly.
 
 # Possible next steps - June 2024
+- Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n
+- Extend test_test-8.cpp to cover some of 4,5,n and 5,5,n
 - Fix `make test`
 - Replace std::map for uniqueGraphs and gNodesByDegree with more efficient data structures
 - Don't store the whole key in the uniqueGraphs map. Rather hash gProperties.
