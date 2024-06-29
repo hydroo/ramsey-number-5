@@ -4,7 +4,6 @@ project(test-8)
 
 find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
-#find_package(Boost COMPONENTS graph)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
