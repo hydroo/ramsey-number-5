@@ -41,16 +41,16 @@ set_source_files_properties(test_adjacencymatrix.cpp test_adjacencymatrixindexer
 #set_source_files_properties(test-8.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=4")
 
 add_executable(test_adjacencymatrix test_adjacencymatrix.cpp)
-target_link_libraries(test_adjacencymatrix ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(test_adjacencymatrix PRIVATE ${GTEST_INCLUDE_DIRS})
+target_link_libraries(test_adjacencymatrix ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(test_adjacencymatrixindexer test_adjacencymatrixindexer.cpp)
-target_link_libraries(test_adjacencymatrixindexer ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(test_adjacencymatrixindexer PRIVATE ${GTEST_INCLUDE_DIRS})
+target_link_libraries(test_adjacencymatrixindexer ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(test_test-8 test_test-8.cpp)
-target_link_libraries(test_test-8 ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(test_test-8 PRIVATE ${GTEST_INCLUDE_DIRS})
+target_link_libraries(test_test-8 ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 find_program(VALGRIND valgrind)
 set(VALGRIND_OPTIONS --leak-check=full --error-exitcode=1000)
