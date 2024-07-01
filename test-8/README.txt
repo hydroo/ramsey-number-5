@@ -331,6 +331,9 @@ The good thing is, if these two maps are properly optimized the upside is 3-10x.
 Hard to tell how much exactly.
 
 # Possible next steps - June 2024
+- Investigate whether it makes and we can use vcpkg by default if discovered on console
+  https://learn.microsoft.com/en-us/vcpkg/users/buildsystems/cmake-integration
+  Strange supposed workflow: cmake .. -DCMAKE_TOOLCHAIN_FILE=<vcpkg-root>/scripts/buildsystems/vcpkg.cmake
 - Tolerate not finding GTest
 - Port to Windows
 
