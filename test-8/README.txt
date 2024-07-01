@@ -334,7 +334,6 @@ Hard to tell how much exactly.
 - Tolerate not finding GTest
 - Tolerate not finding Valgrind (Fix make test)
 - Port to Windows
-- Look into using -Og for debug builds
 
 - Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n
 - Extend test_test-8.cpp to cover some of 4,5,n and 5,5,n
