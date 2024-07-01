@@ -332,7 +332,6 @@ Hard to tell how much exactly.
 
 # Possible next steps - June 2024
 - Tolerate not finding GTest
-- Tolerate not finding Valgrind (Fix make test)
 - Port to Windows
 
 - Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n
