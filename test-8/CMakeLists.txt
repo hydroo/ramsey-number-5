@@ -15,10 +15,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic") # Size=s64 and [] operator result in tons of implicit conversion warnings
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Wconversion")
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_CXX_FLAGS_DEBUG      "-DDEBUG -g -Og -fsanitize=address -fsanitize=undefined")
-else()
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set(CMAKE_CXX_FLAGS_DEBUG      "-DDEBUG -g -Og -fsanitize=address -fsanitize=undefined -fsanitize=leak ")
+else() # Darwin and Windows
+    set(CMAKE_CXX_FLAGS_DEBUG      "-DDEBUG -g -Og -fsanitize=address -fsanitize=undefined")
 endif()
 set(CMAKE_CXX_FLAGS_RELEASE        "-DNDEBUG -O3 -march=native -mtune=native")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -march=native -mtune=native -g -fno-omit-frame-pointer")
