@@ -23,10 +23,6 @@ endif()
 set(CMAKE_CXX_FLAGS_RELEASE        "-DNDEBUG -O3 -march=native -mtune=native")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -march=native -mtune=native -g -fno-omit-frame-pointer")
 
-## gprof
-#set(CMAKE_EXE_LINKER_FLAGS "-pg")
-#set(CMAKE_CXX_FLAGS        "-pg ${CMAKE_CXX_FLAGS}")
-
 add_executable(test-8 test-8.cpp)
 
 configure_file(build.sh build.sh COPYONLY)
