@@ -334,7 +334,6 @@ Hard to tell how much exactly.
 - Investigate whether it makes and we can use vcpkg by default if discovered on console
   https://learn.microsoft.com/en-us/vcpkg/users/buildsystems/cmake-integration
   Strange supposed workflow: cmake .. -DCMAKE_TOOLCHAIN_FILE=<vcpkg-root>/scripts/buildsystems/vcpkg.cmake
-- Tolerate not finding GTest
 - Port to Windows
 
 - Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n

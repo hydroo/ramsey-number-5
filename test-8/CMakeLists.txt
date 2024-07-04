@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.13)
 
 project(test-8)
 
-find_package(GTest REQUIRED)
+find_package(GTest)
 find_package(Threads REQUIRED)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -28,35 +28,39 @@ add_executable(test-8 test-8.cpp)
 configure_file(build.sh build.sh COPYONLY)
 configure_file(bench.sh bench.sh COPYONLY)
 
-set_source_files_properties(test_adjacencymatrix.cpp test_adjacencymatrixindexer.cpp test_test-8 PROPERTIES COMPILE_FLAGS "-DR5_GTEST")
-
 #set_source_files_properties(test-8.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=1")
 #set_source_files_properties(test-8.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=2")
 #set_source_files_properties(test-8.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=3")
 #set_source_files_properties(test-8.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=4")
 
-add_executable(test_adjacencymatrix test_adjacencymatrix.cpp)
-target_include_directories(test_adjacencymatrix PRIVATE ${GTEST_INCLUDE_DIRS})
-target_link_libraries(test_adjacencymatrix ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+if (GTest_FOUND)
+    set_source_files_properties(test_adjacencymatrix.cpp test_adjacencymatrixindexer.cpp test_test-8 PROPERTIES COMPILE_FLAGS "-DR5_GTEST")
 
-add_executable(test_adjacencymatrixindexer test_adjacencymatrixindexer.cpp)
-target_include_directories(test_adjacencymatrixindexer PRIVATE ${GTEST_INCLUDE_DIRS})
-target_link_libraries(test_adjacencymatrixindexer ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    add_executable(test_adjacencymatrix test_adjacencymatrix.cpp)
+    target_include_directories(test_adjacencymatrix PRIVATE ${GTEST_INCLUDE_DIRS})
+    target_link_libraries(test_adjacencymatrix ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
-add_executable(test_test-8 test_test-8.cpp)
-target_include_directories(test_test-8 PRIVATE ${GTEST_INCLUDE_DIRS})
-target_link_libraries(test_test-8 ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    add_executable(test_adjacencymatrixindexer test_adjacencymatrixindexer.cpp)
+    target_include_directories(test_adjacencymatrixindexer PRIVATE ${GTEST_INCLUDE_DIRS})
+    target_link_libraries(test_adjacencymatrixindexer ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
-find_program(VALGRIND valgrind)
-if (VALGRIND)
-    set(VALGRIND_WITH_OPTIONS "${VALGRIND} --leak-check=full --error-exitcode=1000")
+    add_executable(test_test-8 test_test-8.cpp)
+    target_include_directories(test_test-8 PRIVATE ${GTEST_INCLUDE_DIRS})
+    target_link_libraries(test_test-8 ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+
+    find_program(VALGRIND valgrind)
+    if (VALGRIND)
+        set(VALGRIND_WITH_OPTIONS "${VALGRIND} --leak-check=full --error-exitcode=1000")
+    else()
+        set(VALGRIND_WITH_OPTIONS "")
+        message(STATUS "Valgrind not found. Skipping for tests.")
+    endif()
+
+    enable_testing()
+
+    add_test(AdjacencyMatrix        ${VALGRIND_WITH_OPTIONS} ./test_adjacencymatrix)
+    add_test(AdjacencyMatrixIndexer ${VALGRIND_WITH_OPTIONS} ./test_adjacencymatrixindexer)
+    add_test(Test-8                 ${VALGRIND_WITH_OPTIONS} ./test_test-8)
 else()
-    set(VALGRIND_WITH_OPTIONS "")
-    message(STATUS "Valgrind not found. Skipping for tests.")
+    message(STATUS "GTest not found. Skipping tests.")
 endif()
-
-enable_testing()
-
-add_test(AdjacencyMatrix        ${VALGRIND_WITH_OPTIONS} ./test_adjacencymatrix)
-add_test(AdjacencyMatrixIndexer ${VALGRIND_WITH_OPTIONS} ./test_adjacencymatrixindexer)
-add_test(Test-8                 ${VALGRIND_WITH_OPTIONS} ./test_test-8)
