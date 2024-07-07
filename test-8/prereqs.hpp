@@ -23,8 +23,10 @@
 #   define R5_OS_WINDOWS
 #endif
 
-#ifdef R5_OS_MAC
+#if defined(R5_OS_MAC)
 #   include<mach/mach.h>
+#elif defined(R5_OS_LINUX)
+#   include <sys/resource.h>
 #endif
 
 using s8  =  int8_t;
@@ -301,18 +303,25 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
 
 namespace r5 {
 std::size_t memoryUsage() {
-    std::size_t usage = 0;
-#ifdef R5_OS_MAC
+    std::size_t usedBytes = 0;
+#if defined(R5_OS_MAC)
     struct task_basic_info info;
     mach_msg_type_number_t infoCount = TASK_BASIC_INFO_COUNT;
     kern_return_t ret =  task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)&info, &infoCount);
     if (ret == KERN_SUCCESS) {
-        usage = info.resident_size;
+        usedBytes = info.resident_size;
     }
+#elif defined(R5_OS_LINUX)
+    struct rusage ru;
+    int ret = getrusage(RUSAGE_SELF, &ru);
+    if (ret == 0) {
+        usedBytes = ru.ru_maxrss * 1024; // ru_maxrss is in KiB;
+    }
+
 #else
 #   pragma message("not implemented")
 #endif
-    return usage;
+    return usedBytes;
 }
 } // namespace r5
 
