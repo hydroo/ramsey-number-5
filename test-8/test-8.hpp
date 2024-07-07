@@ -126,7 +126,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         std::vector<
             std::tuple<
                 AdjacencyMatrix<nodes>/*g*/,
-                std::map<DegreeTuple, std::vector<Size>>/*gNodesByDegree*/
+                boost::container::flat_map<DegreeTuple, std::vector<Size>>/*gNodesByDegree*/
             >
         >
     > uniqueGraphs;
@@ -191,7 +191,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             gDegrees[n] = std::make_tuple(gEdgeDegrees[n], gTriangleDegrees[n], gEmptyTriangleDegrees[n]);
         }
 
-        std::map<DegreeTuple, std::vector<Size>> gNodesByDegree{};
+        boost::container::flat_map<DegreeTuple, std::vector<Size>> gNodesByDegree{};
         for (Size n = 0; n < nodes; n += 1) {
             gNodesByDegree[gDegrees[n]].emplace_back(n);
         }

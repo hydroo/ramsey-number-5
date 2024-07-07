@@ -11,6 +11,10 @@
 #include <stdint.h>
 #include <vector>
 
+#include <boost/container/flat_map.hpp>
+#include <boost/container/flat_set.hpp>
+#include <boost/container/static_vector.hpp>
+
 #ifdef R5_GTEST
 #   include <gtest/gtest.h>
 #endif
@@ -212,10 +216,10 @@ std::ostream& operator<<(std::ostream& o, const std::tuple<Args...>& t);
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& v);
 
-template <typename T, std::size_t length>
-std::ostream& operator<<(std::ostream& o, const std::array<T, length>& a) {
+template <typename T, std::size_t Capacity>
+std::ostream& operator<<(std::ostream& o, const std::array<T, Capacity>& a) {
     o << '[';
-    for (s64 i = 0; i < ((s64)length) - 1; i += 1) {
+    for (s64 i = 0; i < ((s64)Capacity) - 1; i += 1) {
         o << a[i] << ", ";
     }
     if (a.size() > 0) {
@@ -240,6 +244,21 @@ std::ostream& operator<<(std::ostream& o, const std::map<K, V>& m) {
     return o;
 }
 
+template <typename K, typename V>
+std::ostream& operator<<(std::ostream& o, const boost::container::flat_map<K, V>& m) {
+    o << '{';
+
+    for (auto i = m.cbegin(); i != m.cend(); ++i) {
+        o << i->first << " : " << i->second;
+        auto j = i;
+        if (++j != m.cend()) {
+            o << ", ";
+        }
+    }
+    o << '}';
+    return o;
+}
+
 template <typename T, typename U>
 std::ostream& operator<<(std::ostream& o, const std::pair<T, U>& p) {
     o << '(' << p.first << "," << p.second << ")";
@@ -248,6 +267,21 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T, U>& p) {
 
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::set<T>& s) {
+    o << '{';
+    std::size_t i = 0;
+    for (const auto& e : s) {
+        o << e;
+        if (i < s.size()-1) {
+            o << ", ";
+        }
+        i += 1;
+    }
+    o << '}';
+    return o;
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& o, const boost::container::flat_set<T>& s) {
     o << '{';
     std::size_t i = 0;
     for (const auto& e : s) {
@@ -290,6 +324,19 @@ std::ostream& operator<<(std::ostream& o, const std::tuple<Args...>& t)
 
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
+    o << '[';
+    for (s64 i = 0; i < ((s64)v.size() - 1); i += 1) {
+        o << v[i] << ", ";
+    }
+    if (v.size() > 0) {
+        o << v.back();
+    }
+    o << ']';
+    return o;
+}
+
+template <typename T, std::size_t Capacity>
+std::ostream& operator<<(std::ostream& o, const boost::container::static_vector<T, Capacity>& v) {
     o << '[';
     for (s64 i = 0; i < ((s64)v.size() - 1); i += 1) {
         o << v[i] << ", ";

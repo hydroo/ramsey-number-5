@@ -6,6 +6,7 @@ enable_language(CXX)
 
 find_package(GTest)
 find_package(Threads REQUIRED)
+find_package(Boost 1.74 REQUIRED COMPONENTS container)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
@@ -26,6 +27,8 @@ set(CMAKE_CXX_FLAGS_RELEASE        "-DNDEBUG -O3 -march=native -mtune=native")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -march=native -mtune=native -g -fno-omit-frame-pointer")
 
 add_executable(test-8 test-8.cpp)
+target_include_directories(test-8 PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(test-8 PRIVATE Boost::container)
 
 configure_file(build.sh build.sh COPYONLY)
 configure_file(bench.sh bench.sh COPYONLY)
@@ -40,15 +43,15 @@ if (GTest_FOUND)
 
     add_executable(test_adjacencymatrix test_adjacencymatrix.cpp)
     target_include_directories(test_adjacencymatrix PRIVATE ${GTEST_INCLUDE_DIRS})
-    target_link_libraries(test_adjacencymatrix ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(test_adjacencymatrix PRIVATE ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
     add_executable(test_adjacencymatrixindexer test_adjacencymatrixindexer.cpp)
     target_include_directories(test_adjacencymatrixindexer PRIVATE ${GTEST_INCLUDE_DIRS})
-    target_link_libraries(test_adjacencymatrixindexer ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(test_adjacencymatrixindexer PRIVATE ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
     add_executable(test_test-8 test_test-8.cpp)
-    target_include_directories(test_test-8 PRIVATE ${GTEST_INCLUDE_DIRS})
-    target_link_libraries(test_test-8 ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    target_include_directories(test_test-8 PRIVATE ${Boost_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS} )
+    target_link_libraries(test_test-8 PRIVATE Boost::container ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
     find_program(VALGRIND valgrind)
     if (VALGRIND)
