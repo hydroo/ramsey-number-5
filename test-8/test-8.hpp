@@ -208,7 +208,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             maxDegreeMultiplicity = std::max(maxDegreeMultiplicity, Size(nodesVector.size()));
         }
 
-        std::map<Size, std::set<DegreeTuple>> gDegreeHistogramReverse{}; // degree multiplicty -> set of degrees
+        std::array<boost::container::flat_set<DegreeTuple>, nodes+1> gDegreeHistogramReverse{}; // degree multiplicty -> set of degrees
         for (auto const& [degreeTuple, multiplicity] : gDegreeHistogram) {
             gDegreeHistogramReverse[multiplicity].emplace(degreeTuple);
         }
