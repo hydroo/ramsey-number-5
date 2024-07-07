@@ -270,8 +270,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         const AdjacencyMatrixProperties& gProperties = gDegreeHistogram;
 
-        const auto it = uniqueGraphs.find(gProperties);
-        if (it == uniqueGraphs.cend()) {
+        const auto uniqueGraphsIt = uniqueGraphs.find(gProperties);
+        if (uniqueGraphsIt == uniqueGraphs.cend()) {
 #if R5_VERBOSE >= 4
             cerr << "  unique properties" << endl;
 #endif
@@ -279,7 +279,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         } else {
             // for each recorded unique graph h with the same degree histogram as g
             // (g and h cannot be isomorphic if the node degrees differ)
-            for (const auto& [ h, hNodesByDegree ] : it->second) {
+            for (const auto& [ h, hNodesByDegree ] : uniqueGraphsIt->second) {
 
                 R5_VERBOSE_1(graphCombinations += 1);
 
