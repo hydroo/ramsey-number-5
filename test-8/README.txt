@@ -339,9 +339,8 @@ Hard to tell how much exactly.
 - Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n
 - Extend test_test-8.cpp to cover some of 4,5,n and 5,5,n
 
-- Replace std::map for uniqueGraphs and gNodesByDegree with more efficient data structures
-- Don't store the whole key in the uniqueGraphs map. Rather hash gProperties.
-  (Sadly there is no std::hash for the current keytype. Would need to add.)
+- Update the macbook measurements
+- Further improve containers & their usage (Large majority of time is spent in container-related functions)
 - Improve gProperties/gDegrees beyond edge and triangle degrees
   - Maybe entirely new properties like ?orbit lengths?
   - Maybe K_4+: Probably would use subGraphEdgeMasks() and some smarts to find the subgraphs, instead of the hardcoded degree+triangle+empty triangle stuff we do now
