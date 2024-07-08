@@ -121,7 +121,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     [[maybe_unused]] constexpr Size triangleDegreeCount = nodes >= 2 ? (nodes-1)*(nodes-2)/2 + 1 : 0; // == maxtriangleDegree+1
 
     // Note: std::map might not be great long-term. unordered_map?
-    std::map<
+    std::unordered_map<
         AdjacencyMatrixProperties,
         std::vector<
             std::tuple<
@@ -129,7 +129,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 boost::container::flat_map<DegreeTuple, std::vector<Size>>/*gNodesByDegree*/
             >
         >
-    > uniqueGraphs;
+    > uniqueGraphs(graphs.size());
 
 #if R5_VERBOSE >= 1
     auto uniqueGraphsSize = [](const auto& uniqueGraphs) {
