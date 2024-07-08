@@ -192,9 +192,11 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         }
 
         boost::container::flat_map<DegreeTuple, std::vector<Size>> gNodesByDegree{};
+        gNodesByDegree.reserve(nodes);
         for (Size n = 0; n < nodes; n += 1) {
             gNodesByDegree[gDegrees[n]].emplace_back(n);
         }
+        //gNodesByDegree.shrink_to_fit(); // slow
 
         Size maxDegreeMultiplicity = 0;
         // Note: This works because gNodesByDegree's keys are already sorted.
