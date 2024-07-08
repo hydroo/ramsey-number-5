@@ -140,7 +140,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 valuesByteSize += get<0>(e).byteSize();
                 for (const auto& [degreeTuple, nodesByDegree] : get<1>(e)) {
                     valuesByteSize += sizeof(DegreeTuple);
-                    valuesByteSize += sizeof(Size) * nodesByDegree.size();
+                    valuesByteSize += sizeof(Size) * nodesByDegree.capacity();
                 }
             }
         }
