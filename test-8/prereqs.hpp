@@ -9,12 +9,14 @@
 #include <set>
 #include <sstream>
 #include <stdint.h>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
 #include <boost/container/small_vector.hpp>
 #include <boost/container/static_vector.hpp>
+#include <boost/functional/hash.hpp>
 
 #ifdef R5_GTEST
 #   include <gtest/gtest.h>
@@ -220,6 +222,8 @@ template <typename T, std::size_t Capacity>
 std::ostream& operator<<(std::ostream& o, const boost::container::small_vector<T, Capacity>& v);
 template <typename T, std::size_t Capacity>
 std::ostream& operator<<(std::ostream& o, const boost::container::static_vector<T, Capacity>& v);
+template <typename K, typename V>
+std::ostream& operator<<(std::ostream& o, const std::unordered_map<K, V>& m);
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& v);
 
@@ -355,6 +359,21 @@ std::ostream& operator<<(std::ostream& o, const boost::container::static_vector<
     return o;
 }
 
+template <typename K, typename V>
+std::ostream& operator<<(std::ostream& o, const std::unordered_map<K, V>& m) {
+    o << '{';
+
+    for (auto i = m.cbegin(); i != m.cend(); ++i) {
+        o << i->first << " : " << i->second;
+        auto j = i;
+        if (++j != m.cend()) {
+            o << ", ";
+        }
+    }
+    o << '}';
+    return o;
+}
+
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
     o << '[';
@@ -366,6 +385,47 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
     }
     o << ']';
     return o;
+}
+
+namespace std {
+
+    template <typename T, std::size_t Capacity>
+    struct hash<std::array<T, Capacity>> {
+        size_t operator()(const std::array<T, Capacity>& a) const {
+            size_t seed = 0;
+            for (const auto& v : a) {
+                boost::hash_combine(seed, v);
+            }
+            return seed;
+        }
+    };
+
+    namespace {
+        template <class Tuple, size_t Index = std::tuple_size<Tuple>::value - 1>
+        struct HashValueImpl {
+          static void apply(size_t& seed, const Tuple& tuple)
+          {
+            HashValueImpl<Tuple, Index-1>::apply(seed, tuple);
+            boost::hash_combine(seed, std::get<Index>(tuple));
+          }
+        };
+
+        template <class Tuple>
+        struct HashValueImpl<Tuple,0> {
+          static void apply(size_t& seed, const Tuple& tuple) {
+            boost::hash_combine(seed, std::get<0>(tuple));
+          }
+        };
+    }
+
+    template <typename ... TT>
+    struct hash<std::tuple<TT...>> {
+        size_t operator()(const std::tuple<TT...>& tt) const {
+            size_t seed = 0;
+            HashValueImpl<std::tuple<TT...> >::apply(seed, tt);
+            return seed;
+        }
+    };
 }
 
 namespace r5 {
