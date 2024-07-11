@@ -290,15 +290,15 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 cerr << "  h " << h << " hNodesByDegree " << hNodesByDegree << endl;
 #endif
 
-                // Idea: It might be possible to skip assigning empty/full nodes here
                 // Idea: You could check permutations while assigning them for an early exit here -- But this could make SIMD optimizations less interesting
+                // Note: This could be split up into empty/full nodes and others. Others would have to be of unique degree, i.e. no inner for-loop. In testing I saw no benefit, though.
                 int fixedNodes = 0;
                 std::array<Size, nodes> permutation{};
                 for (Size i = 0; i < firstNotUniqueDegreeMultiplicityNodeIndex; i += 1) {
                     Size n = traversalOrder[i];
                     const auto& degreeTuple = gDegrees[n];
                     const auto candidateNodesIt = hNodesByDegree.find(degreeTuple);
-                    if (candidateNodesIt == hNodesByDegree.cend()) { continue; }
+                    if (candidateNodesIt == hNodesByDegree.cend()) { break; }
                     for(Size j = 0; j < Size(candidateNodesIt->second.size()); j += 1) {
                         Size m = candidateNodesIt->second[j];
                         if (assignedNodes[m] == false) {
