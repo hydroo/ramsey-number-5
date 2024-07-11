@@ -331,11 +331,6 @@ The good thing is, if these two maps are properly optimized the upside is 3-10x.
 Hard to tell how much exactly.
 
 # Possible next steps - June 2024
-- Investigate whether it makes and we can use vcpkg by default if discovered on console
-  https://learn.microsoft.com/en-us/vcpkg/users/buildsystems/cmake-integration
-  Strange supposed workflow: cmake .. -DCMAKE_TOOLCHAIN_FILE=<vcpkg-root>/scripts/buildsystems/vcpkg.cmake
-- Port to Windows
-
 - Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n
 - Extend test_test-8.cpp to cover some of 4,5,n and 5,5,n
 
