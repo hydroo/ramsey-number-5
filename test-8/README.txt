@@ -330,7 +330,12 @@ So we basically traded a reduction of operations uniqueAdjacencyMatrices5 for "p
 The good thing is, if these two maps are properly optimized the upside is 3-10x.
 Hard to tell how much exactly.
 
-# Possible next steps - June 2024
+# Better Containers - 11th July 2024
+
+By using unordered_map for uniqueGraphs, as well as with the boost containers flat_set and flat_map we inched out a ~20-30% reduction in time.
+I was hoping for much better improvements.
+
+# Possible next steps - July 2024
 - Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n
 - Extend test_test-8.cpp to cover some of 4,5,n and 5,5,n
 
