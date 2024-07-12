@@ -294,24 +294,24 @@ This avoids copying/constructing/destroying this data structure and thus improve
 
 # Add Triangle and Empty Triangle Count Histograms as Properties for Pre-Bucketing Potentially Isomorphic Graphs - 13th Nov 2022
 
-                  i7-9750H   M2 Pro (9th Apr 2024)  (11th July 2024)
+                  i7-9750H   M2 Pro (9th Apr 2024)  (12th July 2024)
     R(4,4) =?  9    ~0.4          ~0.2                  ~0.3
-    R(4,4) =? 10     3.7           2.5                   2.4
-    R(4,4) =? 11    30.5          24.2                  17.9
-    R(4,4) =? 12   194.1         135.5                  76.7
-    R(4,4) =? 13   410.9         264.2                 147.3
-    R(4,4) == 18   473.9         300.2                 203.7
+    R(4,4) =? 10     3.7           2.5                   2.3
+    R(4,4) =? 11    30.5          24.2                  17.5
+    R(4,4) =? 12   194.1         135.5                  75.1
+    R(4,4) =? 13   410.9         264.2                 145.2
+    R(4,4) == 18   473.9         300.2                 170.6
 
-    R(3,6) =? 11                   1.6                   1.3
-    R(3,6) =? 12                  16.2                   8.1
-    R(3,6) =? 13                 118.1                  39.2
-    R(3,6) =? 14                 280.9                  94.2
-    R(3,6) == 18                 329.7                 119.8
+    R(3,6) =? 11                   1.6                   1.2
+    R(3,6) =? 12                  16.2                   7.9
+    R(3,6) =? 13                 118.1                  38.8
+    R(3,6) =? 14                 280.9                  91.6
+    R(3,6) == 18                 329.7                 118.4
 
-    R(4,5) == 10                   52.2                 44.8
+    R(4,5) == 10                   52.2                 43.2
 
-    R(5,5) ==  9                   4.0                   3.8
-    R(5,5) == 10                 245.8                 200.5
+    R(5,5) ==  9                   4.0                   3.7
+    R(5,5) == 10                 245.8                 194.0
 
 # Combine all Three Degree Types and Also Use Them to Inform Traversal - 22nd June 2024
 

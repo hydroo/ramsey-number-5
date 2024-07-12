@@ -197,6 +197,10 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         }
         //gNodesByDegree.shrink_to_fit(); // slow
 
+#if R5_VERBOSE >= 4
+            cerr << "  gNodesByDegree " << gNodesByDegree << endl;
+#endif
+
         Size maxDegreeMultiplicity = 0;
         // Note: This works because gNodesByDegree's keys are already sorted.
         //       The right side is automatically padded with [[0, 0, 0], 0] tuples, because we don't know how many elements exactly we need.
@@ -209,64 +213,6 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             maxDegreeMultiplicity = std::max(maxDegreeMultiplicity, Size(nodesVector.size()));
         }
 
-        std::array<boost::container::flat_set<DegreeTuple>, nodes+1> gDegreeHistogramReverse{}; // degree multiplicty -> set of degrees
-        for (auto const& [degreeTuple, multiplicity] : gDegreeHistogram) {
-            gDegreeHistogramReverse[multiplicity].emplace(degreeTuple);
-        }
-
-#if R5_VERBOSE >= 4
-        cerr << "  gNodesByDegree " << gNodesByDegree << endl;
-#endif
-
-        // Traversal Order:
-        // 1) Assign nodes of degree 0 or nodes-1 to any node of the same degree
-        // 2) Assign nodes of a unique degree to the one possible option
-        // 3) Traverse in order of lowest degree multiplicity first.
-        //    I.e. the node degree that is rarest comes first,
-        //    nodes with the most common degree come last.
-        //    This slims the traversal tree. Smaller fan-out first, bigger fan-out later.
-        std::array<Size, nodes> traversalOrder;
-        std::array<bool, nodes> fixedNodes{};
-
-        Size firstNotEmptyOrFullNodeIndex = 0;
-        for (Size n : gEmptyOrFullNodes) {
-            traversalOrder[firstNotEmptyOrFullNodeIndex] = n;
-            R5_DEBUG_ASSERT(fixedNodes[n] == false);
-            fixedNodes[n] = true;
-            firstNotEmptyOrFullNodeIndex += 1;
-        }
-
-        Size firstNotUniqueDegreeMultiplicityNodeIndex = firstNotEmptyOrFullNodeIndex;
-        for (auto const& [dt, multiplicity] : gDegreeHistogram) {
-            if (firstNotUniqueDegreeMultiplicityNodeIndex >= nodes) { break; }
-            if (multiplicity == 1) {
-                auto n = gNodesByDegree[dt][0];
-                traversalOrder[firstNotUniqueDegreeMultiplicityNodeIndex] = n;
-                if (fixedNodes[n] == true) { continue; }
-                fixedNodes[n] = true;
-                firstNotUniqueDegreeMultiplicityNodeIndex += 1;
-            }
-        }
-
-        Size firstNotFixedNodeIndex = firstNotUniqueDegreeMultiplicityNodeIndex;
-
-        R5_VERBOSE_1(fixedNodesSum += firstNotFixedNodeIndex);
-
-        Size traversedNode = firstNotFixedNodeIndex;
-        for (Size degreeMultiplicity = 2; degreeMultiplicity <= maxDegreeMultiplicity; degreeMultiplicity += 1) {
-            for (const auto& dt : gDegreeHistogramReverse[degreeMultiplicity]) {
-                for (Size n : gNodesByDegree[dt]) {
-                    if (fixedNodes[n] == true) { continue; }
-                    traversalOrder[traversedNode] = n;
-                    traversedNode += 1;
-                }
-            }
-        }
-
-#if R5_VERBOSE >= 4
-        cerr << "  traversal order " << traversalOrder  << " firstNotFixedNodeIndex " << firstNotFixedNodeIndex << endl;
-#endif
-
         bool isUnique = true;
 
         const AdjacencyMatrixProperties& gProperties = gDegreeHistogram;
@@ -278,6 +224,62 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #endif
             isUnique = true;
         } else {
+
+            std::array<boost::container::flat_set<DegreeTuple>, nodes+1> gDegreeHistogramReverse{}; // degree multiplicty -> set of degrees
+            for (auto const& [degreeTuple, multiplicity] : gDegreeHistogram) {
+                gDegreeHistogramReverse[multiplicity].emplace(degreeTuple);
+            }
+
+            // Traversal Order:
+            // 1) Assign nodes of degree 0 or nodes-1 to any node of the same degree
+            // 2) Assign nodes of a unique degree to the one possible option
+            // 3) Traverse in order of lowest degree multiplicity first.
+            //    I.e. the node degree that is rarest comes first,
+            //    nodes with the most common degree come last.
+            //    This slims the traversal tree. Smaller fan-out first, bigger fan-out later.
+            std::array<Size, nodes> traversalOrder;
+            std::array<bool, nodes> fixedNodes{};
+
+            Size firstNotEmptyOrFullNodeIndex = 0;
+            for (Size n : gEmptyOrFullNodes) {
+                traversalOrder[firstNotEmptyOrFullNodeIndex] = n;
+                R5_DEBUG_ASSERT(fixedNodes[n] == false);
+                fixedNodes[n] = true;
+                firstNotEmptyOrFullNodeIndex += 1;
+            }
+
+            Size firstNotUniqueDegreeMultiplicityNodeIndex = firstNotEmptyOrFullNodeIndex;
+            for (auto const& [dt, multiplicity] : gDegreeHistogram) {
+                if (firstNotUniqueDegreeMultiplicityNodeIndex >= nodes) { break; }
+                if (multiplicity == 1) {
+                    auto n = gNodesByDegree[dt][0];
+                    traversalOrder[firstNotUniqueDegreeMultiplicityNodeIndex] = n;
+                    if (fixedNodes[n] == true) { continue; }
+                    fixedNodes[n] = true;
+                    firstNotUniqueDegreeMultiplicityNodeIndex += 1;
+                }
+            }
+
+            Size firstNotFixedNodeIndex = firstNotUniqueDegreeMultiplicityNodeIndex;
+
+            R5_VERBOSE_1(fixedNodesSum += firstNotFixedNodeIndex);
+
+            Size traversedNode = firstNotFixedNodeIndex;
+            for (Size degreeMultiplicity = 2; degreeMultiplicity <= maxDegreeMultiplicity; degreeMultiplicity += 1) {
+                for (const auto& dt : gDegreeHistogramReverse[degreeMultiplicity]) {
+                    for (Size n : gNodesByDegree[dt]) {
+                        if (fixedNodes[n] == true) { continue; }
+                        traversalOrder[traversedNode] = n;
+                        traversedNode += 1;
+                    }
+                }
+            }
+
+#if R5_VERBOSE >= 4
+            cerr << "  traversal order " << traversalOrder  << " firstNotFixedNodeIndex " << firstNotFixedNodeIndex << endl;
+#endif
+
+
             // for each recorded unique graph h with the same degree histogram as g
             // (g and h cannot be isomorphic if the node degrees differ)
             for (const auto& [ h, hNodesByDegree ] : uniqueGraphsIt->second) {
