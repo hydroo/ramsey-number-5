@@ -58,6 +58,8 @@ TEST(Test8, ramseyGraphs) {
     ASSERT_EQ((ramseyGraphs<4, 4,  6>().size()),  84);
     ASSERT_EQ((ramseyGraphs<4, 4,  7>().size()), 362);
 
+    // Note: the following results are not confirmed by outside information, yet. TODO
+
     ASSERT_EQ((ramseyGraphs<4, 5,  1>().size()),   1); ASSERT_EQ((ramseyGraphs<5, 4,  1>().size()),   1);
     ASSERT_EQ((ramseyGraphs<4, 5,  2>().size()),   2); ASSERT_EQ((ramseyGraphs<5, 4,  2>().size()),   2);
     ASSERT_EQ((ramseyGraphs<4, 5,  3>().size()),   4); ASSERT_EQ((ramseyGraphs<5, 4,  3>().size()),   4);

@@ -20,7 +20,7 @@ Ramsey(5,5)-graphs with 2 vertices
   Non-unique Ramsey graphs:                              2
   Non-unique Ramsey graphs byte size:                    0.000 MiB
 
-  Average fixed nodes:                                   2.000
+  Average fixed nodes:                                   0.000
   Unique properties:                                     2
   Unique graphs keys byte size                           0.000 MiB
   Unique graphs values byte size                         0.000 MiB
@@ -33,7 +33,7 @@ Ramsey(5,5)-graphs with 2 vertices
   Uniquify Ramsey graphs:                                0.000 seconds
   Ramsey graphs:                                         2
   Ramsey graphs byte size:                               0.000 MiB
-  Total memory usage:                                    1.828 MiB
+  Total memory usage:                                    1.906 MiB
 
 Ramsey(5,5)-graphs with 3 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -52,7 +52,7 @@ Ramsey(5,5)-graphs with 3 vertices
   Non-unique Ramsey graphs:                              8
   Non-unique Ramsey graphs byte size:                    0.000 MiB
 
-  Average fixed nodes:                                   1.500
+  Average fixed nodes:                                   0.500
   Unique properties:                                     4
   Unique graphs keys byte size                           0.000 MiB
   Unique graphs values byte size                         0.000 MiB
@@ -65,7 +65,7 @@ Ramsey(5,5)-graphs with 3 vertices
   Uniquify Ramsey graphs:                                0.000 seconds
   Ramsey graphs:                                         4
   Ramsey graphs byte size:                               0.000 MiB
-  Total memory usage:                                    1.844 MiB
+  Total memory usage:                                    2.016 MiB
 
 Ramsey(5,5)-graphs with 4 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -84,7 +84,7 @@ Ramsey(5,5)-graphs with 4 vertices
   Non-unique Ramsey graphs:                             32
   Non-unique Ramsey graphs byte size:                    0.000 MiB
 
-  Average fixed nodes:                                   1.625
+  Average fixed nodes:                                   1.062
   Unique properties:                                    11
   Unique graphs keys byte size                           0.001 MiB
   Unique graphs values byte size                         0.001 MiB
@@ -97,7 +97,7 @@ Ramsey(5,5)-graphs with 4 vertices
   Uniquify Ramsey graphs:                                0.000 seconds
   Ramsey graphs:                                        11
   Ramsey graphs byte size:                               0.000 MiB
-  Total memory usage:                                    1.891 MiB
+  Total memory usage:                                    2.062 MiB
 
 Ramsey(5,5)-graphs with 5 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -116,20 +116,20 @@ Ramsey(5,5)-graphs with 5 vertices
   Non-unique Ramsey graphs:                            174
   Non-unique Ramsey graphs byte size:                    0.001 MiB
 
-  Average fixed nodes:                                   1.971
+  Average fixed nodes:                                   1.667
   Unique properties:                                    32
   Unique graphs keys byte size                           0.005 MiB
   Unique graphs values byte size                         0.004 MiB
   Max graphs per property:                               1
   Graph combinations checked:                          142
   Graph combinations requiring traversal:              142
-  Recursion steps:                                     443
-  Permutation checks:                                  585
+  Recursion steps:                                     440
+  Permutation checks:                                  582
 
   Uniquify Ramsey graphs:                                0.000 seconds
   Ramsey graphs:                                        32
   Ramsey graphs byte size:                               0.000 MiB
-  Total memory usage:                                    1.953 MiB
+  Total memory usage:                                    2.234 MiB
 
 Ramsey(5,5)-graphs with 6 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -142,26 +142,26 @@ Ramsey(5,5)-graphs with 6 vertices
   Possible combinations:                             1,024 # 32 * 2^5
 
   Check all colorings:                                   0.000 seconds
-  Number of recursion steps:                         1,976
-  Number of colorings checked:                       2,534
-  Number of edge mask checks:                        4,550
+  Number of recursion steps:                         1,972
+  Number of colorings checked:                       2,530
+  Number of edge mask checks:                        4,546
   Non-unique Ramsey graphs:                          1,006
   Non-unique Ramsey graphs byte size:                    0.008 MiB
 
-  Average fixed nodes:                                   2.700
+  Average fixed nodes:                                   2.410
   Unique properties:                                   144
   Unique graphs keys byte size                           0.026 MiB
   Unique graphs values byte size                         0.020 MiB
   Max graphs per property:                               1
   Graph combinations checked:                          862
   Graph combinations requiring traversal:              766
-  Recursion steps:                                   2,898
-  Permutation checks:                                3,758
+  Recursion steps:                                   2,933
+  Permutation checks:                                3,789
 
   Uniquify Ramsey graphs:                                0.002 seconds
   Ramsey graphs:                                       144
   Ramsey graphs byte size:                               0.001 MiB
-  Total memory usage:                                    2.266 MiB
+  Total memory usage:                                    2.344 MiB
 
 Ramsey(5,5)-graphs with 7 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -174,26 +174,26 @@ Ramsey(5,5)-graphs with 7 vertices
   Possible combinations:                             9,216 # 144 * 2^6
 
   Check all colorings:                                   0.000 seconds
-  Number of recursion steps:                        17,898
-  Number of colorings checked:                      24,800
-  Number of edge mask checks:                      110,017
+  Number of recursion steps:                        18,056
+  Number of colorings checked:                      24,958
+  Number of edge mask checks:                      111,043
   Non-unique Ramsey graphs:                          8,918
   Non-unique Ramsey graphs byte size:                    0.068 MiB
 
-  Average fixed nodes:                                   3.920
+  Average fixed nodes:                                   3.577
   Unique properties:                                   928
   Unique graphs keys byte size                           0.198 MiB
   Unique graphs values byte size                         0.163 MiB
   Max graphs per property:                               1
   Graph combinations checked:                        7,990
   Graph combinations requiring traversal:            6,570
-  Recursion steps:                                  26,572
-  Permutation checks:                               34,455
+  Recursion steps:                                  26,546
+  Permutation checks:                               34,432
 
   Uniquify Ramsey graphs:                                0.016 seconds
   Ramsey graphs:                                       928
   Ramsey graphs byte size:                               0.007 MiB
-  Total memory usage:                                    3.688 MiB
+  Total memory usage:                                    3.359 MiB
 
 Ramsey(5,5)-graphs with 8 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -205,27 +205,27 @@ Ramsey(5,5)-graphs with 8 vertices
   New edges to fill:                                     7
   Possible combinations:                           118,784 # 928 * 2^7
 
-  Check all colorings:                                   0.003 seconds
-  Number of recursion steps:                       232,854
-  Number of colorings checked:                     332,064
-  Number of edge mask checks:                    3,008,481
+  Check all colorings:                                   0.004 seconds
+  Number of recursion steps:                       230,498
+  Number of colorings checked:                     329,708
+  Number of edge mask checks:                    2,978,728
   Non-unique Ramsey graphs:                        112,202
   Non-unique Ramsey graphs byte size:                    0.856 MiB
 
-  Average fixed nodes:                                   5.327
+  Average fixed nodes:                                   4.880
   Unique properties:                                10,394
   Unique graphs keys byte size                           2.538 MiB
   Unique graphs values byte size                         2.236 MiB
   Max graphs per property:                               3
-  Graph combinations checked:                      102,567
-  Graph combinations requiring traversal:           77,366
-  Recursion steps:                                 317,635
-  Permutation checks:                              414,436
+  Graph combinations checked:                      102,579
+  Graph combinations requiring traversal:           77,376
+  Recursion steps:                                 318,598
+  Permutation checks:                              415,378
 
-  Uniquify Ramsey graphs:                                0.131 seconds
+  Uniquify Ramsey graphs:                                0.109 seconds
   Ramsey graphs:                                    10,486
   Ramsey graphs byte size:                               0.080 MiB
-  Total memory usage:                                    9.859 MiB
+  Total memory usage:                                    9.406 MiB
 
 Ramsey(5,5)-graphs with 9 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -237,27 +237,27 @@ Ramsey(5,5)-graphs with 9 vertices
   New edges to fill:                                     8
   Possible combinations:                         2,684,416 # 10,486 * 2^8
 
-  Check all colorings:                                   0.053 seconds
-  Number of recursion steps:                     5,116,268
-  Number of colorings checked:                   7,417,015
-  Number of edge mask checks:                  120,205,084
+  Check all colorings:                                   0.055 seconds
+  Number of recursion steps:                     5,202,142
+  Number of colorings checked:                   7,502,889
+  Number of edge mask checks:                  121,938,512
   Non-unique Ramsey graphs:                      2,447,551
   Non-unique Ramsey graphs byte size:                   18.673 MiB
 
-  Average fixed nodes:                                   6.823
+  Average fixed nodes:                                   6.256
   Unique properties:                               210,674
   Unique graphs keys byte size                          57.863 MiB
   Unique graphs values byte size                        54.960 MiB
   Max graphs per property:                               5
-  Graph combinations checked:                    2,304,799
-  Graph combinations requiring traversal:        1,546,715
-  Recursion steps:                               5,946,258
-  Permutation checks:                            8,129,138
+  Graph combinations checked:                    2,305,005
+  Graph combinations requiring traversal:        1,546,572
+  Recursion steps:                               5,937,753
+  Permutation checks:                            8,121,754
 
-  Uniquify Ramsey graphs:                                3.572 seconds
+  Uniquify Ramsey graphs:                                2.971 seconds
   Ramsey graphs:                                   216,529
   Ramsey graphs byte size:                               1.652 MiB
-  Total memory usage:                                  111.938 MiB
+  Total memory usage:                                  115.391 MiB
 
 Ramsey(5,5)-graphs with 10 vertices
   Create subgraph edge masks:                            0.000 seconds
@@ -269,27 +269,27 @@ Ramsey(5,5)-graphs with 10 vertices
   New edges to fill:                                     9
   Possible combinations:                       110,862,848 # 216,529 * 2^9
 
-  Check all colorings:                                   3.415 seconds
-  Number of recursion steps:                   212,480,030
-  Number of colorings checked:                 305,585,320
-  Number of edge mask checks:                8,171,236,900
+  Check all colorings:                                   3.316 seconds
+  Number of recursion steps:                   206,940,222
+  Number of colorings checked:                 300,045,512
+  Number of edge mask checks:                8,000,149,142
   Non-unique Ramsey graphs:                     96,136,696
   Non-unique Ramsey graphs byte size:                  733.465 MiB
 
-  Average fixed nodes:                                   8.211
+  Average fixed nodes:                                   7.544
   Unique properties:                             7,896,428
   Unique graphs keys byte size                       2,409.799 MiB
   Unique graphs values byte size                     2,437.765 MiB
   Max graphs per property:                              15
-  Graph combinations checked:                   94,332,714
-  Graph combinations requiring traversal:       54,644,245
-  Recursion steps:                             198,443,426
-  Permutation checks:                          288,922,769
+  Graph combinations checked:                   94,331,437
+  Graph combinations requiring traversal:       54,646,467
+  Recursion steps:                             198,654,173
+  Permutation checks:                          289,123,645
 
-  Uniquify Ramsey graphs:                              193.351 seconds
+  Uniquify Ramsey graphs:                              164.284 seconds
   Ramsey graphs:                                 8,385,584
   Ramsey graphs byte size:                              63.977 MiB
-  Total memory usage:                                3,240.031 MiB
+  Total memory usage:                                2,199.656 MiB
 
 Ramsey(5,5)-graphs with 10 vertices: 8,385,584
-Total time: 200.566 seconds
+Total time: 170.781 seconds
