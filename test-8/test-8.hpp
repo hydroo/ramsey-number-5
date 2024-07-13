@@ -205,7 +205,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         // Note: This works because gNodesByDegree's keys are already sorted.
         //       The right side is automatically padded with [[0, 0, 0], 0] tuples, because we don't know how many elements exactly we need.
         //       If gDegreeHistogram is used for other purposes, you'd need to reevaluate whether this is still OK.
-        std::array<std::tuple<DegreeTuple, Size>/*multiplicity*/, nodes> gDegreeHistogram{};
+        std::array<std::tuple<DegreeTuple, Size/*multiplicity*/>, nodes> gDegreeHistogram{};
         std::size_t gDegreeHistogramIndex = 0;
         for (auto const& [degreeTuple, nodesVector] : gNodesByDegree) {
             gDegreeHistogram[gDegreeHistogramIndex] = std::make_tuple(degreeTuple, nodesVector.size());
