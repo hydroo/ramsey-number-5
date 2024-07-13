@@ -57,6 +57,22 @@ TEST(Test8, ramseyGraphs) {
     ASSERT_EQ((ramseyGraphs<4, 4,  5>().size()),  24);
     ASSERT_EQ((ramseyGraphs<4, 4,  6>().size()),  84);
     ASSERT_EQ((ramseyGraphs<4, 4,  7>().size()), 362);
+
+    ASSERT_EQ((ramseyGraphs<4, 5,  1>().size()),   1); ASSERT_EQ((ramseyGraphs<5, 4,  1>().size()),   1);
+    ASSERT_EQ((ramseyGraphs<4, 5,  2>().size()),   2); ASSERT_EQ((ramseyGraphs<5, 4,  2>().size()),   2);
+    ASSERT_EQ((ramseyGraphs<4, 5,  3>().size()),   4); ASSERT_EQ((ramseyGraphs<5, 4,  3>().size()),   4);
+    ASSERT_EQ((ramseyGraphs<4, 5,  4>().size()),  10); ASSERT_EQ((ramseyGraphs<5, 4,  4>().size()),  10);
+    ASSERT_EQ((ramseyGraphs<4, 5,  5>().size()),  28); ASSERT_EQ((ramseyGraphs<5, 4,  5>().size()),  28);
+    ASSERT_EQ((ramseyGraphs<4, 5,  6>().size()), 114); ASSERT_EQ((ramseyGraphs<5, 4,  6>().size()), 114);
+    ASSERT_EQ((ramseyGraphs<4, 5,  7>().size()), 627); ASSERT_EQ((ramseyGraphs<5, 4,  7>().size()), 627);
+
+    ASSERT_EQ((ramseyGraphs<5, 5,  1>().size()),   1);
+    ASSERT_EQ((ramseyGraphs<5, 5,  2>().size()),   2);
+    ASSERT_EQ((ramseyGraphs<5, 5,  3>().size()),   4);
+    ASSERT_EQ((ramseyGraphs<5, 5,  4>().size()),  11);
+    ASSERT_EQ((ramseyGraphs<5, 5,  5>().size()),  32);
+    ASSERT_EQ((ramseyGraphs<5, 5,  6>().size()), 144);
+    ASSERT_EQ((ramseyGraphs<5, 5,  7>().size()), 928);
 }
 
 int main(int argc, char** args) {
