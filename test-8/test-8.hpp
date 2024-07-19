@@ -261,11 +261,11 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
             Size firstNotUniqueDegreeMultiplicityNodeIndex = firstNotEmptyOrFullNodeIndex;
             for (auto it = std::cbegin(gDegreeHistogram); it != gDegreeHistogramItEnd; ++it) {
-                auto const& [dt, multiplicity] = *it;
+                auto const& [degreeTuple, multiplicity] = *it;
                 if (firstNotUniqueDegreeMultiplicityNodeIndex >= nodes) { break; }
                 R5_DEBUG_ASSERT(multiplicity > 0);
                 if (multiplicity > 1) { break; }
-                auto n = gNodesByDegree[dt][0];
+                auto n = gNodesByDegree[degreeTuple][0];
                 traversalOrder[firstNotUniqueDegreeMultiplicityNodeIndex] = n;
                 if (fixedNodes[n] == true) { continue; }
                 fixedNodes[n] = true;
@@ -278,9 +278,9 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
             Size traversedNode = firstNotFixedNodeIndex;
             for (auto it = std::cbegin(gDegreeHistogram); it != gDegreeHistogramItEnd; ++it) {
-                const auto& [dt, multiplicity] = *it;
+                const auto& [degreeTuple, multiplicity] = *it;
                 if (multiplicity < 2) { continue; }
-                for (Size n : gNodesByDegree[dt]) {
+                for (Size n : gNodesByDegree[degreeTuple]) {
                     if (fixedNodes[n] == true) { continue; }
                     traversalOrder[traversedNode] = n;
                     traversedNode += 1;
