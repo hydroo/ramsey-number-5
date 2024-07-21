@@ -121,7 +121,12 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     constexpr Size triangleDegreeCount     = nodes >= 2 ? (nodes-1)*(nodes-2)/2 + 1 : 0; // == maxtriangleDegree+1
     constexpr Size edgeDegreeCountBits     = r5::staticLog2Ceil(edgeDegreeCount+1);
     constexpr Size triangleDegreeCountBits = r5::staticLog2Ceil(triangleDegreeCount+1);
+#define NEW_DEGREETUPLE
+#ifdef NEW_DEGREETUPLE
     using DegreeTuple = r5::PackedUIntTuple<edgeDegreeCountBits, triangleDegreeCountBits, triangleDegreeCountBits>;
+#else
+    using DegreeTuple = std::tuple<Size, Size, Size>;
+#endif
     //std::cerr << "AAA  n " << nodes << " ed " << edgeDegreeCount << " td " << triangleDegreeCount
     //        << " edb "<< edgeDegreeCountBits << " tdb " << triangleDegreeCountBits << " allbits " << edgeDegreeCount+2*edgeDegreeCountBits
     //        << " sizeof DegreeTuple "<< sizeof(DegreeTuple) << std::endl;
@@ -195,7 +200,11 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         std::array<DegreeTuple, nodes> gDegrees{};
         for (Size n = 0; n < nodes; n += 1) {
             if (gEdgeDegrees[n] == 0 || gEdgeDegrees[n] == nodes-1) { gEmptyOrFullNodes.emplace_back(n); }
+#ifdef NEW_DEGREETUPLE
             gDegrees[n] = DegreeTuple({gEdgeDegrees[n], gTriangleDegrees[n], gEmptyTriangleDegrees[n]});
+#else
+            gDegrees[n] = std::make_tuple(gEdgeDegrees[n], gTriangleDegrees[n], gEmptyTriangleDegrees[n]);
+#endif
         }
 
         boost::container::flat_map<DegreeTuple, std::vector<Size>> gNodesByDegree{};
