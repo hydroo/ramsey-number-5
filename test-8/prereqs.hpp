@@ -195,11 +195,11 @@ constexpr void fill_n(T* to, s64 count, const T& value) {
 } // namespace r5
 
 // // for uniqueGraphs with unordered_map
-// template<class s64, size_t N> 
+// template<class s64, std::size_t N>
 // struct std::hash<std::array<s64, N>> {
 //     auto operator() (const std::array<s64, N>& key) const {
-//         size_t result = 0;
-//         for(size_t i = 0; i < N; ++i) {
+//         std::size_t result = 0;
+//         for(std::size_t i = 0; i < N; ++i) {
 //             result = result * 31 + key[i];
 //         }
 //         return result;
@@ -391,8 +391,8 @@ namespace std {
 
     template <typename T, std::size_t Capacity>
     struct hash<std::array<T, Capacity>> {
-        size_t operator()(const std::array<T, Capacity>& a) const {
-            size_t seed = 0;
+        std::size_t operator()(const std::array<T, Capacity>& a) const {
+            std::size_t seed = 0;
             for (const auto& v : a) {
                 boost::hash_combine(seed, v);
             }
@@ -401,9 +401,9 @@ namespace std {
     };
 
     namespace {
-        template <class Tuple, size_t Index = std::tuple_size<Tuple>::value - 1>
+        template <class Tuple, std::size_t Index = std::tuple_size<Tuple>::value - 1>
         struct HashValueImpl {
-          static void apply(size_t& seed, const Tuple& tuple)
+          static void apply(std::size_t& seed, const Tuple& tuple)
           {
             HashValueImpl<Tuple, Index-1>::apply(seed, tuple);
             boost::hash_combine(seed, std::get<Index>(tuple));
@@ -412,7 +412,7 @@ namespace std {
 
         template <class Tuple>
         struct HashValueImpl<Tuple,0> {
-          static void apply(size_t& seed, const Tuple& tuple) {
+          static void apply(std::size_t& seed, const Tuple& tuple) {
             boost::hash_combine(seed, std::get<0>(tuple));
           }
         };
@@ -420,8 +420,8 @@ namespace std {
 
     template <typename ... TT>
     struct hash<std::tuple<TT...>> {
-        size_t operator()(const std::tuple<TT...>& tt) const {
-            size_t seed = 0;
+        std::size_t operator()(const std::tuple<TT...>& tt) const {
+            std::size_t seed = 0;
             HashValueImpl<std::tuple<TT...> >::apply(seed, tt);
             return seed;
         }
