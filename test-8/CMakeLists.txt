@@ -39,7 +39,7 @@ configure_file(bench.sh bench.sh COPYONLY)
 #set_source_files_properties(test-8.cpp PROPERTIES COMPILE_FLAGS "-DR5_VERBOSE=4")
 
 if (GTest_FOUND)
-    set_source_files_properties(test_adjacencymatrix.cpp test_adjacencymatrixindexer.cpp test_test-8 PROPERTIES COMPILE_FLAGS "-DR5_GTEST")
+    set_source_files_properties(test_adjacencymatrix.cpp test_adjacencymatrixindexer.cpp test_packeduinttuple.cpp test_test-8 PROPERTIES COMPILE_FLAGS "-DR5_GTEST")
 
     add_executable(test_adjacencymatrix test_adjacencymatrix.cpp)
     target_include_directories(test_adjacencymatrix PRIVATE ${GTEST_INCLUDE_DIRS})
@@ -48,6 +48,10 @@ if (GTest_FOUND)
     add_executable(test_adjacencymatrixindexer test_adjacencymatrixindexer.cpp)
     target_include_directories(test_adjacencymatrixindexer PRIVATE ${GTEST_INCLUDE_DIRS})
     target_link_libraries(test_adjacencymatrixindexer PRIVATE ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+
+    add_executable(test_packeduinttuple test_packeduinttuple.cpp)
+    target_include_directories(test_packeduinttuple PRIVATE ${GTEST_INCLUDE_DIRS})
+    target_link_libraries(test_packeduinttuple PRIVATE ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
     add_executable(test_test-8 test_test-8.cpp)
     target_include_directories(test_test-8 PRIVATE ${Boost_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS} )
@@ -65,6 +69,7 @@ if (GTest_FOUND)
 
     add_test(AdjacencyMatrix        ${VALGRIND_WITH_OPTIONS} ./test_adjacencymatrix)
     add_test(AdjacencyMatrixIndexer ${VALGRIND_WITH_OPTIONS} ./test_adjacencymatrixindexer)
+    add_test(PackedUIntTuple        ${VALGRIND_WITH_OPTIONS} ./test_packeduinttuple)
     add_test(Test-8                 ${VALGRIND_WITH_OPTIONS} ./test_test-8)
 else()
     message(STATUS "GTest not found. Skipping tests.")

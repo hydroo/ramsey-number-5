@@ -335,6 +335,12 @@ Hard to tell how much exactly.
 By using unordered_map for uniqueGraphs, as well as with the boost containers flat_set and flat_map we inched out a ~20-30% reduction in time.
 I was hoping for much better improvements.
 
+TODO improved by 20% on 13th July again, by removing degreeHistogramReverse.
+
+# PackedUintTuple - 21st July 2024
+
+TODO
+
 # Possible next steps - July 2024
 - Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n
   Confirm the extended test_test-8.cpp for 4,5,n and 5,5,n. Remove the note left there.
