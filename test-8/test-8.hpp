@@ -127,10 +127,13 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #else
     using DegreeTuple = std::tuple<Size, Size, Size>;
 #endif
+    using AdjacencyMatrixProperties = std::array<std::tuple<DegreeTuple, Size>, nodes> /*gDegreeHistogram*/;
     //std::cerr << "AAA  n " << nodes << " ed " << edgeDegreeCount << " td " << triangleDegreeCount
     //        << " edb "<< edgeDegreeCountBits << " tdb " << triangleDegreeCountBits << " allbits " << edgeDegreeCount+2*edgeDegreeCountBits
-    //        << " sizeof DegreeTuple "<< sizeof(DegreeTuple) << std::endl;
-    using AdjacencyMatrixProperties = std::array<std::tuple<DegreeTuple, Size>, nodes> /*gDegreeHistogram*/;
+    //        << " sizeof DegreeTuple "<< sizeof(DegreeTuple)
+    //        << " sizeof AdjacencyMatrixProperties = " << sizeof(AdjacencyMatrixProperties)
+    //        << " (" << nodes << " x " << sizeof(std::tuple<DegreeTuple, Size>) << " + padding, "
+    //        << " sizeof map pair " << sizeof(std::pair<AdjacencyMatrixProperties, std::vector<int>>) << std::endl;
 
     std::unordered_map<
         AdjacencyMatrixProperties,
