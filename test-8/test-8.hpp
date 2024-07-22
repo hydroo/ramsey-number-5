@@ -129,7 +129,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #endif
     using AdjacencyMatrixProperties = std::array<std::tuple<DegreeTuple, Size>, nodes> /*gDegreeHistogram*/;
     //std::cerr << "AAA  n " << nodes << " ed " << edgeDegreeCount << " td " << triangleDegreeCount
-    //        << " edb "<< edgeDegreeCountBits << " tdb " << triangleDegreeCountBits << " allbits " << edgeDegreeCount+2*edgeDegreeCountBits
+    //        << " edb "<< edgeDegreeCountBits << " tdb " << triangleDegreeCountBits << " allbits " << edgeDegreeCountBits+2*edgeDegreeCountBits
     //        << " sizeof DegreeTuple "<< sizeof(DegreeTuple)
     //        << " sizeof AdjacencyMatrixProperties = " << sizeof(AdjacencyMatrixProperties)
     //        << " (" << nodes << " x " << sizeof(std::tuple<DegreeTuple, Size>) << " + padding, "
