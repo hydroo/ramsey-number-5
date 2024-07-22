@@ -294,24 +294,24 @@ This avoids copying/constructing/destroying this data structure and thus improve
 
 # Add Triangle and Empty Triangle Count Histograms as Properties for Pre-Bucketing Potentially Isomorphic Graphs - 13th Nov 2022
 
-                  i7-9750H   M2 Pro (9th Apr 2024)  (13th July 2024) (21st July 2024)
-    R(4,4) =?  9    ~0.4          ~0.2                  ~0.3             ~0.2
-    R(4,4) =? 10     3.7           2.5                   2.0              1.4
-    R(4,4) =? 11    30.5          24.2                  15.1             11.4
-    R(4,4) =? 12   194.1         135.5                  66.6             53.1
-    R(4,4) =? 13   410.9         264.2                 131.4            109.7
-    R(4,4) == 18   473.9         300.2                 157.0            135.1
+                  i7-9750H   M2 Pro (9th Apr 2024)  (13th July 2024) (22nd July 2024)
+    R(4,4) =?  9    ~0.4          ~0.2                  ~0.3             ~0.1
+    R(4,4) =? 10     3.7           2.5                   2.0              1.3
+    R(4,4) =? 11    30.5          24.2                  15.1             10.9
+    R(4,4) =? 12   194.1         135.5                  66.6             51.8
+    R(4,4) =? 13   410.9         264.2                 131.4            106.7
+    R(4,4) == 18   473.9         300.2                 157.0            132.9
 
     R(3,6) =? 11                   1.6                   1.1              0.7
-    R(3,6) =? 12                  16.2                   7.3              5.7
-    R(3,6) =? 13                 118.1                  35.6             27.3
-    R(3,6) =? 14                 280.9                  86.3             67.6
-    R(3,6) == 18                 329.7                 109.0             89.9
+    R(3,6) =? 12                  16.2                   7.3              5.4
+    R(3,6) =? 13                 118.1                  35.6             27.0
+    R(3,6) =? 14                 280.9                  86.3             67.0
+    R(3,6) == 18                 329.7                 109.0             88.4
 
-    R(4,5) == 10                   52.2                 37.8             28.1
+    R(4,5) == 10                   52.2                 37.8             26.8
 
-    R(5,5) ==  9                   4.0                   3.2              2.3
-    R(5,5) == 10                 245.8                 170.8            128.4
+    R(5,5) ==  9                   4.0                   3.2              2.1
+    R(5,5) == 10                 245.8                 170.8            126.3
 
 # Combine all Three Degree Types and Also Use Them to Inform Traversal - 22nd June 2024
 
@@ -337,7 +337,7 @@ I was hoping for much better improvements.
 
 TODO improved by 20% on 13th July again, by removing degreeHistogramReverse.
 
-# PackedUintTuple - 21st July 2024
+# PackedUintTuple - 22nd July 2024
 
 TODO
 
@@ -347,6 +347,7 @@ TODO
   Confirm the extended test_test-8.cpp for 4,5,n and 5,5,n. Remove the note left there.
 
 - Further improve containers & their usage (Large majority of time is spent in container-related functions)
+  - gNodesByDegree is the prime candidate as of 22nd July 2024 (will save RAM and speed up by up to 30%)
 - Improve gProperties/gDegrees beyond edge and triangle degrees
   - Maybe entirely new properties like ?orbit lengths?
   - Maybe K_4+: Probably would use subGraphEdgeMasks() and some smarts to find the subgraphs, instead of the hardcoded degree+triangle+empty triangle stuff we do now
