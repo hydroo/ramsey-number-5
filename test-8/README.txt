@@ -330,12 +330,9 @@ So we basically traded a reduction of operations uniqueAdjacencyMatrices5 for "p
 The good thing is, if these two maps are properly optimized the upside is 3-10x.
 Hard to tell how much exactly.
 
-# Better Containers - 11th July 2024
+# Better Containers + Misc. - 11th July 2024
 
-By using unordered_map for uniqueGraphs, as well as with the boost containers flat_set and flat_map we inched out a ~20-30% reduction in time.
-I was hoping for much better improvements.
-
-TODO improved by 20% on 13th July again, by removing degreeHistogramReverse.
+TODO
 
 # PackedUintTuple - 22nd July 2024
 
