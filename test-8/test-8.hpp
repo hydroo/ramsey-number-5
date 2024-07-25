@@ -227,10 +227,10 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         // Note: Sort elements by lowest multiplicity first. <-- this is because multiplicity is the last (left most) entry in the packed uint tuple
         //       This is needed for traversing all degreeTuples by multiplicity below, mainly for the traversal order (low multiplicity -> high multiplicty)
         //       This sorting only sorts the elements on the left that are not (0,0,0), i.e. leaves all (0,0,0) on the right side
-        auto gDegreeHistogramItEnd = std::begin(gDegreeHistogram); // Use this iterator as max for gDegreeHistogram, to skip the (0,0,0) on the right side
-        std::advance(gDegreeHistogramItEnd, gDegreeHistogramSize);
-        std::sort(std::begin(gDegreeHistogram), gDegreeHistogramItEnd);
-        gDegreeHistogramItEnd = std::begin(gDegreeHistogram); // reset the iterator after sorting, just in case. May not be required.
+        auto gDegreeHistogramItEnd_ = std::begin(gDegreeHistogram); // Use this iterator as max for gDegreeHistogram, to skip the (0,0,0) on the right side
+        std::advance(gDegreeHistogramItEnd_, gDegreeHistogramSize);
+        std::sort(std::begin(gDegreeHistogram), gDegreeHistogramItEnd_);
+        auto gDegreeHistogramItEnd = std::cbegin(gDegreeHistogram); // reset the iterator after sorting, just in case. May not be required.
         std::advance(gDegreeHistogramItEnd, gDegreeHistogramSize);
 
         // std::cerr << "  gDegreeHistogram " << gDegreeHistogram << " size " << gDegreeHistogramSize << std::endl;
