@@ -214,7 +214,6 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             cerr << "  gNodesByDegree " << gNodesByDegree << endl;
 #endif
 
-        Size maxDegreeMultiplicity = 0;
         // Note: This works because gNodesByDegree's keys are already sorted.
         //       The right side is automatically padded with [[0, 0, 0], 0] tuples, because we don't know how many elements exactly we need.
         //       If gDegreeHistogram is used for other purposes, you'd need to reevaluate whether this is still OK.
@@ -223,7 +222,6 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         for (auto const& [degreeTuple, nodesVector] : gNodesByDegree) {
             gDegreeHistogram[gDegreeHistogramSize] = DegreeHistogramEntry({degreeTuple.template get<0>(), degreeTuple.template get<1>(), degreeTuple.template get<2>(), typename DegreeTuple::ElementType(nodesVector.size())});
             gDegreeHistogramSize += 1;
-            maxDegreeMultiplicity = std::max(maxDegreeMultiplicity, Size(nodesVector.size()));
         }
 
         // Note: Sort elements by lowest multiplicity first. <-- this is because multiplicity is the last (left most) entry in the packed uint tuple
