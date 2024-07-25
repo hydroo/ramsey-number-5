@@ -141,10 +141,10 @@ template <std::size_t... Bits>
 std::ostream& operator<<(std::ostream& o, const r5::PackedUIntTuple<Bits...>& t) {
     o << '(';
     for (s64 i = 0; i < s64(t.size())-1; i += 1) {
-        o << t.get(i) << ", ";
+        o << (int64_t) t.get(i) << ", ";
     }
     if (t.size() > 0) {
-        o << t.get(t.size()-1);
+        o << (int64_t) t.get(t.size()-1);
     }
     o << ')';
     return o;
