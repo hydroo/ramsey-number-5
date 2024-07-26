@@ -261,7 +261,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             }
         }
 
-        gNodesByDegree.keysSize = gDegreeHistogramSize;
+        gNodesByDegree.keysSize = (typename NodesByDegree::KeysSizeType) gDegreeHistogramSize;
 
         // Fill in the nodes to gNodesByDegree.nodes_
         std::size_t nZeroJ;
