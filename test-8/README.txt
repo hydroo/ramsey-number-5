@@ -294,24 +294,23 @@ This avoids copying/constructing/destroying this data structure and thus improve
 
 # Add Triangle and Empty Triangle Count Histograms as Properties for Pre-Bucketing Potentially Isomorphic Graphs - 13th Nov 2022
 
-                  i7-9750H   M2 Pro (9th Apr 2024)  (13th July 2024) (22nd July 2024)
-    R(4,4) =?  9    ~0.4          ~0.2                  ~0.3             ~0.1
-    R(4,4) =? 10     3.7           2.5                   2.0              1.3
-    R(4,4) =? 11    30.5          24.2                  15.1             10.9
-    R(4,4) =? 12   194.1         135.5                  66.6             51.8
-    R(4,4) =? 13   410.9         264.2                 131.4            106.7
-    R(4,4) == 18   473.9         300.2                 157.0            132.9
+                  i7-9750H   M2 Pro (9th Apr 2024)  (13th July) (22nd July)   (26th July)
+    R(4,4) =? 10     3.7           2.5                   2.0         1.3           1.0
+    R(4,4) =? 11    30.5          24.2                  15.1        10.9           8.4
+    R(4,4) =? 12   194.1         135.5                  66.6        51.8          41.0
+    R(4,4) =? 13   410.9         264.2                 131.4       106.7          90.6
+    R(4,4) == 18   473.9         300.2                 157.0       132.9         115.0
 
-    R(3,6) =? 11                   1.6                   1.1              0.7
-    R(3,6) =? 12                  16.2                   7.3              5.4
-    R(3,6) =? 13                 118.1                  35.6             27.0
-    R(3,6) =? 14                 280.9                  86.3             67.0
-    R(3,6) == 18                 329.7                 109.0             88.4
+    R(3,6) =? 11                   1.6                   1.1         0.7           0.6
+    R(3,6) =? 12                  16.2                   7.3         5.4           4.9
+    R(3,6) =? 13                 118.1                  35.6        27.0          25.1
+    R(3,6) =? 14                 280.9                  86.3        67.0          63.0
+    R(3,6) == 18                 329.7                 109.0        88.4          84.9
 
-    R(4,5) == 10                   52.2                 37.8             26.8
+    R(4,5) == 10                   52.2                 37.8        26.8          19.9
 
-    R(5,5) ==  9                   4.0                   3.2              2.1
-    R(5,5) == 10                 245.8                 170.8            126.3
+    R(5,5) ==  9                   4.0                   3.2         2.1           1.5
+    R(5,5) == 10                 245.8                 170.8       126.3          88.1
 
 # Combine all Three Degree Types and Also Use Them to Inform Traversal - 22nd June 2024
 
@@ -335,6 +334,10 @@ Hard to tell how much exactly.
 TODO
 
 # PackedUintTuple - 22nd July 2024
+
+TODO
+
+# New NodesByDegree - 26th Jult 2024
 
 TODO
 
