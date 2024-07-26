@@ -337,7 +337,7 @@ TODO
 
 TODO
 
-# New NodesByDegree - 26th Jult 2024
+# New NodesByDegree - 26th July 2024
 
 TODO
 
