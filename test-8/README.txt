@@ -338,6 +338,10 @@ TODO
 
 TODO
 
+# New NodesByDegree - 26th Jult 2024
+
+TODO
+
 # Possible next steps - July 2024
 - Get a better high watermark RAM usage measurement. Apparently the current one is not good, as Instruments -> Allocations disagrees on the latest improvement
 - Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n
