@@ -128,9 +128,11 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
     struct NodesByDegree {
         // TODO play with these 3 to reduce RAM usage
-        using NodeType     = Size;
-        using IndexType    = std::size_t;
-        using KeysSizeType = std::size_t;
+        using NodeType     = uint8_t;
+        using IndexType    = uint8_t;
+        using KeysSizeType = uint8_t;
+
+        static_assert(nodes < 256, "uint8_t is only enough for 255 nodes. Need to parameterize NodeType");
 
         std::array<DegreeTuple, nodes> keys;
         std::array<IndexType  , nodes> indices;
