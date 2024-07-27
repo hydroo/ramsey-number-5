@@ -294,23 +294,24 @@ This avoids copying/constructing/destroying this data structure and thus improve
 
 # Add Triangle and Empty Triangle Count Histograms as Properties for Pre-Bucketing Potentially Isomorphic Graphs - 13th Nov 2022
 
-                  i7-9750H   M2 Pro (9th Apr 2024)  (13th July) (22nd July)   (26th July)
-    R(4,4) =? 10     3.7           2.5                   2.0         1.3           1.0
-    R(4,4) =? 11    30.5          24.2                  15.1        10.9           8.4
-    R(4,4) =? 12   194.1         135.5                  66.6        51.8          41.0
-    R(4,4) =? 13   410.9         264.2                 131.4       106.7          90.6
-    R(4,4) == 18   473.9         300.2                 157.0       132.9         115.0
+                  i7-9750H   M2 Pro (9th Apr 2024)  (22nd June) (27th July)
+    R(4,4) =? 10     3.7           2.5                   2.7         0.9
+    R(4,4) =? 11    30.5          24.2                  21.5         7.7
+    R(4,4) =? 12   194.1         135.5                  89.6        38.5
+    R(4,4) =? 13   410.9         264.2                 171.7        84.6
+    R(4,4) == 18   473.9         300.2                 203.7       109.8
 
-    R(3,6) =? 11                   1.6                   1.1         0.7           0.6
-    R(3,6) =? 12                  16.2                   7.3         5.4           4.9
-    R(3,6) =? 13                 118.1                  35.6        27.0          25.1
-    R(3,6) =? 14                 280.9                  86.3        67.0          63.0
-    R(3,6) == 18                 329.7                 109.0        88.4          84.9
+    R(3,6) =? 11                   1.6                   1.3         0.6
+    R(3,6) =? 12                  16.2                   8.0         4.5
+    R(3,6) =? 13                 118.1                  37.0        22.0
+    R(3,6) =? 14                 280.9                  86.0        56.4
+    R(3,6) == 18                 329.7                 111.2        76.8
 
-    R(4,5) == 10                   52.2                 37.8        26.8          19.9
+    R(4,5) == 10                   52.2                  61.0       18.3
+    R(4,5) == 11                                                  1644.4
 
-    R(5,5) ==  9                   4.0                   3.2         2.1           1.5
-    R(5,5) == 10                 245.8                 170.8       126.3          88.1
+    R(5,5) ==  9                   4.0                    4.5        1.4
+    R(5,5) == 10                 245.8                  283.0       82.0
 
 # Combine all Three Degree Types and Also Use Them to Inform Traversal - 22nd June 2024
 
@@ -329,25 +330,37 @@ So we basically traded a reduction of operations uniqueAdjacencyMatrices5 for "p
 The good thing is, if these two maps are properly optimized the upside is 3-10x.
 Hard to tell how much exactly.
 
-# Better Containers + Misc. - 11th July 2024
+# Better Containers - 27th July 2024
 
-TODO
+Introduced various improvements, including but not limited to boost containers, PackedUIntTuple, custom NodesByDegree.
+Speedup is between ~30% (R(3,6)=18) and 3x for R(4,5) and R(5,5).
+RAM savings are substantial, but unclear due to changes in calculation and lack of reliability of the printouts compared to Instruments Allocations.
 
-# PackedUintTuple - 22nd July 2024
+R(4,5)!=11 is now possible in 1644s, yay! Before, we ran out of RAM on this one.
 
-TODO
+NodesByDegree.find() is the largest bottleneck with ~35%+ of execution time still. The search seems not vectorized.
+We may want to pull out the multiplicity out of DegreeHistogramEntry as it seems to have unfortunate alignment and cost 12% of total time to extract.
 
-# New NodesByDegree - 26th July 2024
-
-TODO
+In the future we have to address excessive RAM usage.
+Since every extra node (I.e. going from R(4,5)!=10 to 11) costs ~100x in time and 10x+ in RAM usage, the current approach will not work any longer.
+Bandaids would be to store some static/non-resident things on disk, but ultimately we have to partition the data further.
+Pre-bucket graphs by edge count and process each bucket separately, etc. etc...
+And then we likely have to create a depth-first hybrid that allocates a reasonable amount of RAM per level/nodecount and continues deeper with not-fully-deduplicated(isomorphism) sets of graphs.
+Here, parallelization should come in finally.
+This will trade off performance, unfortunately, but it seems unavoidable at this time. 
 
 # Possible next steps - July 2024
+- Print size of complete and empty edge masks
+- Look into reducing the pre-alloc for uniqueGraphs to never go over the RAM size.
+  This leads to notable slowdowns (up to 8% total) as well as sometimes much higher RAM (3->4GB) usage.
+  Still need to find out how to best do this.
+- NodesByDegree is still the biggest bottleneck
+
 - Get a better high watermark RAM usage measurement. Apparently the current one is not good, as Instruments -> Allocations disagrees on the latest improvement
 - Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n
   Confirm the extended test_test-8.cpp for 4,5,n and 5,5,n. Remove the note left there.
 
-- Further improve containers & their usage (Large majority of time is spent in container-related functions)
-  - gNodesByDegree is the prime candidate as of 22nd July 2024 (will save RAM and speed up by up to 30%)
+- Could print out stats on graph bucketing distribution in uniqueGraphs (Verbose >= 2)
 - Improve gProperties/gDegrees beyond edge and triangle degrees
   - Maybe entirely new properties like ?orbit lengths?
   - Maybe K_4+: Probably would use subGraphEdgeMasks() and some smarts to find the subgraphs, instead of the hardcoded degree+triangle+empty triangle stuff we do now
