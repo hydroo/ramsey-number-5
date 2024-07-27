@@ -23,8 +23,8 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 else() # Darwin and Windows
     set(CMAKE_CXX_FLAGS_DEBUG      "-DDEBUG -g -Og -fsanitize=address -fsanitize=undefined")
 endif()
-set(CMAKE_CXX_FLAGS_RELEASE        "-DNDEBUG -O3 -march=native -mtune=native")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -march=native -mtune=native -g -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS_RELEASE        "-DNDEBUG                  -O3 -march=native -mtune=native")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DNDEBUG -DRELWITHDEBINFO -O3 -march=native -mtune=native -g -fno-omit-frame-pointer")
 
 add_executable(test-8 test-8.cpp)
 target_include_directories(test-8 PRIVATE ${Boost_INCLUDE_DIRS})

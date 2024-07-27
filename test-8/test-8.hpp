@@ -140,7 +140,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         using NodesConstIterator = decltype(nodes_)::const_iterator;
 
         // returns begin and end indices for nodes_
-        std::tuple<NodesConstIterator, NodesConstIterator> find(const DegreeTuple& key) const {
+        R5_NOINLINE std::tuple<NodesConstIterator, NodesConstIterator> find(const DegreeTuple& key) const {
             auto it = std::find(keys.cbegin(), keys.cbegin() + keysSize, key);
             auto i = std::distance(keys.cbegin(), it);
             auto beginIt = nodes_.cbegin() + indices[i];
@@ -149,7 +149,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         }
 
         // returns begin and end indices for nodes_
-        NodeType findFirstNode(const DegreeTuple& key) const {
+        R5_NOINLINE NodeType findFirstNode(const DegreeTuple& key) const {
             auto [beginIt, endIt] = find(key);
             return *beginIt;
         }

@@ -86,6 +86,11 @@ namespace r5 {
     #define R5_DEBUG_ASSERT(expr)
 #endif
 
+#if defined (RELWITHDEBINFO) || defined(DEBUG)
+    #define R5_NOINLINE __attribute__((noinline))
+#else // RELEASE
+    #define R5_NOINLINE
+#endif
 
 namespace r5 {
 template<typename T, T t> struct CompileTimePrint;
