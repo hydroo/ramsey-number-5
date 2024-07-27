@@ -133,8 +133,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         using KeysSizeType = std::size_t;
 
         std::array<DegreeTuple, nodes> keys;
-        std::array<IndexType, nodes>   indices;
-        std::array<NodeType, nodes>    nodes_;
+        std::array<IndexType  , nodes> indices;
+        std::array<NodeType   , nodes> nodes_;
         KeysSizeType                   keysSize;
 
         using NodesConstIterator = decltype(nodes_)::const_iterator;
