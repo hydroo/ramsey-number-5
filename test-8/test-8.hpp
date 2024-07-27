@@ -141,7 +141,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         // returns begin and end indices for nodes_
         std::tuple<NodesConstIterator, NodesConstIterator> find(const DegreeTuple& key) const {
-            auto it = std::lower_bound(keys.cbegin(), keys.cbegin() + keysSize, key);
+            auto it = std::lower_bound(keys.cbegin(), keys.cbegin() + keysSize, key); // TODO .find() is ~5% (total runtime) faster
             auto i = std::distance(keys.cbegin(), it);
             auto beginIt = nodes_.cbegin() + indices[i];
             auto endIt   =  i+1 < nodes ? (nodes_.cbegin() + indices[i+1]) : nodes_.cend();
