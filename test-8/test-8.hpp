@@ -326,17 +326,21 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 return std::make_tuple<DegreeTuple, Size>(DegreeTuple({e.template get<0>(), e.template get<1>(), e.template get<2>()}), (Size)e.template get<3>());
             };
 
+            // Slightly unintuitive way to iterate over nodes of unique degree. But it's better than using .find() and/or unpacking fromDegreeHistogramEntry()
             Size firstNotUniqueDegreeMultiplicityNodeIndex = firstNotEmptyOrFullNodeIndex;
-            for (auto it = std::cbegin(gDegreeHistogram); it != gDegreeHistogramItEnd; ++it) {
-                auto const [degreeTuple, multiplicity] = fromDegreeHistogramEntry(*it);
-                if (firstNotUniqueDegreeMultiplicityNodeIndex >= nodes) { break; }
-                R5_DEBUG_ASSERT(multiplicity > 0);
-                if (multiplicity > 1) { break; }
-                Size n = (Size) gNodesByDegree.findFirstNode(degreeTuple);
-                traversalOrder[firstNotUniqueDegreeMultiplicityNodeIndex] = n;
-                if (fixedNodes[n] == true) { continue; }
-                fixedNodes[n] = true;
-                firstNotUniqueDegreeMultiplicityNodeIndex += 1;
+            std::size_t previousIndex = 0;
+            for (std::size_t i = 1; i <= nodes; ++i) {
+                std::size_t currentIndex = i < nodes ? gNodesByDegree.indices[i] : (std::size_t) nodes;
+                if (currentIndex - previousIndex == 1) {
+                    auto n = gNodesByDegree.nodes_[previousIndex];
+                    traversalOrder[firstNotUniqueDegreeMultiplicityNodeIndex] = n;
+                    if (fixedNodes[n] == false) {
+                        fixedNodes[n] = true;
+                        firstNotUniqueDegreeMultiplicityNodeIndex += 1;
+                        if (firstNotUniqueDegreeMultiplicityNodeIndex == nodes) { break; }
+                    }
+                }
+                previousIndex = currentIndex;
             }
 
             Size firstNotFixedNodeIndex = firstNotUniqueDegreeMultiplicityNodeIndex;
