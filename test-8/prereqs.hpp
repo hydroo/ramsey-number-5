@@ -12,10 +12,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include <boost/container/flat_map.hpp>
-#include <boost/container/flat_set.hpp>
-#include <boost/container/small_vector.hpp>
-#include <boost/container/static_vector.hpp>
+//#include <boost/container/flat_map.hpp>
+//#include <boost/container/flat_set.hpp>
+//#include <boost/container/small_vector.hpp>
+//#include <boost/container/static_vector.hpp>
 #include <boost/functional/hash.hpp>
 
 #ifdef R5_GTEST
@@ -215,18 +215,18 @@ template <typename T, std::size_t length>
 std::ostream& operator<<(std::ostream& o, const std::array<T, length>& a);
 template <typename T, typename U>
 std::ostream& operator<<(std::ostream& o, const std::pair<T, U>& p);
-template <typename K, typename V>
-std::ostream& operator<<(std::ostream& o, const boost::container::flat_map<K, V>& m);
+//template <typename K, typename V>
+//std::ostream& operator<<(std::ostream& o, const boost::container::flat_map<K, V>& m);
 template <typename K, typename V>
 std::ostream& operator<<(std::ostream& o, const std::map<K, V>& m);
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::set<T>& s);
 template<class... Args>
 std::ostream& operator<<(std::ostream& o, const std::tuple<Args...>& t);
-template <typename T, std::size_t Capacity>
-std::ostream& operator<<(std::ostream& o, const boost::container::small_vector<T, Capacity>& v);
-template <typename T, std::size_t Capacity>
-std::ostream& operator<<(std::ostream& o, const boost::container::static_vector<T, Capacity>& v);
+//template <typename T, std::size_t Capacity>
+//std::ostream& operator<<(std::ostream& o, const boost::container::small_vector<T, Capacity>& v);
+//template <typename T, std::size_t Capacity>
+//std::ostream& operator<<(std::ostream& o, const boost::container::static_vector<T, Capacity>& v);
 template <typename K, typename V>
 std::ostream& operator<<(std::ostream& o, const std::unordered_map<K, V>& m);
 template <typename T>
@@ -245,35 +245,35 @@ std::ostream& operator<<(std::ostream& o, const std::array<T, Capacity>& a) {
     return o;
 }
 
-template <typename K, typename V>
-std::ostream& operator<<(std::ostream& o, const boost::container::flat_map<K, V>& m) {
-    o << '{';
+//template <typename K, typename V>
+//std::ostream& operator<<(std::ostream& o, const boost::container::flat_map<K, V>& m) {
+//    o << '{';
+//
+//    for (auto i = m.cbegin(); i != m.cend(); ++i) {
+//        o << i->first << " : " << i->second;
+//        auto j = i;
+//        if (++j != m.cend()) {
+//            o << ", ";
+//        }
+//    }
+//    o << '}';
+//    return o;
+//}
 
-    for (auto i = m.cbegin(); i != m.cend(); ++i) {
-        o << i->first << " : " << i->second;
-        auto j = i;
-        if (++j != m.cend()) {
-            o << ", ";
-        }
-    }
-    o << '}';
-    return o;
-}
-
-template <typename T>
-std::ostream& operator<<(std::ostream& o, const boost::container::flat_set<T>& s) {
-    o << '{';
-    std::size_t i = 0;
-    for (const auto& e : s) {
-        o << e;
-        if (i < s.size()-1) {
-            o << ", ";
-        }
-        i += 1;
-    }
-    o << '}';
-    return o;
-}
+//template <typename T>
+//std::ostream& operator<<(std::ostream& o, const boost::container::flat_set<T>& s) {
+//    o << '{';
+//    std::size_t i = 0;
+//    for (const auto& e : s) {
+//        o << e;
+//        if (i < s.size()-1) {
+//            o << ", ";
+//        }
+//        i += 1;
+//    }
+//    o << '}';
+//    return o;
+//}
 
 template <typename K, typename V>
 std::ostream& operator<<(std::ostream& o, const std::map<K, V>& m) {
@@ -338,31 +338,31 @@ std::ostream& operator<<(std::ostream& o, const std::tuple<Args...>& t)
     return o;
 }
 
-template <typename T, std::size_t Capacity>
-std::ostream& operator<<(std::ostream& o, const boost::container::small_vector<T, Capacity>& v) {
-    o << '[';
-    for (s64 i = 0; i < ((s64)v.size() - 1); i += 1) {
-        o << v[i] << ", ";
-    }
-    if (v.size() > 0) {
-        o << v.back();
-    }
-    o << ']';
-    return o;
-}
+//template <typename T, std::size_t Capacity>
+//std::ostream& operator<<(std::ostream& o, const boost::container::small_vector<T, Capacity>& v) {
+//    o << '[';
+//    for (s64 i = 0; i < ((s64)v.size() - 1); i += 1) {
+//        o << v[i] << ", ";
+//    }
+//    if (v.size() > 0) {
+//        o << v.back();
+//    }
+//    o << ']';
+//    return o;
+//}
 
-template <typename T, std::size_t Capacity>
-std::ostream& operator<<(std::ostream& o, const boost::container::static_vector<T, Capacity>& v) {
-    o << '[';
-    for (s64 i = 0; i < ((s64)v.size() - 1); i += 1) {
-        o << v[i] << ", ";
-    }
-    if (v.size() > 0) {
-        o << v.back();
-    }
-    o << ']';
-    return o;
-}
+//template <typename T, std::size_t Capacity>
+//std::ostream& operator<<(std::ostream& o, const boost::container::static_vector<T, Capacity>& v) {
+//    o << '[';
+//    for (s64 i = 0; i < ((s64)v.size() - 1); i += 1) {
+//        o << v[i] << ", ";
+//    }
+//    if (v.size() > 0) {
+//        o << v.back();
+//    }
+//    o << ']';
+//    return o;
+//}
 
 template <typename K, typename V>
 std::ostream& operator<<(std::ostream& o, const std::unordered_map<K, V>& m) {
