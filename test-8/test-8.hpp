@@ -147,7 +147,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         using NodesConstIterator = decltype(nodes_)::const_iterator;
 
         R5_NOINLINE static std::size_t keyFind1(const KeysContainerType& keys, KeysSizeType keysSize, KeyType key) {
-            auto it = std::find(keys.cbegin(), keys.cbegin() + keysSize, key);
+            auto it = std::find(keys.cbegin(), keys.cbegin() + keysSize, key); // Note: It seems using nodes is faster than keySize here
             return std::distance(keys.cbegin(), it);
         }
 
