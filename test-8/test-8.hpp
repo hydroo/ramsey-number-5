@@ -128,30 +128,39 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
     struct NodesByDegree {
         // TODO play with these 3 to reduce RAM usage
+        using KeyType      = DegreeTuple;
         using NodeType     = u8;
         using IndexType    = u8;
         using KeysSizeType = u8;
 
+        using KeysContainerType  = std::array<KeyType  , nodes>;
+        using IndexContainerType = std::array<IndexType, nodes>;
+        using NodesContainerType = std::array<NodeType , nodes>;
+
         static_assert(nodes < 256, "u8 is only enough for 255 nodes. Need to parameterize NodeType");
 
-        std::array<DegreeTuple, nodes> keys;
-        std::array<IndexType  , nodes> indices;
-        std::array<NodeType   , nodes> nodes_;
-        KeysSizeType                   keysSize;
+        KeysContainerType  keys;
+        IndexContainerType indices;
+        NodesContainerType nodes_;
+        KeysSizeType       keysSize;
 
         using NodesConstIterator = decltype(nodes_)::const_iterator;
 
-        // returns begin and end indices for nodes_
-        R5_NOINLINE std::tuple<NodesConstIterator, NodesConstIterator> find(const DegreeTuple& key) const {
+        R5_NOINLINE static std::size_t keyFind1(const KeysContainerType& keys, KeysSizeType keysSize, KeyType key) {
             auto it = std::find(keys.cbegin(), keys.cbegin() + keysSize, key);
-            auto i = std::distance(keys.cbegin(), it);
+            return std::distance(keys.cbegin(), it);
+        }
+
+        // returns begin and end indices for nodes_
+        R5_NOINLINE std::tuple<NodesConstIterator, NodesConstIterator> find(const KeyType& key) const {
+            auto i = keyFind1(keys, keysSize, key);
             auto beginIt = nodes_.cbegin() + indices[i];
             auto endIt   =  i+1 < nodes ? (nodes_.cbegin() + indices[i+1]) : nodes_.cend();
             return std::make_tuple(beginIt, endIt);
         }
 
         // returns begin and end indices for nodes_
-        R5_NOINLINE NodeType findFirstNode(const DegreeTuple& key) const {
+        R5_NOINLINE NodeType findFirstNode(const KeyType& key) const {
             auto [beginIt, endIt] = find(key);
             return *beginIt;
         }
