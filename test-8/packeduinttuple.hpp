@@ -81,6 +81,8 @@ public:
     PackedUIntTuple(const PackedUIntTuple& t) : _e(t._e) {}
     ~PackedUIntTuple() {}
 
+    // operator ElementType() const { return _e; } // TODO do we need the cast operator?
+
     PackedUIntTuple& operator=(const PackedUIntTuple& rhs) { _e = rhs._e; return *this; }
 
     bool operator==(const PackedUIntTuple& rhs) const { return _e == rhs._e; }
