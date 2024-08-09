@@ -327,11 +327,6 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 firstNotEmptyOrFullNodeIndex += 1;
             }
 
-            // Note: this could be faster if we unpacked DegreeTuple in one sweep
-            auto fromDegreeHistogramEntry = [](const DegreeHistogramEntry& e) {
-                return std::make_tuple<DegreeTuple, Size>(DegreeTuple({e.template get<0>(), e.template get<1>(), e.template get<2>()}), (Size)e.template get<3>());
-            };
-
             // Slightly unintuitive way to iterate over nodes of unique degree. But it's better than using .find() and/or unpacking fromDegreeHistogramEntry()
             Size firstNotUniqueDegreeMultiplicityNodeIndex = firstNotEmptyOrFullNodeIndex;
             std::size_t previousIndex = 0;
@@ -352,6 +347,11 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             Size firstNotFixedNodeIndex = firstNotUniqueDegreeMultiplicityNodeIndex;
 
             R5_VERBOSE_1(fixedNodesSum += firstNotFixedNodeIndex);
+
+            // Note: this could be faster if we unpacked DegreeTuple in one sweep
+            auto fromDegreeHistogramEntry = [](const DegreeHistogramEntry& e) {
+                return std::make_tuple<DegreeTuple, Size>(DegreeTuple({e.template get<0>(), e.template get<1>(), e.template get<2>()}), (Size)e.template get<3>());
+            };
 
             Size traversedNode = firstNotFixedNodeIndex;
             for (auto it = std::cbegin(gDegreeHistogram); it != gDegreeHistogramItEnd; ++it) {
