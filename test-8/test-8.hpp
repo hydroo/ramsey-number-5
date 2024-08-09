@@ -137,6 +137,10 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         static_assert(nodes < 256, "u8 is only enough for 255 nodes. Need to parameterize NodeType");
 
+        // Note: There are 2 things to consider for indices.
+        // 1. Replace it with a "sentinel/end" container and unpack keys (keys = gDegreeSorted). That way you can skip using indices[i] in some cases, going directly to nodes_[i]
+        // 2. Then move that container out of this struct and not store it with the rest. It can be computed on the fly fast, likely.
+        //    You can't skip computing it, because otherwise you'd compare keys for each node of the same key - too slow.
         KeysContainerType  keys;
         IndexContainerType indices;
         NodesContainerType nodes_;
