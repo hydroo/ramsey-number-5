@@ -127,7 +127,6 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     using AdjacencyMatrixProperties = std::array<DegreeHistogramEntry, nodes> /*gDegreeHistogram*/;
 
     struct NodesByDegree {
-        // TODO play with these 3 to reduce RAM usage
         using KeyType      = DegreeTuple;
         using NodeType     = u8;
         using IndexType    = u8;
@@ -157,7 +156,6 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             return std::make_tuple(beginIt, endIt);
         }
 
-        // returns begin and end indices for nodes_
         R5_NOINLINE NodeType findFirstNode(const KeyType& key) const {
             auto [beginIt, endIt] = find(key);
             return *beginIt;
