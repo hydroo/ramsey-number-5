@@ -367,7 +367,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             }
 
 #if R5_VERBOSE >= 4
-            cerr << "  traversal order " << traversalOrder  << " firstNotFixedNodeIndex " << firstNotFixedNodeIndex << endl;
+            cerr << "  traversal order " << traversalOrder << " firstNotEmptyOrFullNodeIndex " << firstNotEmptyOrFullNodeIndex << " firstNotFixedNodeIndex " << firstNotFixedNodeIndex << endl;
 #endif
 
             // for each recorded unique graph h with the same degree histogram as g
