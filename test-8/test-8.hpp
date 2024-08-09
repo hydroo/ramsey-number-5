@@ -285,7 +285,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         }
 
 #if R5_VERBOSE >= 4
-            cerr << "  gNodesByDegree " << gNodesByDegree.dump() << endl;
+        cerr << "  gNodesByDegree " << gNodesByDegree.dump() << endl;
 #endif
 
         // Note: Sort elements by lowest multiplicity first. <-- this is because multiplicity is the last (left most) entry in the packed uint tuple
