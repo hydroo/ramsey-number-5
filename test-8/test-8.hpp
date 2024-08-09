@@ -285,7 +285,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         }
 
 #if R5_VERBOSE >= 4
-            cerr << "  gNodesByDegree " << gNodesByDegree << endl;
+            cerr << "  gNodesByDegree " << gNodesByDegree.dump() << endl;
 #endif
 
         // Note: Sort elements by lowest multiplicity first. <-- this is because multiplicity is the last (left most) entry in the packed uint tuple
@@ -379,7 +379,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 std::array<bool, nodes> assignedNodes{};
 
 #if R5_VERBOSE >= 4
-                cerr << "  h " << h << " hNodesByDegree " << hNodesByDegree << endl;
+                cerr << "  h " << h << " hNodesByDegree " << hNodesByDegree.dump() << endl;
 #endif
 
                 // Idea: You could check permutations while assigning them for an early exit here -- But this could make SIMD optimizations less interesting
