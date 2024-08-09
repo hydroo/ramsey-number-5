@@ -131,7 +131,6 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         using KeyType      = DegreeTuple;
         using NodeType     = u8;
         using IndexType    = u8;
-        using KeysSizeType = u8;
 
         using KeysContainerType  = std::array<KeyType  , nodes>;
         using IndexContainerType = std::array<IndexType, nodes>;
@@ -142,18 +141,17 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         KeysContainerType  keys;
         IndexContainerType indices;
         NodesContainerType nodes_;
-        KeysSizeType       keysSize;
 
         using NodesConstIterator = decltype(nodes_)::const_iterator;
 
-        R5_NOINLINE static std::size_t keyFind1(const KeysContainerType& keys, KeysSizeType keysSize, KeyType key) {
-            auto it = std::find(keys.cbegin(), keys.cbegin() + keysSize, key); // Note: It seems using nodes is faster than keySize here
+        R5_NOINLINE static std::size_t keyFind1(const KeysContainerType& keys, KeyType key) {
+            auto it = std::find(keys.cbegin(), keys.cend(), key);
             return std::distance(keys.cbegin(), it);
         }
 
         // returns begin and end indices for nodes_
         R5_NOINLINE std::tuple<NodesConstIterator, NodesConstIterator> find(const KeyType& key) const {
-            auto i = keyFind1(keys, keysSize, key);
+            auto i = keyFind1(keys, key);
             auto beginIt = nodes_.cbegin() + indices[i];
             auto endIt   =  i+1 < nodes ? (nodes_.cbegin() + indices[i+1]) : nodes_.cend();
             return std::make_tuple(beginIt, endIt);
@@ -168,7 +166,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         std::string dump() const {
             std::ostringstream o;
             // TODO convert up from u8, because the characters are printed wrongly.
-            o << "keysEnd " << keysSize << " keys " << keys << " indices " << indices << " nodes " << nodes_;
+            o << "keys " << keys << " indices " << indices << " nodes " << nodes_;
             return o.str();
         }
     };
@@ -181,7 +179,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     //        << " (" << nodes << " x " << sizeof(DegreeHistogramEntry) << " + padding, "
     //        << " sizeof map pair " << sizeof(std::pair<AdjacencyMatrixProperties, std::vector<int>>)
     //        << " sizeof map vector entry " << sizeof(std::tuple<AdjacencyMatrix<nodes>, NodesByDegree>)
-    //        << " sizeof NodesByDegree " << sizeof(NodesByDegree) << " = " << sizeof(nodesByDegree2Dummy.keys) << " + " << sizeof(nodesByDegree2Dummy.indices) << "+ " << sizeof(nodesByDegree2Dummy.nodes_) << " + " << sizeof(nodesByDegree2Dummy.keysSize) << std::endl;
+    //        << " sizeof NodesByDegree " << sizeof(NodesByDegree) << " = " << sizeof(nodesByDegree2Dummy.keys) << " + " << sizeof(nodesByDegree2Dummy.indices) << "+ " << sizeof(nodesByDegree2Dummy.nodes_) << std::endl;
 
     std::unordered_map<
         AdjacencyMatrixProperties,
@@ -272,8 +270,6 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 runningDegreeMultiplicity += 1;
             }
         }
-
-        gNodesByDegree.keysSize = (typename NodesByDegree::KeysSizeType) gDegreeHistogramSize;
 
         // Fill in the nodes to gNodesByDegree.nodes_
         std::size_t nZeroJ;
