@@ -349,25 +349,23 @@ And then we likely have to create a depth-first hybrid that allocates a reasonab
 Here, parallelization should come in finally.
 This will trade off performance, unfortunately, but it seems unavoidable at this time. 
 
-# Possible next steps - July 2024
+# Possible next steps - August 2024
+- Maybe try to get rid of index array in NodesByDegree. See note in the code.
+- Fix permutation counting for logs by including the pre-testing?! Perhaps as a separate entry
 - Print size of complete and empty edge masks
 - Look into reducing the pre-alloc for uniqueGraphs to never go over the RAM size.
   This leads to notable slowdowns (up to 8% total) as well as sometimes much higher RAM (3->4GB) usage.
   Still need to find out how to best do this.
+  - A packed version of AdjacencyMatrixProperties could help speed up collision checks
 - NodesByDegree is still the biggest bottleneck
-
-- Get a better high watermark RAM usage measurement. Apparently the current one is not good, as Instruments -> Allocations disagrees on the latest improvement
+  - SIMDify .find()
+- AdjacencyMatrixProperties could be denser if we packed the array. Would save some more RAM.
 - Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n
   Confirm the extended test_test-8.cpp for 4,5,n and 5,5,n. Remove the note left there.
-
 - Could print out stats on graph bucketing distribution in uniqueGraphs (Verbose >= 2)
 - Improve gProperties/gDegrees beyond edge and triangle degrees
   - Maybe entirely new properties like ?orbit lengths?
   - Maybe K_4+: Probably would use subGraphEdgeMasks() and some smarts to find the subgraphs, instead of the hardcoded degree+triangle+empty triangle stuff we do now
-- Address RAM usage. If we get a bit faster, than RAM usage could become limiting (Lots of options here)
-  - It could be the case the current map in the uniqueGraphs value causes a lot of fragmentation and increases RAM usage.
-    It used to be smaller before the map, but the map has fewer elements than the old structure.
-    Which makes me think, a new container might improve the situation by 2-10x.
 - Read, understand and implement the algorithm from geng - Applications of a technique for labelled enumeration (http://cs.anu.edu.au/~bdm/papers/LabelledEnumeration.pdf)
 - Make the data type for Size flexible (smaller indexes could save storage/time)
   - In combination with SIMD-accelerated algorithms this becomes even more attractive
