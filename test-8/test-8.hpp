@@ -106,7 +106,7 @@ std::array<std::vector<AdjacencyMatrix<nodes>>, edges + 1> subGraphEdgeMasksByLa
     return ret;
 }
 
-template<Size nodes>
+template<Size r /*fullK*/, Size s /*emptyK*/, Size nodes>
 std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
 
 #if R5_VERBOSE >= 1
@@ -117,13 +117,14 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     s64 fixedNodesSum      = 0;
 #endif
 
-    constexpr Size maxEdgeDegree      = nodes >= 1 ? nodes-1 : 0;
-    constexpr Size maxTriangleDegree  = nodes >= 2 ? (nodes-1)*(nodes-2)/2 : 0;
-    constexpr Size nodesBits          = r5::staticLog2Ceil(nodes+1);
-    constexpr Size edgeDegreeBits     = r5::staticLog2Ceil(maxEdgeDegree+1);
-    constexpr Size triangleDegreeBits = r5::staticLog2Ceil(maxTriangleDegree+1);
-    using DegreeTuple = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, triangleDegreeBits>;
-    using DegreeHistogramEntry = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, triangleDegreeBits, nodesBits>;
+    constexpr Size maxEdgeDegree           = nodes >= 1 ? nodes-1 : 0;
+    constexpr Size maxTriangleDegree       = nodes >= 2 ? (nodes-1)*(nodes-2)/2 : 0;
+    constexpr Size nodesBits               = r5::staticLog2Ceil(nodes+1);
+    constexpr Size edgeDegreeBits          = r5::staticLog2Ceil(maxEdgeDegree+1);
+    constexpr Size triangleDegreeBits      = r <= 3 ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
+    constexpr Size emptyTriangleDegreeBits = s <= 3 ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
+    using DegreeTuple = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, emptyTriangleDegreeBits>;
+    using DegreeHistogramEntry = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, emptyTriangleDegreeBits, nodesBits>;
     using AdjacencyMatrixProperties = std::array<DegreeHistogramEntry, nodes> /*gDegreeHistogram*/;
 
     struct NodesByDegree {
@@ -175,7 +176,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
     //NodesByDegree nodesByDegree2Dummy;
     //std::cerr << "AAA  n " << nodes << " med " << maxEdgeDegree << " mtd " << maxTriangleDegree
-    //        << " edb "<< edgeDegreeBits << " tdb " << triangleDegreeBits << " allbits " << edgeDegreeBits+2*triangleDegreeBits
+    //        << " edb " << edgeDegreeBits << " tdb " << triangleDegreeBits << " etdb " << emptyTriangleDegreeBits  << " allbits " << edgeDegreeBits+triangleDegreeBits+emptyTriangleDegreeBits
     //        << " sizeof DegreeTuple "<< sizeof(DegreeTuple)
     //        << " sizeof AdjacencyMatrixProperties = " << sizeof(AdjacencyMatrixProperties)
     //        << " (" << nodes << " x " << sizeof(DegreeHistogramEntry) << " + padding, "
@@ -223,19 +224,19 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         std::array<Size, nodes> gTriangleDegrees{};
         std::array<Size, nodes> gEmptyTriangleDegrees{};
         for (Size n = 0; n < nodes; n += 1) {
-            for (Size m = 0; m < n; m += 1) {
+            for (Size m = 0; m < n && (r > 2 || s > 2); m += 1) {
                 auto nm = g.edge(n, m);
-                if (nm) {
+                if (r > 2 && nm) {
                     gEdgeDegrees[n] += 1;
                     gEdgeDegrees[m] += 1;
                 }
 
-                for (Size j = 0; j < m; j += 1) {
-                    if (nm && g.edge(m, j) && g.edge(n, j)) {
+                for (Size j = 0; j < m && (r > 3 || s > 3); j += 1) {
+                    if (r > 3 && nm && g.edge(m, j) && g.edge(n, j)) {
                         gTriangleDegrees[n] += 1;
                         gTriangleDegrees[m] += 1;
                         gTriangleDegrees[j] += 1;
-                    } else if (nm == false && g.edge(m, j) == false && g.edge(n, j) == false) {
+                    } else if (s > 3 && nm == false && g.edge(m, j) == false && g.edge(n, j) == false) {
                         gEmptyTriangleDegrees[n] += 1;
                         gEmptyTriangleDegrees[m] += 1;
                         gEmptyTriangleDegrees[j] += 1;
@@ -760,7 +761,7 @@ struct RamseyGraphs {
 #endif
 
         R5_VERBOSE_1(auto t6 = std::chrono::steady_clock::now());
-        auto ramseyGraphs = uniqueAdjacencyMatrices5(nonUniqueRamseyGraphs);
+        auto ramseyGraphs = uniqueAdjacencyMatrices5<r, s, n>(nonUniqueRamseyGraphs);
         R5_VERBOSE_1(auto t7 = std::chrono::steady_clock::now());
 
         R5_VERBOSE_1(auto t67 = std::chrono::duration<double>(t7 - t6).count());
