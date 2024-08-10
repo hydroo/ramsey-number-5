@@ -22,20 +22,20 @@ using r5::AdjacencyMatrixIndexer;
 using r5::Size;
 
 // Returns an array of adjacency matrices.
-// Returns the set of all possible graphs that have exactly one complete subgraph of size `subGraphSize`.
+// Returns the set of all possible graphs that have exactly one complete subgraph of size `SubGraphSize`.
 // TODO only enumerate the ones for the current extension.
 // I.e. Probably the last node has to be true
-template <Size edges, Size nodes, Size subGraphSize>
-std::vector<AdjacencyMatrix<nodes>> subGraphEdgeMasks() {
+template <Size Edges, Size Nodes, Size SubGraphSize>
+std::vector<AdjacencyMatrix<Nodes>> subGraphEdgeMasks() {
 
-    std::vector<AdjacencyMatrix<nodes>> masks(nChooseK(nodes, subGraphSize));
+    std::vector<AdjacencyMatrix<Nodes>> masks(nChooseK(Nodes, SubGraphSize));
 
-    std::array<bool, nodes> nodeMask{};
+    std::array<bool, Nodes> nodeMask{};
 
-    for (Size i = 0; i < subGraphSize; i += 1) {
+    for (Size i = 0; i < SubGraphSize; i += 1) {
         nodeMask[i] = true;
     }
-    for (Size i = subGraphSize; i < nodes; i += 1) {
+    for (Size i = SubGraphSize; i < Nodes; i += 1) {
         nodeMask[i] = false;
     }
 
@@ -46,8 +46,8 @@ std::vector<AdjacencyMatrix<nodes>> subGraphEdgeMasks() {
     do {
         masks[p].unsetAllEdges();
 
-        for (Size e = 0; e < edges; e += 1) {
-            auto pair = AdjacencyMatrixIndexer<nodes>::reverse(e);
+        for (Size e = 0; e < Edges; e += 1) {
+            auto pair = AdjacencyMatrixIndexer<Nodes>::reverse(e);
             Size c = pair.first;
             Size r = pair.second;
 
@@ -68,10 +68,10 @@ std::vector<AdjacencyMatrix<nodes>> subGraphEdgeMasks() {
 }
 
 // flips all edges
-template <Size edges, Size nodes, Size subGraphSize>
-std::vector<AdjacencyMatrix<nodes>> invertSubgraphEdgeMasks(const std::vector<AdjacencyMatrix<nodes>>& edgeMasks) {
-    R5_DEBUG_ASSERT(edgeMasks.size() == nChooseK(nodes, subGraphSize));
-    std::vector<AdjacencyMatrix<nodes>> ret(nChooseK(nodes, subGraphSize));
+template <Size Edges, Size Nodes, Size SubGraphSize>
+std::vector<AdjacencyMatrix<Nodes>> invertSubgraphEdgeMasks(const std::vector<AdjacencyMatrix<Nodes>>& edgeMasks) {
+    R5_DEBUG_ASSERT(edgeMasks.size() == nChooseK(Nodes, SubGraphSize));
+    std::vector<AdjacencyMatrix<Nodes>> ret(nChooseK(Nodes, SubGraphSize));
     for (std::size_t i = 0; i < edgeMasks.size(); i += 1) {
         ret[i] = ~edgeMasks[i];
     }
@@ -88,14 +88,14 @@ std::vector<AdjacencyMatrix<nodes>> invertSubgraphEdgeMasks(const std::vector<Ad
  * On the other hand it is useless to compare an enumerated graph that is larger than the complete subgraph,
  * because the result is the same as comparing it to one which has fewer edges.
  */
-template <Size edges, Size nodes, bool digit>
-std::array<std::vector<AdjacencyMatrix<nodes>>, edges + 1> subGraphEdgeMasksByLastDigit(const std::vector<AdjacencyMatrix<nodes>>& edgeMasks) {
-    std::array<std::vector<AdjacencyMatrix<nodes>>, edges + 1> ret;
+template <Size Edges, Size Nodes, bool Digit>
+std::array<std::vector<AdjacencyMatrix<Nodes>>, Edges + 1> subGraphEdgeMasksByLastDigit(const std::vector<AdjacencyMatrix<Nodes>>& edgeMasks) {
+    std::array<std::vector<AdjacencyMatrix<Nodes>>, Edges + 1> ret;
 
     for (const auto& mask : edgeMasks) {
         Size last = -1;  // offset everything by +1 so that we can use -1, and don't have to worry about array[nextEdge-1]
         for (Size i = mask.edges() - 1; i >= 0; i -= 1) {
-            if (mask.edge(i) == digit) {
+            if (mask.edge(i) == Digit) {
                 last = i;
                 break;
             }
@@ -106,8 +106,8 @@ std::array<std::vector<AdjacencyMatrix<nodes>>, edges + 1> subGraphEdgeMasksByLa
     return ret;
 }
 
-template<Size r /*fullK*/, Size s /*emptyK*/, Size nodes>
-std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<AdjacencyMatrix<nodes>>& graphs) {
+template<Size R /*fullK*/, Size S /*emptyK*/, Size Nodes>
+std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<AdjacencyMatrix<Nodes>>& graphs) {
 
 #if R5_VERBOSE >= 1
     s64 graphCombinations  = 0;
@@ -117,47 +117,47 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     s64 fixedNodesSum      = 0;
 #endif
 
-    constexpr Size maxEdgeDegree           = nodes >= 1 ? nodes-1 : 0;
-    constexpr Size maxTriangleDegree       = nodes >= 2 ? (nodes-1)*(nodes-2)/2 : 0;
-    constexpr Size nodesBits               = r5::staticLog2Ceil(nodes+1);
+    constexpr Size maxEdgeDegree           = Nodes >= 1 ? Nodes-1 : 0;
+    constexpr Size maxTriangleDegree       = Nodes >= 2 ? (Nodes-1)*(Nodes-2)/2 : 0;
+    constexpr Size nodesBits               = r5::staticLog2Ceil(Nodes+1);
     constexpr Size edgeDegreeBits          = r5::staticLog2Ceil(maxEdgeDegree+1);
-    constexpr Size triangleDegreeBits      = r <= 3 ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
-    constexpr Size emptyTriangleDegreeBits = s <= 3 ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
+    constexpr Size triangleDegreeBits      = R <= 3 ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
+    constexpr Size emptyTriangleDegreeBits = S <= 3 ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
     using DegreeTuple = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, emptyTriangleDegreeBits>;
     using DegreeHistogramEntry = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, emptyTriangleDegreeBits, nodesBits>;
-    using AdjacencyMatrixProperties = std::array<DegreeHistogramEntry, nodes> /*gDegreeHistogram*/;
+    using AdjacencyMatrixProperties = std::array<DegreeHistogramEntry, Nodes> /*gDegreeHistogram*/;
 
     struct NodesByDegree {
         using KeyType      = DegreeTuple;
         using NodeType     = u8;
         using IndexType    = u8;
 
-        using KeysContainerType  = std::array<KeyType  , nodes>;
-        using IndexContainerType = std::array<IndexType, nodes>;
-        using NodesContainerType = std::array<NodeType , nodes>;
+        using KeysContainerType  = std::array<KeyType  , Nodes>;
+        using IndexContainerType = std::array<IndexType, Nodes>;
+        using NodesContainerType = std::array<NodeType , Nodes>;
 
-        static_assert(nodes < 256, "u8 is only enough for 255 nodes. Need to parameterize NodeType");
+        static_assert(Nodes < 256, "u8 is only enough for 255 nodes. Need to parameterize NodeType");
 
         // Note: There are 2 things to consider for indices.
-        // 1. Replace it with a "sentinel/end" container and unpack keys (keys = gDegreeSorted). That way you can skip using indices[i] in some cases, going directly to nodes_[i]
+        // 1. Replace it with a "sentinel/end" container and unpack keys (keys = gDegreeSorted). That way you can skip using indices[i] in some cases, going directly to nodes[i]
         // 2. Then move that container out of this struct and not store it with the rest. It can be computed on the fly fast, likely.
         //    You can't skip computing it, because otherwise you'd compare keys for each node of the same key - too slow.
         KeysContainerType  keys;
         IndexContainerType indices;
-        NodesContainerType nodes_;
+        NodesContainerType nodes;
 
-        using NodesConstIterator = decltype(nodes_)::const_iterator;
+        using NodesConstIterator = decltype(nodes)::const_iterator;
 
         R5_NOINLINE static std::size_t keyFind1(const KeysContainerType& keys, KeyType key) {
             auto it = std::find(keys.cbegin(), keys.cend(), key);
             return std::distance(keys.cbegin(), it);
         }
 
-        // returns begin and end indices for nodes_
+        // returns begin and end indices for nodes
         R5_NOINLINE std::tuple<NodesConstIterator, NodesConstIterator> find(const KeyType& key) const {
             auto i = keyFind1(keys, key);
-            auto beginIt = nodes_.cbegin() + indices[i];
-            auto endIt   =  i+1 < nodes ? (nodes_.cbegin() + indices[i+1]) : nodes_.cend();
+            auto beginIt = nodes.cbegin() + indices[i];
+            auto endIt   =  i+1 < Nodes ? (nodes.cbegin() + indices[i+1]) : nodes.cend();
             return std::make_tuple(beginIt, endIt);
         }
 
@@ -169,26 +169,26 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         std::string dump() const {
             std::ostringstream o;
             // TODO convert up from u8, because the characters are printed wrongly.
-            o << "keys " << keys << " indices " << indices << " nodes " << nodes_;
+            o << "keys " << keys << " indices " << indices << " nodes " << nodes;
             return o.str();
         }
     };
 
     //NodesByDegree nodesByDegree2Dummy;
-    //std::cerr << "AAA  n " << nodes << " med " << maxEdgeDegree << " mtd " << maxTriangleDegree
+    //std::cerr << "AAA  n " << Nodes << " med " << maxEdgeDegree << " mtd " << maxTriangleDegree
     //        << " edb " << edgeDegreeBits << " tdb " << triangleDegreeBits << " etdb " << emptyTriangleDegreeBits  << " allbits " << edgeDegreeBits+triangleDegreeBits+emptyTriangleDegreeBits
     //        << " sizeof DegreeTuple "<< sizeof(DegreeTuple)
     //        << " sizeof AdjacencyMatrixProperties = " << sizeof(AdjacencyMatrixProperties)
-    //        << " (" << nodes << " x " << sizeof(DegreeHistogramEntry) << " + padding, "
+    //        << " (" << Nodes << " x " << sizeof(DegreeHistogramEntry) << " + padding, "
     //        << " sizeof map pair " << sizeof(std::pair<AdjacencyMatrixProperties, std::vector<int>>)
-    //        << " sizeof map vector entry " << sizeof(std::tuple<AdjacencyMatrix<nodes>, NodesByDegree>)
-    //        << " sizeof NodesByDegree " << sizeof(NodesByDegree) << " = " << sizeof(nodesByDegree2Dummy.keys) << " + " << sizeof(nodesByDegree2Dummy.indices) << "+ " << sizeof(nodesByDegree2Dummy.nodes_) << std::endl;
+    //        << " sizeof map vector entry " << sizeof(std::tuple<AdjacencyMatrix<Nodes>, NodesByDegree>)
+    //        << " sizeof NodesByDegree " << sizeof(NodesByDegree) << " = " << sizeof(nodesByDegree2Dummy.keys) << " + " << sizeof(nodesByDegree2Dummy.indices) << "+ " << sizeof(nodesByDegree2Dummy.nodes) << std::endl;
 
     std::unordered_map<
         AdjacencyMatrixProperties,
         std::vector<
             std::tuple<
-                AdjacencyMatrix<nodes> /*g*/,
+                AdjacencyMatrix<Nodes> /*g*/,
                 NodesByDegree /*gNodesByDegree*/
             >
         >
@@ -212,7 +212,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     s64 uniqueGraphsCount = 0;
 
     std::vector<std::tuple<s64 /*i*/, Size /*m*/>> stack;
-    stack.reserve(nodes*(nodes-1));
+    stack.reserve(Nodes*(Nodes-1));
 
     for (const auto& g : graphs) {
 
@@ -220,23 +220,23 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         cerr << "g " << g << endl;
 #endif
 
-        std::array<Size, nodes> gEdgeDegrees{};
-        std::array<Size, nodes> gTriangleDegrees{};
-        std::array<Size, nodes> gEmptyTriangleDegrees{};
-        for (Size n = 0; n < nodes; n += 1) {
-            for (Size m = 0; m < n && (r > 2 || s > 2); m += 1) {
+        std::array<Size, Nodes> gEdgeDegrees{};
+        std::array<Size, Nodes> gTriangleDegrees{};
+        std::array<Size, Nodes> gEmptyTriangleDegrees{};
+        for (Size n = 0; n < Nodes; n += 1) {
+            for (Size m = 0; m < n && (R > 2 || S > 2); m += 1) {
                 auto nm = g.edge(n, m);
-                if (r > 2 && nm) {
+                if (R > 2 && nm) {
                     gEdgeDegrees[n] += 1;
                     gEdgeDegrees[m] += 1;
                 }
 
-                for (Size j = 0; j < m && (r > 3 || s > 3); j += 1) {
-                    if (r > 3 && nm && g.edge(m, j) && g.edge(n, j)) {
+                for (Size j = 0; j < m && (R > 3 || S > 3); j += 1) {
+                    if (R > 3 && nm && g.edge(m, j) && g.edge(n, j)) {
                         gTriangleDegrees[n] += 1;
                         gTriangleDegrees[m] += 1;
                         gTriangleDegrees[j] += 1;
-                    } else if (s > 3 && nm == false && g.edge(m, j) == false && g.edge(n, j) == false) {
+                    } else if (S > 3 && nm == false && g.edge(m, j) == false && g.edge(n, j) == false) {
                         gEmptyTriangleDegrees[n] += 1;
                         gEmptyTriangleDegrees[m] += 1;
                         gEmptyTriangleDegrees[j] += 1;
@@ -246,27 +246,27 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         }
 
         std::vector<Size> gEmptyOrFullNodes{};
-        std::array<DegreeTuple, nodes> gDegrees{};
-        for (Size n = 0; n < nodes; n += 1) {
-            if (gEdgeDegrees[n] == 0 || gEdgeDegrees[n] == nodes-1) { gEmptyOrFullNodes.emplace_back(n); }
+        std::array<DegreeTuple, Nodes> gDegrees{};
+        for (Size n = 0; n < Nodes; n += 1) {
+            if (gEdgeDegrees[n] == 0 || gEdgeDegrees[n] == Nodes-1) { gEmptyOrFullNodes.emplace_back(n); }
             gDegrees[n] = DegreeTuple({gEdgeDegrees[n], gTriangleDegrees[n], gEmptyTriangleDegrees[n]});
         }
 
         auto gDegreesSorted = gDegrees;
         std::sort(gDegreesSorted.begin(), gDegreesSorted.end());
 
-        // Builds gDegreeHistogram, and the keys and indices without nodes of gNodesByDegree
-        std::array<DegreeHistogramEntry, nodes> gDegreeHistogram{};
+        // Builds gDegreeHistogram, and the keys and indices without Nodes of gNodesByDegree
+        std::array<DegreeHistogramEntry, Nodes> gDegreeHistogram{};
         NodesByDegree gNodesByDegree{};
         std::size_t gDegreeHistogramSize = 0;
         typename DegreeTuple::ElementType runningDegreeMultiplicity = 1;
-        for (std::size_t i = 1; i <= nodes; ++i) {
-            if (i == nodes || gDegreesSorted[i-1] != gDegreesSorted[i]) {
+        for (std::size_t i = 1; i <= Nodes; ++i) {
+            if (i == Nodes || gDegreesSorted[i-1] != gDegreesSorted[i]) {
                 gDegreeHistogram[gDegreeHistogramSize] = DegreeHistogramEntry({gDegreesSorted[i-1].template get<0>(), gDegreesSorted[i-1].template get<1>(), gDegreesSorted[i-1].template get<2>(), runningDegreeMultiplicity});
                 runningDegreeMultiplicity = 1;
                 gNodesByDegree.keys[gDegreeHistogramSize] = gDegreesSorted[i-1];
                 gDegreeHistogramSize += 1;
-                if (gDegreeHistogramSize < nodes) {
+                if (gDegreeHistogramSize < Nodes) {
                     gNodesByDegree.indices[gDegreeHistogramSize] = i;
                 }
             } else {
@@ -274,17 +274,17 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             }
         }
 
-        // Fill in the nodes to gNodesByDegree.nodes_
+        // Fill in the nodes to gNodesByDegree.nodes
         std::size_t nZeroJ;
-        for (std::size_t n = 0; n < nodes; ++n) {
+        for (std::size_t n = 0; n < Nodes; ++n) {
             const auto& degreeTuple = gDegrees[n];
             auto [ it, itEnd ] = gNodesByDegree.find(degreeTuple);
-            auto j = (std::size_t) std::distance(gNodesByDegree.nodes_.cbegin(), it);
+            auto j = (std::size_t) std::distance(gNodesByDegree.nodes.cbegin(), it);
             if (n == 0) { nZeroJ = j; }
-            while ((gNodesByDegree.nodes_[j] != 0) || (gNodesByDegree.nodes_[j] == 0 && n != 0 && j == nZeroJ)) {
+            while ((gNodesByDegree.nodes[j] != 0) || (gNodesByDegree.nodes[j] == 0 && n != 0 && j == nZeroJ)) {
                 ++j;
             }
-            gNodesByDegree.nodes_[j] = n;
+            gNodesByDegree.nodes[j] = n;
         }
 
 #if R5_VERBOSE >= 4
@@ -319,8 +319,8 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             //    I.e. the node degree that is rarest comes first,
             //    nodes with the most common degree come last.
             //    This slims the traversal tree. Smaller fan-out first, bigger fan-out later.
-            std::array<Size, nodes> traversalOrder;
-            std::array<bool, nodes> fixedNodes{};
+            std::array<Size, Nodes> traversalOrder;
+            std::array<bool, Nodes> fixedNodes{};
 
             Size firstNotEmptyOrFullNodeIndex = 0;
             for (Size n : gEmptyOrFullNodes) {
@@ -333,15 +333,15 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             // Slightly unintuitive way to iterate over nodes of unique degree. But it's better than using .find() and/or unpacking fromDegreeHistogramEntry()
             Size firstNotUniqueDegreeMultiplicityNodeIndex = firstNotEmptyOrFullNodeIndex;
             std::size_t previousIndex = 0;
-            for (std::size_t i = 1; i <= nodes; ++i) {
-                std::size_t currentIndex = i < nodes ? gNodesByDegree.indices[i] : (std::size_t) nodes;
+            for (std::size_t i = 1; i <= Nodes; ++i) {
+                std::size_t currentIndex = i < Nodes ? gNodesByDegree.indices[i] : (std::size_t) Nodes;
                 if (currentIndex - previousIndex == 1) {
-                    auto n = gNodesByDegree.nodes_[previousIndex];
+                    auto n = gNodesByDegree.nodes[previousIndex];
                     traversalOrder[firstNotUniqueDegreeMultiplicityNodeIndex] = n;
                     if (fixedNodes[n] == false) {
                         fixedNodes[n] = true;
                         firstNotUniqueDegreeMultiplicityNodeIndex += 1;
-                        if (firstNotUniqueDegreeMultiplicityNodeIndex == nodes) { break; }
+                        if (firstNotUniqueDegreeMultiplicityNodeIndex == Nodes) { break; }
                     }
                 }
                 previousIndex = currentIndex;
@@ -379,7 +379,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
                 R5_VERBOSE_1(graphCombinations += 1);
 
-                std::array<bool, nodes> assignedNodes{};
+                std::array<bool, Nodes> assignedNodes{};
 
 #if R5_VERBOSE >= 4
                 cerr << "  h " << h << " hNodesByDegree " << hNodesByDegree.dump() << endl;
@@ -388,12 +388,12 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 // Idea: You could check permutations while assigning them for an early exit here -- But this could make SIMD optimizations less interesting
                 // Note: This could be split up into empty/full nodes and others. Others would have to be of unique degree, i.e. no inner for-loop. In testing I saw no benefit, though.
                 int fixedNodes = 0;
-                std::array<Size, nodes> permutation{};
+                std::array<Size, Nodes> permutation{};
                 for (Size i = 0; i < firstNotUniqueDegreeMultiplicityNodeIndex; i += 1) {
                     Size n = traversalOrder[i];
                     const auto& degreeTuple = gDegrees[n];
                     auto [ candidateNodesIt, candidateNodesItEnd ] = hNodesByDegree.find(degreeTuple);
-                    if (candidateNodesIt == hNodesByDegree.nodes_.cend()) { break; }
+                    if (candidateNodesIt == hNodesByDegree.nodes.cend()) { break; }
                     for(; candidateNodesIt != candidateNodesItEnd; ++candidateNodesIt) {
                         Size m = (Size) *candidateNodesIt;
                         if (assignedNodes[m] == false) {
@@ -441,7 +441,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 #endif
                     isUnique = true;
                     continue;
-                } else if (firstNotFixedNodeIndex == nodes) {
+                } else if (firstNotFixedNodeIndex == Nodes) {
 #if R5_VERBOSE >= 4
                     cerr << "    complete early match" << endl;
 #endif
@@ -506,7 +506,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                     if (match == false) {
                         stack.pop_back();
                         continue;
-                    } else if (i == nodes-1) {
+                    } else if (i == Nodes-1) {
                         isUnique = false;
 #if R5_VERBOSE >= 4
                         cerr << "    isomorphic, permutation" << permutation << endl;
@@ -563,7 +563,7 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     cerr << "  Permutation checks:                      " << std::setw(15) << permutationChecks << endl;
 #endif
 
-    std::vector<AdjacencyMatrix<nodes>> ret;
+    std::vector<AdjacencyMatrix<Nodes>> ret;
     ret.reserve(uniqueGraphsCount);
 #if R5_VERBOSE >= 2
         cerr << "  Unique graphs:" << endl;
@@ -588,35 +588,35 @@ std::vector<AdjacencyMatrix<nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
 
 // Note: Partial specialization of function templates is not allowed. Therefore use struct to wrap the function.
-template<Size r, Size s, Size n, typename Enable = void>
+template<Size R, Size S, Size N, typename Enable = void>
 struct RamseyGraphs {
-    static std::vector<AdjacencyMatrix<n>> f(const std::vector<AdjacencyMatrix<n-1>>& smallerRamseyGraphs) {
-        R5_STATIC_ASSERT(r >= 1);
-        R5_STATIC_ASSERT(s >= 1);
+    static std::vector<AdjacencyMatrix<N>> f(const std::vector<AdjacencyMatrix<N-1>>& smallerRamseyGraphs) {
+        R5_STATIC_ASSERT(R >= 1);
+        R5_STATIC_ASSERT(S >= 1);
 
-        constexpr auto e = AdjacencyMatrix<n>().edges();
+        constexpr auto e = AdjacencyMatrix<N>().edges();
 
 #if R5_VERBOSE >= 1
-        cerr << "Ramsey(" << r << "," << s << ")-graphs with " << n << " vertices" << endl;
+        cerr << "Ramsey(" << R << "," << S << ")-graphs with " << N << " vertices" << endl;
 #endif
 
         R5_VERBOSE_1(auto t1 = std::chrono::steady_clock::now());
 
-        std::vector<AdjacencyMatrix<n>> edgeMasksComplete;
-        std::vector<AdjacencyMatrix<n>> edgeMasksEmpty;
-        if (n >= r) {
-            edgeMasksComplete = subGraphEdgeMasks<e, n, r>();
+        std::vector<AdjacencyMatrix<N>> edgeMasksComplete;
+        std::vector<AdjacencyMatrix<N>> edgeMasksEmpty;
+        if (N >= R) {
+            edgeMasksComplete = subGraphEdgeMasks<e, N, R>();
         }
-        if (n >= s) {
-            edgeMasksEmpty    = invertSubgraphEdgeMasks<e, n, s>(subGraphEdgeMasks<e, n, s>());
+        if (N >= S) {
+            edgeMasksEmpty    = invertSubgraphEdgeMasks<e, N, S>(subGraphEdgeMasks<e, N, S>());
         }
         R5_VERBOSE_1(auto t2 = std::chrono::steady_clock::now());
         R5_VERBOSE_1(auto t12 = std::chrono::duration<double>(t2 - t1).count());
 
         // TODO only generate the subgraphs interesting for the current extension
 
-        std::array<std::vector<AdjacencyMatrix<n>>, e + 1> edgeMasksCompleteByLastOne = subGraphEdgeMasksByLastDigit<e, n, true>(edgeMasksComplete);
-        std::array<std::vector<AdjacencyMatrix<n>>, e + 1> edgeMasksEmptyByLastZero   = subGraphEdgeMasksByLastDigit<e, n, false>(edgeMasksEmpty);
+        std::array<std::vector<AdjacencyMatrix<N>>, e + 1> edgeMasksCompleteByLastOne = subGraphEdgeMasksByLastDigit<e, N, true>(edgeMasksComplete);
+        std::array<std::vector<AdjacencyMatrix<N>>, e + 1> edgeMasksEmptyByLastZero   = subGraphEdgeMasksByLastDigit<e, N, false>(edgeMasksEmpty);
 
         R5_VERBOSE_1(auto t3 = std::chrono::steady_clock::now());
         R5_VERBOSE_1(auto t23 = std::chrono::duration<double>(t3 - t2).count());
@@ -646,14 +646,14 @@ struct RamseyGraphs {
         cerr << "]" << endl;
         cerr << endl;
         cerr << "  Smaller Ramsey graphs:                   " << std::setw(15) << smallerRamseyGraphs.size() << endl;
-        cerr << "  New edges to fill:                       " << std::setw(15) << n-1 << endl;
-        cerr << "  Possible combinations:                   " << std::setw(15) << smallerRamseyGraphs.size()*s64(std::pow(2, n-1)) << " # " << smallerRamseyGraphs.size() << " * 2^" << n-1 << endl;
+        cerr << "  New edges to fill:                       " << std::setw(15) << N-1 << endl;
+        cerr << "  Possible combinations:                   " << std::setw(15) << smallerRamseyGraphs.size()*s64(std::pow(2, N-1)) << " # " << smallerRamseyGraphs.size() << " * 2^" << N-1 << endl;
         cerr << endl;
 #endif
 
         R5_VERBOSE_1(auto t4 = std::chrono::steady_clock::now());
 
-        std::vector<AdjacencyMatrix<n>> nonUniqueRamseyGraphs;
+        std::vector<AdjacencyMatrix<N>> nonUniqueRamseyGraphs;
 
 #if R5_VERBOSE >= 1
         s64 recursionSteps   = 0;
@@ -661,18 +661,18 @@ struct RamseyGraphs {
         s64 edgeMaskChecks   = 0;
 #endif
 
-        for (const AdjacencyMatrix<n-1>& graph : smallerRamseyGraphs) {
+        for (const AdjacencyMatrix<N-1>& graph : smallerRamseyGraphs) {
 
             // cerr << "  " << graph << endl;
 
-            AdjacencyMatrix<n> coloring(graph);
+            AdjacencyMatrix<N> coloring(graph);
 
             // *** Start DFS ***
 
             std::array<Size, e + 1> stack;
             Size stackTop = 1;
-            stack[0] = AdjacencyMatrix<n-1>().edges(); // set   edge x
-            stack[1] = AdjacencyMatrix<n-1>().edges(); // unset edge x
+            stack[0] = AdjacencyMatrix<N-1>().edges(); // set   edge x
+            stack[1] = AdjacencyMatrix<N-1>().edges(); // unset edge x
 
             while (stackTop >= 0) {
 
@@ -693,7 +693,7 @@ struct RamseyGraphs {
 
                 if (coloring.edge(edge) == true) {
 
-                    if (n >= r) { // avoids matching subgraphs larger than the to-be-checked graph
+                    if (N >= R) { // avoids matching subgraphs larger than the to-be-checked graph
                         // Compare this graph against all appropriate complete subgraphs.
                         // Appropriate means every graph whos complete subgraph's laste edge is exactly the lastly enumerated edge
                         bool foundCompleteSubgraph = false;
@@ -711,7 +711,7 @@ struct RamseyGraphs {
 
                 } else {
 
-                    if (n >= s) { // avoids matching subgraphs larger than the to-be-checked graph
+                    if (N >= S) { // avoids matching subgraphs larger than the to-be-checked graph
                         // Do the same for empty subgraphs
                         bool foundEmptySubgraph = false;
                         const auto& currentEdgeMasksEmpty = edgeMasksEmptyByLastZero[edge + 1];
@@ -752,7 +752,7 @@ struct RamseyGraphs {
         cerr << "  Number of colorings checked:             " << std::setw(15) << coloringsChecked << endl;
         cerr << "  Number of edge mask checks:              " << std::setw(15) << edgeMaskChecks   << endl;
         cerr << "  Non-unique Ramsey graphs:                " << std::setw(15) << nonUniqueRamseyGraphs.size() << endl;
-        float nonUniqueRamseyGraphsByteSize = float(nonUniqueRamseyGraphs.size() * AdjacencyMatrix<n>{}.byteSize()) / (1024*1024);
+        float nonUniqueRamseyGraphsByteSize = float(nonUniqueRamseyGraphs.size() * AdjacencyMatrix<N>{}.byteSize()) / (1024*1024);
         cerr << "  Non-unique Ramsey graphs byte size:      " << std::setw(15 + 4) << std::fixed << nonUniqueRamseyGraphsByteSize << " MiB" << endl;
 #if R5_VERBOSE >= 2
         cerr << "  Non-unique Ramsey graphs:                " << std::setw(15) << nonUniqueRamseyGraphs << endl;
@@ -761,7 +761,7 @@ struct RamseyGraphs {
 #endif
 
         R5_VERBOSE_1(auto t6 = std::chrono::steady_clock::now());
-        auto ramseyGraphs = uniqueAdjacencyMatrices5<r, s, n>(nonUniqueRamseyGraphs);
+        auto ramseyGraphs = uniqueAdjacencyMatrices5<R, S, N>(nonUniqueRamseyGraphs);
         R5_VERBOSE_1(auto t7 = std::chrono::steady_clock::now());
 
         R5_VERBOSE_1(auto t67 = std::chrono::duration<double>(t7 - t6).count());
@@ -769,7 +769,7 @@ struct RamseyGraphs {
 #if R5_VERBOSE >= 1
         cerr << "  Uniquify Ramsey graphs:                  " << std::setw(15 + 4) << std::fixed << t67 << " seconds" << endl;
         cerr << "  Ramsey graphs:                           " << std::setw(15) << ramseyGraphs.size() << endl;
-        float ramseyGraphsByteSize = float(ramseyGraphs.size() * AdjacencyMatrix<n>{}.byteSize()) / (1024*1024);
+        float ramseyGraphsByteSize = float(ramseyGraphs.size() * AdjacencyMatrix<N>{}.byteSize()) / (1024*1024);
         cerr << "  Ramsey graphs byte size:                 " << std::setw(15 + 4) << std::fixed << ramseyGraphsByteSize << " MiB" << endl;
         cerr << "  Total memory usage:                      " << std::setw(15 + 4) << std::fixed << double(r5::memoryUsage()) / (1024*1024) << " MiB" << endl;
 #if R5_VERBOSE >= 2
@@ -777,7 +777,7 @@ struct RamseyGraphs {
         Size maxEdges = -1;
         for (const auto& g : ramseyGraphs) {
             Size edges = 0;
-            for (Size i = 0; i < n; i += 1) {
+            for (Size i = 0; i < N; i += 1) {
                 for (Size j = 0; j < i; j += 1) {
                     edges += g.edge(i, j);
                 }
@@ -792,38 +792,38 @@ struct RamseyGraphs {
         cerr << endl;
 #endif
 
-        checkRamseyGraphCount(r, s, n, ramseyGraphs.size());
+        checkRamseyGraphCount(R, S, N, ramseyGraphs.size());
 
         return ramseyGraphs;
     }
 };
 
-template<Size r, Size s>
-struct RamseyGraphs<r, s, 1, std::enable_if_t<(r > 1 && s > 1)>> {
+template<Size R, Size S>
+struct RamseyGraphs<R, S, 1, std::enable_if_t<(R > 1 && S > 1)>> {
     static std::vector<AdjacencyMatrix<1>> f(const std::vector<AdjacencyMatrix<0>>&) { return {AdjacencyMatrix<1>()}; }
 };
-template<Size r>
-struct RamseyGraphs<r, 1, 1> {
+template<Size R>
+struct RamseyGraphs<R, 1, 1> {
     static std::vector<AdjacencyMatrix<1>> f(const std::vector<AdjacencyMatrix<0>>&) { return {}; }
 };
-template<Size s>
-struct RamseyGraphs<1, s, 1, std::enable_if_t<(s > 1)>> {
+template<Size S>
+struct RamseyGraphs<1, S, 1, std::enable_if_t<(S > 1)>> {
     static std::vector<AdjacencyMatrix<1>> f(const std::vector<AdjacencyMatrix<0>>&) { return {}; }
 };
 
-template<Size r, Size s, Size n>
-std::vector<AdjacencyMatrix<n>> ramseyGraphs() {
+template<Size R, Size S, Size N>
+std::vector<AdjacencyMatrix<N>> ramseyGraphs() {
 
     auto ramseyGraphs2 = []<Size... NodesMinusOne>(std::integer_sequence<Size, NodesMinusOne...> /*nodeCountSequence*/) {
         auto allGraphs = std::make_tuple(std::vector<AdjacencyMatrix<0>>{}, std::vector<AdjacencyMatrix<NodesMinusOne+1>>{} ...);
 
         ([&]{
             auto smallerGraphs = std::get<NodesMinusOne>(allGraphs);
-            std::get<NodesMinusOne+1>(allGraphs) = RamseyGraphs<r, s, NodesMinusOne+1>::f(smallerGraphs);
+            std::get<NodesMinusOne+1>(allGraphs) = RamseyGraphs<R, S, NodesMinusOne+1>::f(smallerGraphs);
         }(), ...);
 
-        return std::get<n>(allGraphs);
+        return std::get<N>(allGraphs);
     };
 
-    return ramseyGraphs2(std::make_integer_sequence<Size, n>{});
+    return ramseyGraphs2(std::make_integer_sequence<Size, N>{});
 }
