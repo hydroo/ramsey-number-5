@@ -117,6 +117,16 @@ TEST(PackedUIntTuple, std_unordered_set_2) {
     ASSERT_TRUE(s.contains(v2));
 }
 
+TEST(PackedUIntTuple, zero_bit_entries) {
+    PackedUIntTuple<0> a0_0; a0_0.set<0>(0); ASSERT_EQ(a0_0.data(), 0b0); ASSERT_EQ(a0_0.get<0>(), 0);
+    //PackedUIntTuple<0> a0_1; /*Errors out:*/ a0_1.set<0>(1); ASSERT_EQ(a0_1.data(), 0b1); ASSERT_EQ(a0_1.get<0>(), 1);
+
+    PackedUIntTuple<1,0> a10; a10.set<0>(1); a10.set<1>(0); ASSERT_EQ(a10.get<0>(), 1); ASSERT_EQ(a10.get<1>(), 0);
+    PackedUIntTuple<0,1> a01; a01.set<0>(0); a01.set<1>(1); ASSERT_EQ(a01.get<0>(), 0); ASSERT_EQ(a01.get<1>(), 1);
+
+    PackedUIntTuple<2,0,2> a202; a202.set<0>(3); a202.set<1>(0); a202.set<2>(3); ASSERT_EQ(a202.get<0>(), 3); ASSERT_EQ(a202.get<1>(), 0); ASSERT_EQ(a202.get<2>(), 3);
+}
+
 TEST(PackedUIntTuple_helpers, staticLog2Floor) {
     ASSERT_EQ(staticLog2Floor(-1) ,    -1);
     ASSERT_EQ(staticLog2Floor( 0) ,     0);
