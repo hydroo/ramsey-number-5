@@ -70,7 +70,7 @@ std::vector<AdjacencyMatrix<Nodes>> subGraphEdgeMasks() {
 // flips all edges
 template <Size Edges, Size Nodes, Size SubGraphSize>
 std::vector<AdjacencyMatrix<Nodes>> invertSubgraphEdgeMasks(const std::vector<AdjacencyMatrix<Nodes>>& edgeMasks) {
-    R5_DEBUG_ASSERT(edgeMasks.size() == nChooseK(Nodes, SubGraphSize));
+    R5_DEBUG_ASSERT(edgeMasks.size() == (std::size_t) nChooseK(Nodes, SubGraphSize));
     std::vector<AdjacencyMatrix<Nodes>> ret(nChooseK(Nodes, SubGraphSize));
     for (std::size_t i = 0; i < edgeMasks.size(); i += 1) {
         ret[i] = ~edgeMasks[i];
