@@ -117,14 +117,23 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     s64 fixedNodesSum      = 0;
 #endif
 
+    constexpr bool enablePropertyEdgeDegree          = true;
+    constexpr bool enablePropertyTriangleDegree      = R > 3;
+    constexpr bool enablePropertyEmptyTriangleDegree = S > 3;
+    constexpr bool enablePropertyK4Degree            = R > 4;
+    constexpr bool enablePropertyEmptyK4Degree       = S > 4;
+
     constexpr Size maxEdgeDegree           = Nodes >= 1 ? Nodes-1 : 0;
     constexpr Size maxTriangleDegree       = Nodes >= 2 ? (Nodes-1)*(Nodes-2)/2 : 0;
+    constexpr Size maxK4Degree             = Nodes >= 3 ? (Nodes-1)*(Nodes-2)*(Nodes-3)/6 : 0;
     constexpr Size nodesBits               = r5::staticLog2Ceil(Nodes+1);
-    constexpr Size edgeDegreeBits          = r5::staticLog2Ceil(maxEdgeDegree+1);
-    constexpr Size triangleDegreeBits      = R <= 3 ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
-    constexpr Size emptyTriangleDegreeBits = S <= 3 ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
-    using DegreeTuple = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, emptyTriangleDegreeBits>;
-    using DegreeHistogramEntry = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, emptyTriangleDegreeBits, nodesBits>;
+    constexpr Size edgeDegreeBits          = !enablePropertyEdgeDegree          ? 0 : r5::staticLog2Ceil(maxEdgeDegree+1);
+    constexpr Size triangleDegreeBits      = !enablePropertyTriangleDegree      ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
+    constexpr Size emptyTriangleDegreeBits = !enablePropertyEmptyTriangleDegree ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
+    constexpr Size k4DegreeBits            = !enablePropertyK4Degree            ? 0 : r5::staticLog2Ceil(maxK4Degree+1);
+    constexpr Size emptyK4DegreeBits       = !enablePropertyEmptyK4Degree       ? 0 : r5::staticLog2Ceil(maxK4Degree+1);
+    using DegreeTuple = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, emptyTriangleDegreeBits, k4DegreeBits, emptyK4DegreeBits>;
+    using DegreeHistogramEntry = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, emptyTriangleDegreeBits, k4DegreeBits, emptyK4DegreeBits, nodesBits>;
     using AdjacencyMatrixProperties = std::array<DegreeHistogramEntry, Nodes> /*gDegreeHistogram*/;
 
     struct NodesByDegree {
@@ -176,7 +185,8 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
     //NodesByDegree nodesByDegree2Dummy;
     //std::cerr << "AAA  n " << Nodes << " med " << maxEdgeDegree << " mtd " << maxTriangleDegree
-    //        << " edb " << edgeDegreeBits << " tdb " << triangleDegreeBits << " etdb " << emptyTriangleDegreeBits  << " allbits " << edgeDegreeBits+triangleDegreeBits+emptyTriangleDegreeBits
+    //        << " edb " << edgeDegreeBits << " tdb " << triangleDegreeBits << " etdb " << emptyTriangleDegreeBits
+    //        << " k4db " << k4DegreeBits << " ek4db " << emptyK4DegreeBits << " allbits " << edgeDegreeBits+triangleDegreeBits+emptyTriangleDegreeBits+k4DegreeBits+emptyK4DegreeBits
     //        << " sizeof DegreeTuple "<< sizeof(DegreeTuple)
     //        << " sizeof AdjacencyMatrixProperties = " << sizeof(AdjacencyMatrixProperties)
     //        << " (" << Nodes << " x " << sizeof(DegreeHistogramEntry) << " + padding, "
@@ -220,26 +230,54 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         cerr << "g " << g << endl;
 #endif
 
+        constexpr bool enableLoopK =                               enablePropertyK4Degree       || enablePropertyEmptyK4Degree;
+        constexpr bool enableLoopJ =                enableLoopK || enablePropertyTriangleDegree || enablePropertyEmptyTriangleDegree;
+        constexpr bool enableLoopM = enableLoopJ || enableLoopK || enablePropertyEdgeDegree;
+        constexpr bool enableLoopN = enableLoopM;
         std::array<Size, Nodes> gEdgeDegrees{};
         std::array<Size, Nodes> gTriangleDegrees{};
         std::array<Size, Nodes> gEmptyTriangleDegrees{};
-        for (Size n = 0; n < Nodes; n += 1) {
-            for (Size m = 0; m < n && (R > 2 || S > 2); m += 1) {
+        std::array<Size, Nodes> gK4Degrees{};
+        std::array<Size, Nodes> gEmptyK4Degrees{};
+        for (Size n = 0; enableLoopN && n < Nodes; n += 1) {
+            for (Size m = 0; enableLoopM && m < n; m += 1) {
                 auto nm = g.edge(n, m);
-                if (R > 2 && nm) {
+                if (enablePropertyEdgeDegree && nm) {
                     gEdgeDegrees[n] += 1;
                     gEdgeDegrees[m] += 1;
                 }
 
-                for (Size j = 0; j < m && (R > 3 || S > 3); j += 1) {
-                    if (R > 3 && nm && g.edge(m, j) && g.edge(n, j)) {
+                for (Size j = 0; enableLoopJ && j < m; j += 1) {
+                    auto nmj  = nm          && g.edge(n, j)          && g.edge(m, j);
+                    auto nmj_ = nm == false && g.edge(n, j) == false && g.edge(m, j) == false;
+
+                    if (nmj == false && nmj_ == false) { continue; }
+
+                    if (enablePropertyTriangleDegree && nmj) {
                         gTriangleDegrees[n] += 1;
                         gTriangleDegrees[m] += 1;
                         gTriangleDegrees[j] += 1;
-                    } else if (S > 3 && nm == false && g.edge(m, j) == false && g.edge(n, j) == false) {
+                    } else if (enablePropertyEmptyTriangleDegree && nmj_) {
                         gEmptyTriangleDegrees[n] += 1;
                         gEmptyTriangleDegrees[m] += 1;
                         gEmptyTriangleDegrees[j] += 1;
+                    }
+
+                    for (Size k = 0; enableLoopK && k < j; k += 1) {
+                        auto nmjk  = nmj  && g.edge(n, k)          && g.edge(m, k)          && g.edge(j, k);
+                        auto nmjk_ = nmj_ && g.edge(n, k) == false && g.edge(m, k) == false && g.edge(j, k) == false;
+
+                        if (enablePropertyK4Degree && nmjk) {
+                            gK4Degrees[n] += 1;
+                            gK4Degrees[m] += 1;
+                            gK4Degrees[j] += 1;
+                            gK4Degrees[k] += 1;
+                        } else if (enablePropertyEmptyK4Degree && nmjk_) {
+                            gEmptyK4Degrees[n] += 1;
+                            gEmptyK4Degrees[m] += 1;
+                            gEmptyK4Degrees[j] += 1;
+                            gEmptyK4Degrees[k] += 1;
+                        }
                     }
                 }
             }
@@ -249,7 +287,7 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         std::array<DegreeTuple, Nodes> gDegrees{};
         for (Size n = 0; n < Nodes; n += 1) {
             if (gEdgeDegrees[n] == 0 || gEdgeDegrees[n] == Nodes-1) { gEmptyOrFullNodes.emplace_back(n); }
-            gDegrees[n] = DegreeTuple({gEdgeDegrees[n], gTriangleDegrees[n], gEmptyTriangleDegrees[n]});
+            gDegrees[n] = DegreeTuple({gEdgeDegrees[n], gTriangleDegrees[n], gEmptyTriangleDegrees[n], gK4Degrees[n], gEmptyK4Degrees[n]});
         }
 
         auto gDegreesSorted = gDegrees;
@@ -262,7 +300,7 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         typename DegreeTuple::ElementType runningDegreeMultiplicity = 1;
         for (std::size_t i = 1; i <= Nodes; ++i) {
             if (i == Nodes || gDegreesSorted[i-1] != gDegreesSorted[i]) {
-                gDegreeHistogram[gDegreeHistogramSize] = DegreeHistogramEntry({gDegreesSorted[i-1].template get<0>(), gDegreesSorted[i-1].template get<1>(), gDegreesSorted[i-1].template get<2>(), runningDegreeMultiplicity});
+                gDegreeHistogram[gDegreeHistogramSize] = DegreeHistogramEntry({gDegreesSorted[i-1].template get<0>(), gDegreesSorted[i-1].template get<1>(), gDegreesSorted[i-1].template get<2>(), gDegreesSorted[i-1].template get<3>(), gDegreesSorted[i-1].template get<4>(), runningDegreeMultiplicity});
                 runningDegreeMultiplicity = 1;
                 gNodesByDegree.keys[gDegreeHistogramSize] = gDegreesSorted[i-1];
                 gDegreeHistogramSize += 1;
@@ -353,7 +391,7 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
             // Note: this could be faster if we unpacked DegreeTuple in one sweep
             auto fromDegreeHistogramEntry = [](const DegreeHistogramEntry& e) {
-                return std::make_tuple<DegreeTuple, Size>(DegreeTuple({e.template get<0>(), e.template get<1>(), e.template get<2>()}), (Size)e.template get<3>());
+                return std::make_tuple<DegreeTuple, Size>(DegreeTuple({e.template get<0>(), e.template get<1>(), e.template get<2>(), e.template get<3>(), e.template get<4>()}), (Size)e.template get<5>());
             };
 
             Size traversedNode = firstNotFixedNodeIndex;
