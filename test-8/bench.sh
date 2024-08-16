@@ -34,5 +34,5 @@ for rsn in $args; do
     sleep 0.4
     echo "$log" > "$date-r-$r-$s-$n.log"
     total_time="$(echo "$log" | tail -n 1 | sed "s/Total time: //g" | sed "s/ seconds//g")"
-    printf " %7.3f s\n" $total_time
+    printf " %9.3f s\n" $total_time
 done
