@@ -117,14 +117,18 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
     s64 fixedNodesSum      = 0;
 #endif
 
+    constexpr bool enablePropertyEdgeDegree          = true;
+    constexpr bool enablePropertyTriangleDegree      = R > 3;
+    constexpr bool enablePropertyEmptyTriangleDegree = S > 3;
+
     constexpr Size maxEdgeDegree           = Nodes >= 1 ? Nodes-1 : 0;
     constexpr Size maxTriangleDegree       = Nodes >= 2 ? (Nodes-1)*(Nodes-2)/2 : 0;
     constexpr Size nodesBits               = r5::staticLog2Ceil(Nodes+1);
-    constexpr Size edgeDegreeBits          = r5::staticLog2Ceil(maxEdgeDegree+1);
-    constexpr Size triangleDegreeBits      = R <= 3 ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
-    constexpr Size emptyTriangleDegreeBits = S <= 3 ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
+    constexpr Size edgeDegreeBits          = !enablePropertyEdgeDegree          ? 0 : r5::staticLog2Ceil(maxEdgeDegree+1);
+    constexpr Size triangleDegreeBits      = !enablePropertyTriangleDegree      ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
+    constexpr Size emptyTriangleDegreeBits = !enablePropertyEmptyTriangleDegree ? 0 : r5::staticLog2Ceil(maxTriangleDegree+1);
     using DegreeTuple = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, emptyTriangleDegreeBits>;
-    using DegreeHistogramEntry = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, emptyTriangleDegreeBits, nodesBits>;
+    using DegreeHistogramEntry = r5::PackedUIntTuple<edgeDegreeBits, triangleDegreeBits, emptyTriangleDegreeBits, nodesBits/*multiplcity*/>;
     using AdjacencyMatrixProperties = std::array<DegreeHistogramEntry, Nodes> /*gDegreeHistogram*/;
 
     struct NodesByDegree {
@@ -220,26 +224,39 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
         cerr << "g " << g << endl;
 #endif
 
+        constexpr bool enableLoopJ =                enablePropertyTriangleDegree || enablePropertyEmptyTriangleDegree;
+        constexpr bool enableLoopM = enableLoopJ || enablePropertyEdgeDegree;
+        constexpr bool enableLoopN = enableLoopM;
         std::array<Size, Nodes> gEdgeDegrees{};
         std::array<Size, Nodes> gTriangleDegrees{};
         std::array<Size, Nodes> gEmptyTriangleDegrees{};
-        for (Size n = 0; n < Nodes; n += 1) {
-            for (Size m = 0; m < n && (R > 2 || S > 2); m += 1) {
-                auto nm = g.edge(n, m);
-                if (R > 2 && nm) {
-                    gEdgeDegrees[n] += 1;
-                    gEdgeDegrees[m] += 1;
-                }
+        if (enableLoopN) {
+            for (Size n = 0; n < Nodes; n += 1) {
 
-                for (Size j = 0; j < m && (R > 3 || S > 3); j += 1) {
-                    if (R > 3 && nm && g.edge(m, j) && g.edge(n, j)) {
-                        gTriangleDegrees[n] += 1;
-                        gTriangleDegrees[m] += 1;
-                        gTriangleDegrees[j] += 1;
-                    } else if (S > 3 && nm == false && g.edge(m, j) == false && g.edge(n, j) == false) {
-                        gEmptyTriangleDegrees[n] += 1;
-                        gEmptyTriangleDegrees[m] += 1;
-                        gEmptyTriangleDegrees[j] += 1;
+                if (enableLoopM == false) { continue; }
+
+                for (Size m = 0; m < n; m += 1) {
+                    auto nm = enablePropertyEdgeDegree && g.edge(n, m);
+                    if (nm) {
+                        gEdgeDegrees[n] += 1;
+                        gEdgeDegrees[m] += 1;
+                    }
+
+                    if (enableLoopJ == false) { continue; }
+
+                    for (Size j = 0; j < m; j += 1) {
+                        auto nmj  = enablePropertyTriangleDegree      && nm          && g.edge(n, j)          && g.edge(m, j);
+                        auto nmj_ = enablePropertyEmptyTriangleDegree && nm == false && g.edge(n, j) == false && g.edge(m, j) == false;
+
+                        if (nmj) {
+                            gTriangleDegrees[n] += 1;
+                            gTriangleDegrees[m] += 1;
+                            gTriangleDegrees[j] += 1;
+                        } else if (nmj_) {
+                            gEmptyTriangleDegrees[n] += 1;
+                            gEmptyTriangleDegrees[m] += 1;
+                            gEmptyTriangleDegrees[j] += 1;
+                        }
                     }
                 }
             }
