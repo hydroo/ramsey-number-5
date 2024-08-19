@@ -205,6 +205,53 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             }
         }
 
+        R5_NOINLINE static std::size_t keyFind4(const KeysContainerType& keys, KeyType key) {
+            if constexpr (std::is_same<typename KeyType::ElementType, uint16_t>::value) {
+                auto keyv = vdupq_n_u16(key.data());
+                constexpr uint16x8_t allIndices = {  0,   1,   2,   3,   4,   5,   6,   7};
+                constexpr uint16x8_t maxIndices = {255, 255, 255, 255, 255, 255, 255, 255};
+                auto ret = std::numeric_limits<std::size_t>::max();
+                for (std::size_t i = 0; i < Nodes; i += 8) {
+                    uint16x8_t keystrip   = vld1q_u16((const typename DegreeTuple::ElementType*) &(keys[i]));
+                    auto comparison = vceqq_u16(keystrip, keyv);
+                    auto indices    = vbslq_u16(comparison, allIndices, maxIndices);
+                    auto index      = vminvq_u16(indices);
+                    ret = std::min(ret, i + (std::size_t) index);
+                }
+                return (std::size_t) ret;
+            } else {
+                return keyFind1(keys, key);
+            }
+        }
+
+        R5_NOINLINE static std::size_t keyFind5(const KeysContainerType& keys, KeyType key) {
+            if constexpr (std::is_same<typename KeyType::ElementType, uint16_t>::value && Nodes < 8) {
+                auto keyv = vdupq_n_u16(key.data());
+                constexpr uint16x8_t allIndices = {  0,   1,   2,   3,   4,   5,   6,   7};
+                constexpr uint16x8_t maxIndices = {255, 255, 255, 255, 255, 255, 255, 255};
+                uint16x8_t keystrip  = vld1q_u16((const typename DegreeTuple::ElementType*) &(keys[0]));
+                auto comparison      = vceqq_u16(keystrip, keyv);
+                auto indices         = vbslq_u16(comparison, allIndices, maxIndices);
+                auto index           = vminvq_u16(indices);
+                return (std::size_t) index;
+            } else if constexpr (std::is_same<typename KeyType::ElementType, uint16_t>::value && Nodes >= 8 && Nodes <= 16) {
+                auto keyv = vdupq_n_u16(key.data());
+                constexpr uint8x16_t allIndices = {  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15};
+                constexpr uint8x16_t maxIndices = {255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255};
+                uint16x8_t keystrip_0 = vld1q_u16((const typename DegreeTuple::ElementType*) &(keys[0]));
+                uint16x8_t keystrip_1 = vld1q_u16((const typename DegreeTuple::ElementType*) &(keys[8]));
+                auto comparison_0     = vceqq_u16(keystrip_0, keyv);
+                auto comparison_1     = vceqq_u16(keystrip_1, keyv);
+                auto comparison_0_u8  = vqmovn_u16(comparison_0);
+                auto comparison       = vqmovn_high_u16(comparison_0_u8, comparison_1);
+                auto indices          = vbslq_u8(comparison, allIndices, maxIndices);
+                auto index            = vminvq_u8(indices);
+                return (std::size_t) index;
+            } else {
+                return keyFind1(keys, key);
+            }
+        }
+
         // returns begin and end indices for nodes
         R5_NOINLINE std::tuple<NodesConstIterator, NodesConstIterator> find(const KeyType& key) const {
             auto i = keyFind1(keys, key);
