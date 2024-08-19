@@ -2,6 +2,9 @@
 
 #include "prereqs.hpp"
 
+#include <arm_neon.h>
+
+#include <bit>
 #include <chrono>
 #include <functional>
 #include <iterator>
@@ -154,7 +157,52 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         R5_NOINLINE static std::size_t keyFind1(const KeysContainerType& keys, KeyType key) {
             auto it = std::find(keys.cbegin(), keys.cend(), key);
-            return std::distance(keys.cbegin(), it);
+            auto ret = std::distance(keys.cbegin(), it);
+            return ret;
+        }
+
+        R5_NOINLINE static std::size_t keyFind2(const KeysContainerType& keys, KeyType key) {
+            if constexpr (std::is_same<typename KeyType::ElementType, uint16_t>::value) {
+                auto keyv = vdupq_n_u16(key.data());
+                std::size_t ret = -1;
+                for (std::size_t i = 0; i < Nodes; i += 8) {
+                    uint16x8_t keystrip = vld1q_u16((const typename DegreeTuple::ElementType*) &(keys[i]));
+                    auto comparison_u16x8  = vceqq_u16(keystrip, keyv);
+                    auto comparison_u8x8   = vqmovn_u16(comparison_u16x8);
+                    auto comparison_u64    = (uint64_t) vreinterpret_u64_u8(comparison_u8x8);
+                    auto zeroes            = std::countr_zero(comparison_u64) >> 3;
+                    if (zeroes < 8) {
+                        ret = i + zeroes;
+                        break;
+                    }
+                }
+                return ret;
+            } else {
+                return keyFind1(keys, key);
+            }
+        }
+
+        // Note:
+        // - Reads further out that just nodes. But that's OK since we know the element is present, and we pick the first hit.
+        // - Checks for equality, because we know it will hit
+        // - The following is branchless, unlike keyFind2
+        R5_NOINLINE static std::size_t keyFind3(const KeysContainerType& keys, KeyType key) {
+            if constexpr (std::is_same<typename KeyType::ElementType, uint16_t>::value) {
+                auto keyv = vdupq_n_u16(key.data());
+                std::size_t ret = std::numeric_limits<std::size_t>::max();
+                for (std::size_t i = 0; i < Nodes; i += 8) {
+                    uint16x8_t keystrip   = vld1q_u16((const typename DegreeTuple::ElementType*) &(keys[i]));
+                    auto comparison_u16x8 = vceqq_u16(keystrip, keyv);
+                    auto comparison_u8x8  = vqmovn_u16(comparison_u16x8);
+                    auto comparison_u64   = (uint64_t) vreinterpret_u64_u8(comparison_u8x8);
+                    auto zeros            = std::countr_zero(comparison_u64) >> 3;
+                    auto j                = zeros != 8 ? i + zeros : std::numeric_limits<std::size_t>::max();
+                    ret = std::min(ret, j);
+                }
+                return ret;
+            } else {
+                return keyFind1(keys, key);
+            }
         }
 
         // returns begin and end indices for nodes
