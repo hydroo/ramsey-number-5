@@ -209,7 +209,7 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             if constexpr (std::is_same<typename KeyType::ElementType, uint16_t>::value) {
                 auto keyv = vdupq_n_u16(key.data());
                 constexpr uint16x8_t allIndices = {  0,   1,   2,   3,   4,   5,   6,   7};
-                constexpr uint16x8_t maxIndices = {255, 255, 255, 255, 255, 255, 255, 255};
+                const     uint16x8_t maxIndices = vdupq_n_u16(0xffff);
                 auto ret = std::numeric_limits<std::size_t>::max();
                 for (std::size_t i = 0; i < Nodes; i += 8) {
                     uint16x8_t keystrip   = vld1q_u16((const typename DegreeTuple::ElementType*) &(keys[i]));
@@ -228,7 +228,7 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             if constexpr (std::is_same<typename KeyType::ElementType, uint16_t>::value && Nodes < 8) {
                 auto keyv = vdupq_n_u16(key.data());
                 constexpr uint16x8_t allIndices = {  0,   1,   2,   3,   4,   5,   6,   7};
-                constexpr uint16x8_t maxIndices = {255, 255, 255, 255, 255, 255, 255, 255};
+                const     uint16x8_t maxIndices = vdupq_n_u16(0xffff);
                 uint16x8_t keystrip  = vld1q_u16((const typename DegreeTuple::ElementType*) &(keys[0]));
                 auto comparison      = vceqq_u16(keystrip, keyv);
                 auto indices         = vbslq_u16(comparison, allIndices, maxIndices);
@@ -237,7 +237,7 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
             } else if constexpr (std::is_same<typename KeyType::ElementType, uint16_t>::value && Nodes >= 8 && Nodes <= 16) {
                 auto keyv = vdupq_n_u16(key.data());
                 constexpr uint8x16_t allIndices = {  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15};
-                constexpr uint8x16_t maxIndices = {255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255};
+                const     uint8x16_t maxIndices = vdupq_n_u8(0xff);
                 uint16x8_t keystrip_0 = vld1q_u16((const typename DegreeTuple::ElementType*) &(keys[0]));
                 uint16x8_t keystrip_1 = vld1q_u16((const typename DegreeTuple::ElementType*) &(keys[8]));
                 auto comparison_0     = vceqq_u16(keystrip_0, keyv);
