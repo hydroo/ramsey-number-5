@@ -7,7 +7,7 @@ using std::endl;
 
 using r5::AdjacencyMatrix;
 
-#define R5_TEST_8_FAST_COMPILE
+//#define R5_TEST_8_FAST_COMPILE
 
 TEST(Test8, ramseyGraphs) {
 
