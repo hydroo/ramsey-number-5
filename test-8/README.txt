@@ -358,7 +358,7 @@ This will trade off performance, unfortunately, but it seems unavoidable at this
   Still need to find out how to best do this.
   - A packed version of AdjacencyMatrixProperties could help speed up collision checks
 - NodesByDegree is still the biggest bottleneck
-  - SIMDify .find()
+  - SIMDify .find() - https://github.com/hydroo/ramsey-number-5/pull/4
 - AdjacencyMatrixProperties could be denser if we packed the array. Would save some more RAM.
 - Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n
   Confirm the extended test_test-8.cpp for 4,5,n and 5,5,n. Remove the note left there.
