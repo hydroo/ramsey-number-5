@@ -528,9 +528,9 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
                 R5_DEBUG_ASSERT(firstNotFixedNodeIndex == firstNotUniqueDegreeMultiplicityNodeIndex);
 
                 bool match = true;
-                for (Size i = firstNotEmptyOrFullNodeIndex; i < firstNotFixedNodeIndex; i += 1) {
+                for (Size i = firstNotEmptyOrFullNodeIndex+1; i < firstNotFixedNodeIndex; i += 1) {
                     Size n = traversalOrder[i];
-                    for (Size j = 0; j < i; j += 1) {
+                    for (Size j = firstNotEmptyOrFullNodeIndex; j < i; j += 1) {
                         Size m = traversalOrder[j];
                         R5_DEBUG_ASSERT(n != m)
                         R5_DEBUG_ASSERT(permutation[n] != permutation[m])
