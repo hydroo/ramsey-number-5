@@ -635,6 +635,7 @@ struct RamseyGraphs {
 #if R5_VERBOSE >= 1
         cerr << "  Create subgraph edge masks:              " << std::setw(15 + 4) << std::fixed << t12 << " seconds" << endl;
         cerr << "  Sort subgraph edge masks by last digit:  " << std::setw(15 + 4) << std::fixed << t23 << " seconds" << endl;
+        cerr << "  Number of complete edge masks:           " << std::setw(15) << edgeMasksComplete.size() << endl;
         cerr << "  Number of complete edge masks by last 1: " << std::setw(15) << "[";
         for (size_t i = 0; i < edgeMasksCompleteByLastOne.size(); i += 1) {
             if (edgeMasksCompleteByLastOne[i].size() > 0) {
@@ -643,6 +644,7 @@ struct RamseyGraphs {
             }
         }
         cerr << "]" << endl;
+        cerr << "  Number of empty    edge masks:           " << std::setw(15) << edgeMasksEmpty.size() << endl;
         cerr << "  Number of empty    edge masks by last 0: " << std::setw(15) << "[";
         for (size_t i = 0; i < edgeMasksEmptyByLastZero.size(); i += 1) {
             if (edgeMasksEmptyByLastZero[i].size() > 0) {
