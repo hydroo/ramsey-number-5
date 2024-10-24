@@ -86,10 +86,12 @@ namespace r5 {
     #define R5_DEBUG_ASSERT(expr)
 #endif
 
+#define R5_NOINLINE __attribute__((noinline))
+
 #if defined(RELWITHDEBINFO) || defined(DEBUG)
-    #define R5_NOINLINE __attribute__((noinline))
+    #define R5_DEBUG_NOINLINE R5_NOINLINE
 #else // RELEASE
-    #define R5_NOINLINE
+    #define R5_DEBUG_NOINLINE
 #endif
 
 namespace r5 {

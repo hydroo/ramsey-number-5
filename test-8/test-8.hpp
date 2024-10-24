@@ -152,20 +152,20 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         using NodesConstIterator = decltype(nodes)::const_iterator;
 
-        R5_NOINLINE static std::size_t keyFind1(const KeysContainerType& keys, KeyType key) {
+        R5_DEBUG_NOINLINE static std::size_t keyFind1(const KeysContainerType& keys, KeyType key) {
             auto it = std::find(keys.cbegin(), keys.cend(), key);
             return std::distance(keys.cbegin(), it);
         }
 
         // returns begin and end indices for nodes
-        R5_NOINLINE std::tuple<NodesConstIterator, NodesConstIterator> find(const KeyType& key) const {
+        R5_DEBUG_NOINLINE std::tuple<NodesConstIterator, NodesConstIterator> find(const KeyType& key) const {
             auto i = keyFind1(keys, key);
             auto beginIt = nodes.cbegin() + indices[i];
             auto endIt   =  i+1 < Nodes ? (nodes.cbegin() + indices[i+1]) : nodes.cend();
             return std::make_tuple(beginIt, endIt);
         }
 
-        R5_NOINLINE NodeType findFirstNode(const KeyType& key) const {
+        R5_DEBUG_NOINLINE NodeType findFirstNode(const KeyType& key) const {
             auto [beginIt, endIt] = find(key);
             return *beginIt;
         }
