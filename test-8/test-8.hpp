@@ -619,14 +619,8 @@ struct RamseyGraphs {
 
         R5_VERBOSE_1(auto t1 = std::chrono::steady_clock::now());
 
-        std::vector<AdjacencyMatrix<N>> edgeMasksComplete;
-        std::vector<AdjacencyMatrix<N>> edgeMasksEmpty;
-        if (N >= R) {
-            edgeMasksComplete = subGraphEdgeMasks<e, N, R>();
-        }
-        if (N >= S) {
-            edgeMasksEmpty    = invertSubgraphEdgeMasks<e, N, S>(subGraphEdgeMasks<e, N, S>());
-        }
+        std::vector<AdjacencyMatrix<N>> edgeMasksComplete = N >= R ?                                  subGraphEdgeMasks<e, N, R>()  : std::vector<AdjacencyMatrix<N>>{};
+        std::vector<AdjacencyMatrix<N>> edgeMasksEmpty    = N >= S ? invertSubgraphEdgeMasks<e, N, S>(subGraphEdgeMasks<e, N, S>()) : std::vector<AdjacencyMatrix<N>>{};
         R5_VERBOSE_1(auto t2 = std::chrono::steady_clock::now());
         R5_VERBOSE_1(auto t12 = std::chrono::duration<double>(t2 - t1).count());
 
@@ -645,9 +639,7 @@ struct RamseyGraphs {
         for (size_t i = 0; i < edgeMasksCompleteByLastOne.size(); i += 1) {
             if (edgeMasksCompleteByLastOne[i].size() > 0) {
                 cerr << i - 1 << " : " << edgeMasksCompleteByLastOne[i].size();
-                if (i < edgeMasksCompleteByLastOne.size()-1) {
-                    cerr << ", ";
-                }
+                if (i < edgeMasksCompleteByLastOne.size()-1) { cerr << ", "; }
             }
         }
         cerr << "]" << endl;
@@ -655,9 +647,7 @@ struct RamseyGraphs {
         for (size_t i = 0; i < edgeMasksEmptyByLastZero.size(); i += 1) {
             if (edgeMasksEmptyByLastZero[i].size() > 0) {
                 cerr << i - 1 << " : " << edgeMasksEmptyByLastZero[i].size();
-                if (i < edgeMasksEmptyByLastZero.size()-1) {
-                    cerr << ", ";
-                }
+                if (i < edgeMasksEmptyByLastZero.size()-1) { cerr << ", "; }
             }
         }
         cerr << "]" << endl;
