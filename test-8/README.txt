@@ -350,8 +350,10 @@ Here, parallelization should come in finally.
 This will trade off performance, unfortunately, but it seems unavoidable at this time. 
 
 # Possible next steps - August 2024
-- Maybe try to get rid of index array in NodesByDegree. See note in the code.
+- Fix NodesByDegree.dump()
 - Fix permutation counting for logs by including the pre-testing?! Perhaps as a separate entry
+
+- Maybe try to get rid of index array in NodesByDegree. See note in the code.
 - Print size of complete and empty edge masks
 - Look into reducing the pre-alloc for uniqueGraphs to never go over the RAM size.
   This leads to notable slowdowns (up to 8% total) as well as sometimes much higher RAM (3->4GB) usage.
