@@ -26,13 +26,13 @@ protected:
     }
 
     static constexpr void assign(const u64* m, Size nodes, u64* v) {
-        r5::copy(m, elements(nodes), v);
+        std::copy(m, m + elements(nodes), v);
     }
 
     template<Size NodesM>
     static constexpr void assign(const u64* m, Size nodesM, Size nodesV, u64* v) {
         if (Triangular == true) {
-            r5::copy(m, elements(nodesM), v);
+            std::copy(m, m + elements(nodesM), v);
         } else {
             for (Size c = 1; c < nodesM; c += 1) {
                 for (Size r = 0; r < c; r += 1) {
@@ -164,7 +164,7 @@ protected:
     }
 
     static constexpr void unsetAllEdges(Size nodes, u64* v) {
-        r5::fill_n(v, elements(nodes), (u64) 0x0000000000000000);
+        std::fill_n(v, elements(nodes), (u64) 0x0000000000000000);
     }
 
     static constexpr void setEdge(Size column, Size row, Size nodes, u64* v) {
