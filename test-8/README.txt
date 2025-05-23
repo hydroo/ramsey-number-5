@@ -1,3 +1,7 @@
+# Note
+
+Use `codesign --verbose --deep --force --sign - --options runtime --entitlements ../entitlements.plist test-8` to allow profiling the app on Mac
+
 # Overhaul - 20th Jan 2020
 
 Create Ramsey graphs directly, instead of the test-7 method.
