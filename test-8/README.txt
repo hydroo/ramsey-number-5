@@ -362,8 +362,7 @@ This will trade off performance, unfortunately, but it seems unavoidable at this
 - NodesByDegree is still the biggest bottleneck
   - SIMDify .find() - https://github.com/hydroo/ramsey-number-5/pull/4
 - AdjacencyMatrixProperties could be denser if we packed the array. Would save some more RAM.
-- Checkramseygraphcount.hpp: Find more results especially for 4,5,n and 5,5,n
-  Confirm the extended test_test-8.cpp for 4,5,n and 5,5,n. Remove the note left there.
+- Checkramseygraphcount.hpp: Find results for 5,5,n and confirm the 5,5,n additions from commit 25ceeae in test_test-8.cpp
 - Could print out stats on graph bucketing distribution in uniqueGraphs (Verbose >= 2)
 - Improve gProperties/gDegrees beyond edge and triangle degrees
   - Maybe entirely new properties like ?orbit lengths?
