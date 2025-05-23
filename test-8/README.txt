@@ -354,8 +354,13 @@ Here, parallelization should come in finally.
 This will trade off performance, unfortunately, but it seems unavoidable at this time. 
 
 # Possible next steps - August 2024
-- Fix NodesByDegree.dump()
+- Fix NodesByDegree.dump() and PackedIntTuple.dump() by introducing some sort of cast to print uint8_t as int rather than char
 - Fix permutation counting for logs by including the pre-testing?! Perhaps as a separate entry
+
+- Move uniquification inline with generation. This should:
+  - Avoid the intermediate array of all extended results nonUniqueRamseyGraphs and thus lower the high-water-mark RAM usage
+  - Likely improve the ability to implement other RAM saving techniques later on (e.g. Tiling, DFS)
+  - Measure allocations before and after using the Instruments allocation trace
 
 - Maybe try to get rid of index array in NodesByDegree. See note in the code.
 - Print size of complete and empty edge masks
@@ -369,6 +374,8 @@ This will trade off performance, unfortunately, but it seems unavoidable at this
 - Checkramseygraphcount.hpp: Find results for 5,5,n and confirm the 5,5,n additions from commit 25ceeae in test_test-8.cpp
 - Could print out stats on graph bucketing distribution in uniqueGraphs (Verbose >= 2)
 - Improve gProperties/gDegrees beyond edge and triangle degrees
+  - Try degrees (via mask + popcount on adjacencymatrix (precompute masks at compilation-time)), and then again ?sum?min/max? degrees of neighbors (perhaps recursively multple times).
+    Still need to think through the implementation. This should be faster than the current approach and likely more detailed at the same time. Plus it would allow recursive application if it proves useful.
   - Maybe entirely new properties like ?orbit lengths?
   - Maybe K_4+: Probably would use subGraphEdgeMasks() and some smarts to find the subgraphs, instead of the hardcoded degree+triangle+empty triangle stuff we do now
 - Read, understand and implement the algorithm from geng - Applications of a technique for labelled enumeration (http://cs.anu.edu.au/~bdm/papers/LabelledEnumeration.pdf)
