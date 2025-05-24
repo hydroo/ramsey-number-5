@@ -164,6 +164,10 @@ std::ostream& operator<<(std::ostream& o, const std::unordered_map<K, V>& m);
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& v);
 
+namespace r5 {
+    using ::operator<<;
+}
+
 template <typename T, std::size_t Capacity>
 std::ostream& operator<<(std::ostream& o, const std::array<T, Capacity>& a) {
     o << '[';
