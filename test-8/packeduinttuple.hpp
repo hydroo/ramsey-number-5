@@ -42,15 +42,6 @@ private:
         return ret;
     }
 
-    template<typename T, std::size_t Size_>
-    static std::array<uint64_t, Size_> convertArrayForPrinting(const std::array<T, Size_>& a) {
-        std::array<uint64_t, Size_> ret;
-        for (std::size_t i = 0; i < a.size(); ++i) {
-            ret[i] = uint64_t(a[i]);
-        }
-        return ret;
-    }
-
     static constexpr std::size_t                    _size           = sizeof...(Bits);
     static_assert(_size > 0, "Need at least one entry, or add the necessary code to support empty tuples");
     static constexpr std::array<std::size_t, _size> _bitSizes{Bits...};
@@ -132,7 +123,7 @@ public:
         o << " _bitSum "         << _bitSum;
         o << " _byteSum "        << _byteSum;
         o << " _byteSumRounded " << _byteSumRounded;
-        o << " _bitMasks "       << convertArrayForPrinting(_bitMasks);
+        o << " _bitMasks "       << u8ArrayToU32(_bitMasks);
         return o.str();
     }
 

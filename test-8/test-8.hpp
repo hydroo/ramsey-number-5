@@ -172,8 +172,7 @@ std::vector<AdjacencyMatrix<Nodes>> uniqueAdjacencyMatrices5(const std::vector<A
 
         std::string dump() const {
             std::ostringstream o;
-            // TODO convert up from u8, because the characters are printed wrongly.
-            o << "keys " << keys << " indices " << indices << " nodes " << nodes;
+            o << "keys " << keys << " indices " << r5::u8ArrayToU32(indices) << " nodes " << r5::u8ArrayToU32(nodes);
             return o.str();
         }
     };

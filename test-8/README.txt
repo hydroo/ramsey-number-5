@@ -354,7 +354,6 @@ Here, parallelization should come in finally.
 This will trade off performance, unfortunately, but it seems unavoidable at this time. 
 
 # Possible next steps - August 2024
-- Fix NodesByDegree.dump() and PackedIntTuple.dump() by introducing some sort of cast to print uint8_t as int rather than char
 - Fix permutation counting for logs by including the pre-testing?! Perhaps as a separate entry
 
 - Move uniquification inline with generation. This should:

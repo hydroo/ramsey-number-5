@@ -328,6 +328,18 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v) {
     return o;
 }
 
+namespace r5 {
+// Needed to print u8 as int rather than character
+template<std::size_t Capacity>
+static std::array<u32, Capacity> u8ArrayToU32(const std::array<u8, Capacity>& a) {
+    std::array<u32, Capacity> ret;
+    for (std::size_t i = 0; i < a.size(); ++i) {
+        ret[i] = u32(a[i]);
+    }
+    return ret;
+}
+}
+
 namespace std {
 
     template <typename T, std::size_t Capacity>
