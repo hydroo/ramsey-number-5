@@ -360,6 +360,7 @@ This will trade off performance, unfortunately, but it seems unavoidable at this
   - Avoid the intermediate array of all extended results nonUniqueRamseyGraphs and thus lower the high-water-mark RAM usage
   - Likely improve the ability to implement other RAM saving techniques later on (e.g. Tiling, DFS)
   - Measure allocations before and after using the Instruments allocation trace
+    - Perhaps the thing to do is to only create extensions of a certain edge count, and thus chunk the current approach per edge count. That would greatly reduce running RAM requirements.
 
 - Maybe try to get rid of index array in NodesByDegree. See note in the code.
 - Print size of complete and empty edge masks
